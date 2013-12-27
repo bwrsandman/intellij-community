@@ -1,0 +1,21 @@
+Bazaar4Idea
+======================================================================
+
+This is the Bazaar IntelliJ IDEA VCS plugin. This plugin was originally
+derived from the Git plugin source & a couple of other Bazaar plugin
+sources. It should be compatible with IDEA v13 & above.
+
+Usage:
+
+Requires external Bazaar command line tool to function. Configure the
+location of the 'bzr' command in the project settings Version Control
+tab using the "Configure VCS" button for the Bazaar VCS.
+
+Here's the IDEA plugin page:
+TODO
+
+Original source code Subversion repository is available here:
+TODO
+
+
+======================================================================

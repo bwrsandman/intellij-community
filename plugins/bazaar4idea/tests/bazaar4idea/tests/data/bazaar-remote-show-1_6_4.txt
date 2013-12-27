@@ -1,0 +1,10 @@
+* remote origin
+  Fetch URL: bzr://host/dir.bzr
+  Push  URL: bzr@host/dir.bzr
+  HEAD branch: (not queried)
+  Remote branch: (status not queried)
+    master
+  Local branch configured for 'bzr pull':
+    master merges with remote master
+  Local ref configured for 'bzr push' (status not queried):
+    (matching) pushes to (matching)

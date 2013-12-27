@@ -1,0 +1,12 @@
+BRANCH
+trunk
+. .
+refs/remotes/bzr-svn
+refs/remotes/bzr-svn
+merge
+BRANCH
+trunk2
+. .
+refs/remotes/bzr-svn
+refs/remotes/bzr-svn
+merge

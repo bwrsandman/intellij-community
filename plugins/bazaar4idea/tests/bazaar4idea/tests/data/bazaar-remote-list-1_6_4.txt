@@ -1,0 +1,2 @@
+origin	bzr://host/dir.bzr (fetch)
+origin	bzr@host/dir.bzr (push)

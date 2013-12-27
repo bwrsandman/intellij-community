@@ -1,0 +1,6 @@
+* remote origin
+  URL: bzr@host/dir.bzr
+  Remote branch merged with 'bzr pull' while on branch master
+    master
+  Tracked remote branch
+    master

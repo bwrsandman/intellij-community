@@ -1,0 +1,23 @@
+<idea-plugin>
+  <name>Bazaar Integration Tests</name>
+  <id>Bazaar4Idea-Tests</id>
+  <description>Overriding services for tests.</description>
+
+  <depends>com.intellij.modules.vcs</depends>
+  <depends>Bazaar4Idea</depends>
+
+  <extensions defaultExtensionNs="com.intellij">
+    <applicationService serviceInterface="bazaar4idea.commands.BzrHttpAuthService"
+                        serviceImplementation="bazaar4idea.remote.BzrHttpAuthTestService"
+                        overrides="true" />
+    <applicationService serviceInterface="bazaar4idea.DialogManager"
+                        serviceImplementation="bazaar4idea.test.TestDialogManager"
+                        overrides="true" />
+
+    <projectService serviceInterface="bazaar4idea.Notificator"
+                    serviceImplementation="bazaar4idea.test.TestNotificator"
+                    overrides="true"/>
+
+  </extensions>
+
+</idea-plugin>
