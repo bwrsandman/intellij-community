@@ -1213,6 +1213,46 @@
     <option name="to" hit="Warn if CRLF line separators are about to be committed" />
     <option name="warn" hit="Warn if CRLF line separators are about to be committed" />
   </configurable>
+    <configurable id="vcs.Bazaar" configurable_name="Bazaar">
+    <option name="" hit="" />
+    <option name="auto-update" hit="Auto-update if push of the current branch was rejected" />
+    <option name="branch" hit="Auto-update if push of the current branch was rejected" />
+    <option name="current" hit="Auto-update if push of the current branch was rejected" />
+    <option name="if" hit="Auto-update if push of the current branch was rejected" />
+    <option name="of" hit="Auto-update if push of the current branch was rejected" />
+    <option name="push" hit="Auto-update if push of the current branch was rejected" />
+    <option name="rejected" hit="Auto-update if push of the current branch was rejected" />
+    <option name="the" hit="Auto-update if push of the current branch was rejected" />
+    <option name="was" hit="Auto-update if push of the current branch was rejected" />
+    <option name="automatically" hit="Commit automatically on cherry-pick" />
+    <option name="cherry-pick" hit="Commit automatically on cherry-pick" />
+    <option name="commit" hit="Commit automatically on cherry-pick" />
+    <option name="on" hit="Commit automatically on cherry-pick" />
+    <option name="branches" hit="Control branches from different roots synchronously" />
+    <option name="control" hit="Control branches from different roots synchronously" />
+    <option name="different" hit="Control branches from different roots synchronously" />
+    <option name="from" hit="Control branches from different roots synchronously" />
+    <option name="roots" hit="Control branches from different roots synchronously" />
+    <option name="synchronously" hit="Control branches from different roots synchronously" />
+    <option name="bzr" hit="Bazaar" />
+    <option name="executable" hit="Path to Bazaar executable:" />
+    <option name="bzr" hit="Path to Bazaar executable:" />
+    <option name="path" hit="Path to Bazaar executable:" />
+    <option name="to" hit="Path to Bazaar executable:" />
+    <option name="executable" hit="SSH executable:" />
+    <option name="ssh" hit="SSH executable:" />
+    <option name="test" hit="Test " />
+    <option name="about" hit="Warn if CRLF line separators are about to be committed" />
+    <option name="are" hit="Warn if CRLF line separators are about to be committed" />
+    <option name="be" hit="Warn if CRLF line separators are about to be committed" />
+    <option name="committed" hit="Warn if CRLF line separators are about to be committed" />
+    <option name="crlf" hit="Warn if CRLF line separators are about to be committed" />
+    <option name="if" hit="Warn if CRLF line separators are about to be committed" />
+    <option name="line" hit="Warn if CRLF line separators are about to be committed" />
+    <option name="separators" hit="Warn if CRLF line separators are about to be committed" />
+    <option name="to" hit="Warn if CRLF line separators are about to be committed" />
+    <option name="warn" hit="Warn if CRLF line separators are about to be committed" />
+  </configurable>
   <configurable id="usage.statistics" configurable_name="Usage Statistics">
     <option name="" hit=" Were asking your permission to send information about your plugins configuration (what is enabled  and what is not) and feature usage statistics (e.g. how frequently youre using code completion).     This data is anonymous, does not contain any personal information, collected for use only by JetBrains s.r.o.  and will never be transmitted to any third party. " />
     <option name="about" hit=" Were asking your permission to send information about your plugins configuration (what is enabled  and what is not) and feature usage statistics (e.g. how frequently youre using code completion).     This data is anonymous, does not contain any personal information, collected for use only by JetBrains s.r.o.  and will never be transmitted to any third party. " />

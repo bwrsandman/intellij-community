@@ -1,0 +1,1 @@
+origin	bzr@host/dir.bzr

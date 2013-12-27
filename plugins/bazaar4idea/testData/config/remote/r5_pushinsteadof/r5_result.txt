@@ -1,0 +1,12 @@
+REMOTE
+origin
+https://github.com/JetBrains/intellij-community.bzr
+bzr@github.com:JetBrains/intellij-community.bzr
++refs/heads/*:refs/remotes/origin/*
++refs/heads/*:refs/remotes/origin/*
+REMOTE
+jps
+bzr://github.com/JetBrains/JPS.bzr
+bzr@github.com:JetBrains/JPS.bzr
++refs/heads/*:refs/remotes/jps/*
++refs/heads/*:refs/remotes/jps/*

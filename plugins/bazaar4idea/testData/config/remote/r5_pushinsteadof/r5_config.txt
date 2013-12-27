@@ -1,0 +1,19 @@
+  [core]
+repositoryformatversion = 0
+filemode = true
+bare = false
+logallrefupdates = true
+ignorecase = true
+
+  [remote "origin"]
+fetch = +refs/heads/*:refs/remotes/origin/*
+url = anygithub/JetBrains/intellij-community.bzr
+pushUrl = bzr@github.com:JetBrains/intellij-community.bzr
+  [remote "jps"]
+fetch = +refs/heads/*:refs/remotes/jps/*
+url = bzr://github.com/JetBrains/JPS.bzr
+pushUrl = bzr@github.com:JetBrains/JPS.bzr
+
+  [url "https://github.com/"]
+insteadOf = anygithub/
+pushInsteadOf = bzr@github.com:

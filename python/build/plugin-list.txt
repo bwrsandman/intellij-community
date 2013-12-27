@@ -4,6 +4,7 @@ cvs-plugin
 javacvs-src
 smartcvs-src
 svn4idea
+bazaar4idea
 git4idea
 hg4idea
 tasks

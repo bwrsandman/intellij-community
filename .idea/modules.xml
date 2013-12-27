@@ -17,6 +17,8 @@
       <module fileurl="file://$PROJECT_DIR$/plugins/ant/jps-plugin/ant-jps-plugin.iml" filepath="$PROJECT_DIR$/plugins/ant/jps-plugin/ant-jps-plugin.iml" group="plugins" />
       <module fileurl="file://$PROJECT_DIR$/jps/antLayout/antlayout.iml" filepath="$PROJECT_DIR$/jps/antLayout/antlayout.iml" group="jps" />
       <module fileurl="file://$PROJECT_DIR$/plugins/google-app-engine/runtime/appEngine-runtime.iml" filepath="$PROJECT_DIR$/plugins/google-app-engine/runtime/appEngine-runtime.iml" group="plugins/GAE" />
+      <module fileurl="file://$PROJECT_DIR$/plugins/bazaar4idea/bazaar4idea.iml" filepath="$PROJECT_DIR$/plugins/bazaar4idea/bazaar4idea.iml" group="plugins/VCS" />
+      <module fileurl="file://$PROJECT_DIR$/plugins/bazaar4idea/rt/bazaar4idea-rt.iml" filepath="$PROJECT_DIR$/plugins/bazaar4idea/rt/bazaar4idea-rt.iml" group="plugins/VCS" />
       <module fileurl="file://$PROJECT_DIR$/platform/boot/boot.iml" filepath="$PROJECT_DIR$/platform/boot/boot.iml" group="platform" />
       <module fileurl="file://$PROJECT_DIR$/platform/bootstrap/bootstrap.iml" filepath="$PROJECT_DIR$/platform/bootstrap/bootstrap.iml" group="platform" />
       <module fileurl="file://$PROJECT_DIR$/build/build.iml" filepath="$PROJECT_DIR$/build/build.iml" />

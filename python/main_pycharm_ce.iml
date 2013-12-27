@@ -9,6 +9,7 @@
     <orderEntry type="module" module-name="cvs-plugin" />
     <orderEntry type="module" module-name="hg4idea" />
     <orderEntry type="module" module-name="svn4idea" />
+    <orderEntry type="module" module-name="bazaar4idea" />
     <orderEntry type="module" module-name="git4idea" />
     <orderEntry type="module" module-name="relaxng" />
     <orderEntry type="module" module-name="github" />

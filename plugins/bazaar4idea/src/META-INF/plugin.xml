@@ -1,0 +1,199 @@
+<idea-plugin>
+  <name>Bazaar Integration</name>
+  <id>Bazaar4Idea</id>
+  <description>Provides integration with Bazaar version control system</description>
+  <version>8.1</version>
+  <category>VCS Integration</category>
+  <vendor url="http://svn.jetbrains.org/idea/Trunk/bundled/bazaar4idea/" logo="/general/ijLogo.png">JetBrains</vendor>
+
+  <depends>com.intellij.modules.vcs</depends>
+
+  <actions>
+
+    <action id="Bazaar.Init" class="bazaar4idea.actions.BzrInit" text="Create Bazaar Repository...">
+      <add-to-group group-id="Vcs.Import"/>
+    </action>
+
+    <action id="Bazaar.Log" class="bazaar4idea.history.wholeTree.SelectRepositoryAndShowLogAction">
+      <add-to-group group-id="Vcs.Browse"/>
+    </action>
+
+    <group id="BazaarFileActions">
+      <reference ref="CheckinFiles"/>
+      <action id="Bazaar.Add" class="bazaar4idea.actions.BzrAdd" text="Add" icon="AllIcons.General.Add" use-shortcut-of="ChangesView.AddUnversioned" />
+      <separator/>
+      <reference ref="Annotate"/>
+      <reference ref="Show.Current.Revision"/>
+      <reference ref="Compare.SameVersion"/>
+      <reference ref="Compare.LastVersion"/>
+      <reference ref="Compare.Selected"/>
+      <action id="Bazaar.CompareWithBranch" class="bazaar4idea.actions.BzrCompareWithBranchAction" text="Compare with Branch..." />
+      <reference ref="Vcs.ShowTabbedFileHistory"/>
+      <reference id="Vcs.ShowHistoryForBlock"/>
+      <separator/>
+      <action id="Bazaar.Revert" class="bazaar4idea.actions.BzrRevert" icon="AllIcons.Actions.Rollback" text="Revert..."/>
+      <action id="Bazaar.ResolveConflicts" class="bazaar4idea.actions.BzrResolveConflictsAction" text="Resolve Conflicts..."/>
+    </group>
+
+    <group id="BazaarRepositoryActions">
+      <action id="Bazaar.Branches" class="bazaar4idea.ui.branch.BzrBranchesAction" text="_Branches..." icon="Bazaar4ideaIcons.Branch"/>
+      <action id="Bazaar.Tag" class="bazaar4idea.actions.BzrTag" text="Tag Files..."/>
+      <action id="Bazaar.Merge" class="bazaar4idea.actions.BzrMerge" text="Merge Changes..." icon="AllIcons.Vcs.MergeSourcesTree"/>
+      <action id="bazaar.Stash" class="bazaar4idea.actions.BzrStash" text="Stash Changes..."/>
+      <action id="Bazaar.Unstash" class="bazaar4idea.actions.BzrUnstash" text="UnStash Changes..."/>
+      <action id="Bazaar.Reset" class="bazaar4idea.actions.BzrResetHead" text="Reset HEAD..." icon="AllIcons.Actions.Reset"/>
+      <separator/>
+      <action id="Bazaar.Fetch" class="bazaar4idea.actions.BzrFetch" text="Fetch"/>
+      <action id="Bazaar.Pull" class="bazaar4idea.actions.BzrPull" text="Pull..." icon="AllIcons.Actions.CheckOut"/>
+      <action id="Bazaar.Push" class="bazaar4idea.actions.BzrPushAction" icon="AllIcons.Actions.Commit" text="Push...">
+        <keyboard-shortcut first-keystroke="control shift K" keymap="$default"/>
+      </action>
+      <separator/>
+      <action id="Bazaar.Rebase" class="bazaar4idea.actions.BzrRebase" text="Rebase..."/>
+      <action id="Bazaar.Rebase.Abort" class="bazaar4idea.actions.BzrRebaseAbort" text="Abort Rebasing"/>
+      <action id="Bazaar.Rebase.Continue" class="bazaar4idea.actions.BzrRebaseContinue" text="Continue Rebasing"/>
+      <action id="Bazaar.Rebase.Skip" class="bazaar4idea.actions.BzrRebaseSkip" text="Skip Commit in Rebasing"/>
+      <separator/>
+    </group>
+
+    <group id="Bazaar.Menu" class="bazaar4idea.actions.BzrMenu" popup="true" text="_Bazaar">
+      <reference ref="BazaarFileActions"/>
+      <separator/>
+      <reference ref="BazaarRepositoryActions"/>
+
+      <add-to-group group-id="VcsGlobalGroup" anchor="after" relative-to-action="Vcs.Specific"/>
+    </group>
+
+    <group id="Bazaar.ContextMenu" class="bazaar4idea.actions.BzrMenu" popup="true" text="_Bazaar">
+      <reference ref="BazaarFileActions"/>
+      <separator/>
+      <group id="Bazaar.RepositoryContextMenu" popup="true" text="_Repository">
+        <reference ref="BazaarRepositoryActions"/>
+      </group>
+      <add-to-group group-id="VcsGroup" anchor="last"/>
+    </group>
+
+    <group id="Bazaar.LogContextMenu">
+      <separator/>
+    </group>
+
+    <action id="Bazaar.CherryPick" class="bazaar4idea.cherrypick.BzrCherryPickAction" text="Cherry-Pick" icon="Bazaar4ideaIcons.CherryPick"/>
+    <action id="Bazaar.CheckoutRevision" class="bazaar4idea.actions.BzrCheckoutRevisionAction" text="Checkout Revision"/>
+    <action id="Bazaar.CreateNewBranch" class="bazaar4idea.actions.BzrCreateNewBranchAction" text="New Branch"
+            description="Create new branch starting from the selected commit"/>
+    <action id="Bazaar.CreateNewTag" class="bazaar4idea.actions.BzrCreateTagAction" text="New Tag"
+            description="Create new tag pointing to this commit"/>
+
+    <group id="Bazaar.Log.ContextMenu">
+      <separator/>
+      <reference id="Bazaar.CherryPick" />
+      <reference id="Bazaar.CheckoutRevision"/>
+      <reference id="Bazaar.CreateNewBranch" />
+      <reference id="Bazaar.CreateNewTag" />
+      <add-to-group group-id="Vcs.Log.ContextMenu" />
+    </group>
+
+    <group id="Bazaar.Log.Toolbar">
+      <reference id="Bazaar.CherryPick"/>
+      <add-to-group group-id="Vcs.Log.Toolbar" />
+    </group>
+    
+
+  </actions>
+
+  <project-components>
+    <component>
+      <implementation-class>bazaar4idea.repo.BzrRepositoryManager</implementation-class>
+    </component>
+  </project-components>
+
+  <extensions defaultExtensionNs="com.intellij">
+    <errorHandler implementation="com.intellij.diagnostic.ITNReporter"/>
+    <vcs name="Bazaar" vcsClass="bazaar4idea.BzrVcs" displayName="Bazaar" administrativeAreaName=".bzr"/>
+    <checkoutProvider implementation="bazaar4idea.checkout.BzrCheckoutProvider"/>
+    <vcsRootChecker implementation="bazaar4idea.roots.BzrRootChecker"/>
+    <vcsPopupProvider implementation="bazaar4idea.actions.BzrQuickListContentProvider"/>
+    <vcsCheckinHandlerFactory implementation="bazaar4idea.checkin.BzrCheckinHandlerFactory"/>
+    <checkinHandlerFactory implementation="bazaar4idea.checkin.UnresolvedMergeCheckFactory"/>
+    <logProvider implementation="bazaar4idea.log.BzrLogProvider"/>
+    <vcsChangesViewRefresher implementation="bazaar4idea.changes.BzrChangesViewRefresher" />
+    
+    <vcs.rootFinder implementation="bazaar4idea.roots.BzrRootFinder"/>
+
+    <projectService
+      serviceInterface="bazaar4idea.history.wholeTree.LogFactoryService"
+      serviceImplementation="bazaar4idea.history.wholeTree.LogFactoryService"/>
+    <projectService
+        serviceInterface="bazaar4idea.annotate.BzrAnnotationProvider"
+        serviceImplementation="bazaar4idea.annotate.BzrAnnotationProvider"/>
+    <projectService
+        serviceInterface="bazaar4idea.diff.BzrDiffProvider"
+        serviceImplementation="bazaar4idea.diff.BzrDiffProvider"/>
+    <projectService
+        serviceInterface="bazaar4idea.checkin.BzrCheckinEnvironment"
+        serviceImplementation="bazaar4idea.checkin.BzrCheckinEnvironment"/>
+    <projectService
+        serviceInterface="bazaar4idea.status.BzrChangeProvider"
+        serviceImplementation="bazaar4idea.status.BzrChangeProvider"/>
+    <projectService
+        serviceInterface="bazaar4idea.history.BzrHistoryProvider"
+        serviceImplementation="bazaar4idea.history.BzrHistoryProvider"/>
+    <projectService
+        serviceInterface="bazaar4idea.rollback.BzrRollbackEnvironment"
+        serviceImplementation="bazaar4idea.rollback.BzrRollbackEnvironment"/>
+    <projectService
+        serviceInterface="bazaar4idea.config.BzrVcsSettings"
+        serviceImplementation="bazaar4idea.config.BzrVcsSettings"/>
+    <projectService
+        serviceInterface="bazaar4idea.settings.BzrPushSettings"
+        serviceImplementation="bazaar4idea.settings.BzrPushSettings"/>
+    <projectService
+        serviceInterface="bazaar4idea.history.NewBzrUsersComponent"
+        serviceImplementation="bazaar4idea.history.NewBzrUsersComponent"/>
+    <projectService
+        serviceInterface="bazaar4idea.history.browser.BzrProjectLogManager"
+        serviceImplementation="bazaar4idea.history.browser.BzrProjectLogManager"/>
+    <projectService
+        serviceInterface="bazaar4idea.config.BzrExecutableValidator"
+        serviceImplementation="bazaar4idea.config.BzrExecutableValidator"/>
+    <projectService
+        serviceInterface="bazaar4idea.MessageManager"
+        serviceImplementation="bazaar4idea.MessageManager"/>
+    <projectService serviceInterface="bazaar4idea.Notificator"
+                    serviceImplementation="bazaar4idea.Notificator"/>
+    <projectService serviceInterface="bazaar4idea.history.wholeTree.BzrLogSettings"
+                    serviceImplementation="bazaar4idea.history.wholeTree.BzrLogSettings"/>
+    <projectService serviceInterface="bazaar4idea.branch.BzrBrancher"
+                    serviceImplementation="bazaar4idea.branch.BzrBrancherImpl"/>
+
+    <projectService serviceImplementation="bazaar4idea.log.BzrContentRevisionFactory" />
+
+    <applicationService serviceImplementation="bazaar4idea.history.wholeTree.BzrCommitsSequentialIndex"
+                        serviceInterface="bazaar4idea.history.wholeTree.BzrCommitsSequentially"/>
+    <applicationService serviceInterface="bazaar4idea.config.BzrVcsApplicationSettings"
+                        serviceImplementation="bazaar4idea.config.BzrVcsApplicationSettings"/>
+    <applicationService serviceInterface="org.jetbrains.bazaar4idea.ssh.BzrXmlRpcSshService"
+                        serviceImplementation="org.jetbrains.bazaar4idea.ssh.BzrXmlRpcSshService"/>
+    <applicationService serviceInterface="bazaar4idea.commands.BzrHttpAuthService"
+                        serviceImplementation="bazaar4idea.commands.BzrHttpAuthServiceImpl" />
+    <applicationService serviceInterface="bazaar4idea.rebase.BzrRebaseEditorService"
+                        serviceImplementation="bazaar4idea.rebase.BzrRebaseEditorService"/>
+    <applicationService serviceInterface="bazaar4idea.config.SSHConnectionSettings"
+                        serviceImplementation="bazaar4idea.config.SSHConnectionSettings"/>
+    <applicationService serviceInterface="bazaar4idea.remote.BzrRememberedInputs"
+                        serviceImplementation="bazaar4idea.remote.BzrRememberedInputs"/>
+    <applicationService serviceInterface="bazaar4idea.commands.Bzr"
+                        serviceImplementation="bazaar4idea.commands.BzrImpl"/>
+    <applicationService serviceInterface="bazaar4idea.BzrPlatformFacade"
+                        serviceImplementation="bazaar4idea.BzrPlatformFacadeImpl" />
+    <applicationService serviceInterface="bazaar4idea.DialogManager"
+                        serviceImplementation="bazaar4idea.DialogManager" />
+
+    <fileTypeFactory implementation="bazaar4idea.vfs.BzrFileTypeFactory"/>
+    <vcs.taskHandler implementation="bazaar4idea.BzrTaskHandler"/>
+  </extensions>
+
+  <extensionPoints>
+    <extensionPoint qualifiedName="Bazaar4Idea.BzrHttpAuthDataProvider" interface="bazaar4idea.jgit.BzrHttpAuthDataProvider"/>
+  </extensionPoints>
+</idea-plugin>
