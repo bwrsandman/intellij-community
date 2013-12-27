@@ -154,7 +154,7 @@ public class BzrPullDialog extends DialogWrapper {
    * @return a pull handler configured according to dialog options
    */
   public BzrLineHandler makeHandler(@NotNull String url) {
-    BzrLineHandler h = new BzrLineHandler(myProject, gitRoot(), BzrCommand.PULL);
+    BzrLineHandler h = new BzrLineHandler(myProject, bzrRoot(), BzrCommand.PULL);
     // ignore merge failure for the pull
     h.ignoreErrorCode(1);
     h.setUrl(url);
@@ -288,7 +288,7 @@ public class BzrPullDialog extends DialogWrapper {
 
   @Nullable
   private BzrRepository getRepository() {
-    VirtualFile root = gitRoot();
+    VirtualFile root = bzrRoot();
     BzrRepository repository = myRepositoryManager.getRepositoryForRoot(root);
     if (repository == null) {
       LOG.error("Repository is null for " + root);
@@ -334,7 +334,7 @@ public class BzrPullDialog extends DialogWrapper {
   /**
    * @return a currently selected git root
    */
-  public VirtualFile gitRoot() {
+  public VirtualFile bzrRoot() {
     return (VirtualFile)myBzrRoot.getSelectedItem();
   }
 

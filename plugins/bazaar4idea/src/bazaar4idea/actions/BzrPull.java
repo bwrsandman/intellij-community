@@ -70,8 +70,8 @@ public class BzrPull extends BzrRepositoryAction {
       public void run(@NotNull ProgressIndicator indicator) {
         final BzrRepositoryManager repositoryManager = BzrUtil.getRepositoryManager(myProject);
 
-        BzrRepository repository = repositoryManager.getRepositoryForRoot(dialog.gitRoot());
-        assert repository != null : "Repository can't be null for root " + dialog.gitRoot();
+        BzrRepository repository = repositoryManager.getRepositoryForRoot(dialog.bzrRoot());
+        assert repository != null : "Repository can't be null for root " + dialog.bzrRoot();
         String remoteOrUrl = dialog.getRemote();
         
         
@@ -83,7 +83,7 @@ public class BzrPull extends BzrRepositoryAction {
 
         final BzrLineHandler handler = dialog.makeHandler(url);
 
-        final VirtualFile root = dialog.gitRoot();
+        final VirtualFile root = dialog.bzrRoot();
         affectedRoots.add(root);
         String revision = repository.getCurrentRevision();
         if (revision == null) {

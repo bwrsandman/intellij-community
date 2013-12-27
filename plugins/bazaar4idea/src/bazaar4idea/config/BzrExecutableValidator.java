@@ -39,7 +39,7 @@ public class BzrExecutableValidator extends ExecutableValidator {
 
   public BzrExecutableValidator(@NotNull Project project, @Nullable BzrVcs vcs) {
     super(project,
-          BzrBundle.message("git.executable.notification.title"), BzrBundle.message("git.executable.notification.description"));
+          BzrBundle.message("bzr.executable.notification.title"), BzrBundle.message("bzr.executable.notification.description"));
     myVcs = vcs;
   }
 

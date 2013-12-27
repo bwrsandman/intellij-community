@@ -75,9 +75,9 @@ class BzrBranchWorkerTest extends BzrLightTest {
     myRepositories = [ myUltimate, myCommunity, myContrib ]
 
     cd(myProjectRoot)
-    touch(".gitignore", "community\ncontrib")
-    bzr("add .gitignore")
-    bzr("commit -m gitignore")
+    touch(".bzrignore", "community\ncontrib")
+    bzr("add .bzrignore")
+    bzr("commit -m bzrignore")
   }
 
   @After
