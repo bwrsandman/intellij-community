@@ -321,12 +321,12 @@ public class BzrUtil {
   }
 
   /**
-   * Return a git root for the file path (the parent directory with ".git" subdirectory)
+   * Return a Bazaar root for the file path (the parent directory with ".bzr" subdirectory)
    *
    * @param filePath a file path
-   * @return git root for the file
-   * @throws IllegalArgumentException if the file is not under git
-   * @throws VcsException             if the file is not under git
+   * @return Bazaar root for the file
+   * @throws IllegalArgumentException if the file is not under Bazaar
+   * @throws VcsException             if the file is not under Bazaar
    *
    * @deprecated because uses the java.io.File.
    * @use BzrRepositoryManager#getRepositoryForFile().
@@ -336,7 +336,7 @@ public class BzrUtil {
     if (root != null) {
       return root;
     }
-    throw new VcsException("The file " + filePath + " is not under git.");
+    throw new VcsException("The file " + filePath + " is not under Bazaar.");
   }
 
   /**

@@ -297,7 +297,7 @@ public class BzrHistoryUtilsTest extends BzrTest {
 
     BzrRevisionNumber revisionNumber = (BzrRevisionNumber) BzrHistoryUtils.getCurrentRevision(myProject, bfilePath, "master");
     assertEquals(revisionNumber.getRev(), output[0]);
-    assertEquals(revisionNumber.getTimestamp(), BzrTestRevision.gitTimeStampToDate(output[1]));
+    assertEquals(revisionNumber.getTimestamp(), BzrTestRevision.bzrTimeStampToDate(output[1]));
   }
 
   @Test(enabled = false)
@@ -324,7 +324,7 @@ public class BzrHistoryUtilsTest extends BzrTest {
     assertTrue(!state.isItemExists());
     final BzrRevisionNumber revisionNumber = (BzrRevisionNumber) state.getNumber();
     assertEquals(revisionNumber.getRev(), hashAndData[0]);
-    assertEquals(revisionNumber.getTimestamp(), BzrTestRevision.gitTimeStampToDate(hashAndData[1]));
+    assertEquals(revisionNumber.getTimestamp(), BzrTestRevision.bzrTimeStampToDate(hashAndData[1]));
   }
 
   @Test
@@ -341,8 +341,8 @@ public class BzrHistoryUtilsTest extends BzrTest {
     final List<BzrFileRevision> revisions = new ArrayList<BzrFileRevision>(3);
     Consumer<BzrFileRevision> consumer = new Consumer<BzrFileRevision>() {
       @Override
-      public void consume(BzrFileRevision gitFileRevision) {
-        revisions.add(gitFileRevision);
+      public void consume(BzrFileRevision bzrFileRevision) {
+        revisions.add(bzrFileRevision);
       }
     };
     Consumer<VcsException> exceptionConsumer = new Consumer<VcsException>() {
@@ -387,8 +387,8 @@ public class BzrHistoryUtilsTest extends BzrTest {
     for (BzrTestRevision rev : myRevisionsAfterRename) {
       ids.add(rev.myHash);
     }
-    final List<BzrCommit> gitCommits = BzrHistoryUtils.commitsDetails(myProject, bfilePath, Collections.<String>emptySet(), ids);
-    assertCommitsEqualToTestRevisions(gitCommits, myRevisionsAfterRename);
+    final List<BzrCommit> bzrCommits = BzrHistoryUtils.commitsDetails(myProject, bfilePath, Collections.<String>emptySet(), ids);
+    assertCommitsEqualToTestRevisions(bzrCommits, myRevisionsAfterRename);
   }*/
 
   @Test(enabled = false)
@@ -398,8 +398,8 @@ public class BzrHistoryUtilsTest extends BzrTest {
     final List<CommitHashPlusParents> hashesWithParents = new ArrayList<CommitHashPlusParents>(3);
     AsynchConsumer<CommitHashPlusParents> consumer = new AsynchConsumer<CommitHashPlusParents>() {
       @Override
-      public void consume(CommitHashPlusParents gitFileRevision) {
-        hashesWithParents.add(gitFileRevision);
+      public void consume(CommitHashPlusParents bzrFileRevision) {
+        hashesWithParents.add(bzrFileRevision);
       }
 
       @Override
@@ -482,7 +482,7 @@ public class BzrHistoryUtilsTest extends BzrTest {
     private String[] myParents;
 
     public BzrTestRevision(String hash,
-                           String gitTimestamp,
+                           String bzrTimestamp,
                            String[] parents,
                            String commitMessage,
                            String authorName,
@@ -492,7 +492,7 @@ public class BzrHistoryUtilsTest extends BzrTest {
                            String branch,
                            String content) {
       myHash = hash;
-      myDate = gitTimeStampToDate(gitTimestamp);
+      myDate = bzrTimeStampToDate(bzrTimestamp);
       myParents = parents;
       myCommitMessage = commitMessage;
       myAuthorName = authorName;
@@ -508,8 +508,8 @@ public class BzrHistoryUtilsTest extends BzrTest {
       return myHash;
     }
 
-    public static Date gitTimeStampToDate(String gitTimestamp) {
-      return new Date(Long.parseLong(gitTimestamp)*1000);
+    public static Date bzrTimeStampToDate(String bzrTimestamp) {
+      return new Date(Long.parseLong(bzrTimestamp)*1000);
     }
   }
   

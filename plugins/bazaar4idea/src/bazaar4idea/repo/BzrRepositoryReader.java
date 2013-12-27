@@ -60,7 +60,7 @@ class BzrRepositoryReader {
   @NonNls private static final String REFS_HEADS_PREFIX = "refs/heads/";
   @NonNls private static final String REFS_REMOTES_PREFIX = "refs/remotes/";
 
-  @NotNull private final File myBzrDir;                  // .bzr/
+  @NotNull private final File          myBzrDir;         // .bzr/
   @NotNull private final File          myHeadFile;       // .git/HEAD
   @NotNull private final File          myRefsHeadsDir;   // .git/refs/heads/
   @NotNull private final File          myRefsRemotesDir; // .git/refs/remotes/
