@@ -454,8 +454,8 @@ public class BzrVcs extends AbstractVcs<CommittedChangeList> {
         final String SETTINGS_LINK = "settings";
         final String UPDATE_LINK = "update";
         String message = String.format("The <a href='" + SETTINGS_LINK + "'>configured</a> version of Bazaar is not supported: %s.<br/> " +
-                                       "The minimal supported version is %s. Please <a href='" + UPDATE_LINK + "'>update</a>.",
-                                       myVersion, BzrVersion.MIN);
+                                       "The minimal supported version is %%s. Please <a href='" + UPDATE_LINK + "'>update</a>.",
+                                       myVersion);
         IMPORTANT_ERROR_NOTIFICATION.createNotification("Unsupported Bazaar version", message, NotificationType.ERROR,
           new NotificationListener.Adapter() {
             @Override

@@ -51,61 +51,53 @@ public final class BzrVersion implements Comparable<BzrVersion> {
   }
 
   /**
-   * The minimal supported version
-   */
-  public static final BzrVersion MIN = new BzrVersion(1, 7, 1, 1);
-
-  /**
    * Special version with a special Type which indicates, that Bazaar version information is unavailable.
    * Probably, because of invalid executable, or when BzrVcs hasn't fully initialized yet.
    */
-  public static final BzrVersion NULL = new BzrVersion(0, 0, 0, 0, Type.NULL);
+  public static final BzrVersion NULL = new BzrVersion(0, 0, 0, Type.NULL);
 
   private static final Pattern FORMAT = Pattern.compile(
-    "git version (\\d+)\\.(\\d+)\\.(\\d+)(?:\\.(\\d+))?(.*)", Pattern.CASE_INSENSITIVE);
+    "(\\d+)\\.(\\d+)\\.(\\d+)(.*)", Pattern.CASE_INSENSITIVE);
 
   private static final Logger LOG = Logger.getInstance(BzrVersion.class.getName());
 
   private final int myMajor;
   private final int myMinor;
   private final int myRevision;
-  private final int myPatchLevel;
   private final Type myType;
 
   private final int myHashCode;
 
-  public BzrVersion(int major, int minor, int revision, int patchLevel, Type type) {
+  public BzrVersion(int major, int minor, int revision, Type type) {
     myMajor = major;
     myMinor = minor;
     myRevision = revision;
-    myPatchLevel = patchLevel;
     myType = type;
-    myHashCode = Objects.hashCode(myMajor, myMinor, myRevision, myPatchLevel);
+    myHashCode = Objects.hashCode(myMajor, myMinor, myRevision);
   }
 
   /**
    * Creates new BzrVersion with the UNDEFINED Type which actually means that the type doesn't matter for current purpose.
    */
-  public BzrVersion(int major, int minor, int revision, int patchLevel) {
-    this(major, minor, revision, patchLevel, Type.UNDEFINED);
+  public BzrVersion(int major, int minor, int revision) {
+    this(major, minor, revision, Type.UNDEFINED);
   }
 
   /**
-   * Parses output of "git version" command.
+   * Parses output of "bzr version" command.
    */
   @NotNull
   public static BzrVersion parse(String output) throws ParseException {
     if (StringUtil.isEmptyOrSpaces(output)) {
-      throw new ParseException("Empty git --version output: " + output, 0);
+      throw new ParseException("Empty bzr version --short output:\n" + output, 0);
     }
     Matcher m = FORMAT.matcher(output.trim());
     if (!m.matches()) {
-      throw new ParseException("Unsupported format of git --version output: " + output, 0);
+      throw new ParseException("Unsupported format of bzr version --short output:\n" + output, 0);
     }
     int major = getIntGroup(m, 1);
     int minor = getIntGroup(m, 2);
     int rev = getIntGroup(m, 3);
-    int patch = getIntGroup(m, 4);
     boolean msys = (m.groupCount() >= 5) && m.group(5) != null && m.group(5).toLowerCase().contains("msysgit");
     Type type;
     if (SystemInfo.isWindows) {
@@ -113,7 +105,7 @@ public final class BzrVersion implements Comparable<BzrVersion> {
     } else {
       type = Type.UNIX;
     }
-    return new BzrVersion(major, minor, rev, patch, type);
+    return new BzrVersion(major, minor, rev, type);
   }
 
   // Utility method used in parsing - checks that the given capture group exists and captured something - then returns the captured value,
@@ -130,10 +122,11 @@ public final class BzrVersion implements Comparable<BzrVersion> {
   }
 
   @NotNull
-  public static BzrVersion identifyVersion(String gitExecutable) throws TimeoutException, ExecutionException, ParseException {
+  public static BzrVersion identifyVersion(String bzrExecutable) throws TimeoutException, ExecutionException, ParseException {
     GeneralCommandLine commandLine = new GeneralCommandLine();
-    commandLine.setExePath(gitExecutable);
-    commandLine.addParameter("--version");
+    commandLine.setExePath(bzrExecutable);
+    commandLine.addParameter("version");
+    commandLine.addParameter("--short");
     CapturingProcessHandler handler = new CapturingProcessHandler(commandLine.createProcess(), CharsetToolkit.getDefaultSystemCharset());
     ProcessOutput result = handler.runProcess(30 * 1000);
     if (result.isTimeout()) {
@@ -145,7 +138,7 @@ public final class BzrVersion implements Comparable<BzrVersion> {
       try {
         parse(result.getStdout());
       } catch (ParseException pe) {
-        throw new ExecutionException("Errors while executing git --version. exitCode=" + result.getExitCode() +
+        throw new ExecutionException("Errors while executing bzr version --short. exitCode=" + result.getExitCode() +
                                      " errors: " + result.getStderr());
       }
     }
@@ -156,7 +149,7 @@ public final class BzrVersion implements Comparable<BzrVersion> {
    * @return true if the version is supported by the plugin
    */
   public boolean isSupported() {
-    return getType() != Type.NULL && compareTo(MIN) >= 0;
+    return getType() != Type.NULL;// && compareTo(MIN) >= 0;
   }
 
   /**
@@ -188,15 +181,6 @@ public final class BzrVersion implements Comparable<BzrVersion> {
     return myHashCode;
   }
 
-  /**
-   * Note: this class has a natural ordering that is inconsistent with equals.
-   * Only numbered versions are compared, so
-   * (msys git 1.7.3).compareTo(cygwin git 1.7.3) == 0
-   * BUT
-   * (msys git 1.7.3).equals(cygwin git 1.7.3) == false
-   * 
-   * {@link BzrVersion#NULL} is less than any other not-NULL version.
-   */
   public int compareTo(@NotNull BzrVersion o) {
     if (o.getType() == Type.NULL) {
       return (getType() == Type.NULL ? 0 : 1);
@@ -209,17 +193,13 @@ public final class BzrVersion implements Comparable<BzrVersion> {
     if (d != 0) {
       return d;
     }
-    d = myRevision - o.myRevision;
-    if (d != 0) {
-      return d;
-    }
-    return myPatchLevel - o.myPatchLevel;
+    return myRevision - o.myRevision;
   }
 
   @Override
   public String toString() {
     final String msysIndicator = (myType == Type.MSYS ? ".msysgit" : "");
-    return myMajor + "." + myMinor + "." + myRevision + "." + myPatchLevel + msysIndicator;
+    return myMajor + "." + myMinor + "." + myRevision + msysIndicator;
   }
 
   /**

@@ -153,9 +153,9 @@ public class BzrDiffProvider implements DiffProvider, DiffMixin {
     try {
 
       for (VcsFileRevision f : BzrHistoryUtils.history(myProject, filePath)) {
-        BzrFileRevision gitRevision = (BzrFileRevision)f;
+        BzrFileRevision bzrRevision = (BzrFileRevision)f;
         if (f.getRevisionNumber().equals(revisionNumber)) {
-          return BzrContentRevision.createRevision(gitRevision.getPath(), revisionNumber, myProject, selectedFile.getCharset());
+          return BzrContentRevision.createRevision(bzrRevision.getPath(), revisionNumber, myProject, selectedFile.getCharset());
         }
       }
       BzrContentRevision candidate =

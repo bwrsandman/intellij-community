@@ -347,10 +347,6 @@ public abstract class BzrHandler {
    * @return is "--progress" parameter supported by this version of Bazaar.
    */
   public boolean addProgressParameter() {
-    if (BzrVersionSpecialty.ABLE_TO_USE_PROGRESS_IN_REMOTE_COMMANDS.existsIn(myVcs.getVersion())) {
-      addParameters("--progress");
-      return true;
-    }
     return false;
   }
 
