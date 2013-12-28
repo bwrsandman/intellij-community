@@ -135,7 +135,7 @@ public class BzrLogParser {
     myOptions = options;
     myNameStatusOption = nameStatusOption;
     BzrVcs vcs = BzrVcs.getInstance(project);
-    mySupportsRawBody = vcs != null && BzrVersionSpecialty.STARTED_USING_RAW_BODY_IN_FORMAT.existsIn(vcs.getVersion());
+    mySupportsRawBody = vcs != null;  // && BzrVersionSpecialty.STARTED_USING_RAW_BODY_IN_FORMAT.existsIn(vcs.getVersion());
   }
 
   private static String makeFormatFromOptions(BzrLogOption[] options) {

@@ -282,14 +282,14 @@ public class BzrExecutableDetector {
       if (name == null) {
         return null;
       }
-      final Pattern VERSION = Pattern.compile("(\\d+)(?:\\.(\\d+))?(?:\\.(\\d+))?(?:\\.(\\d+))?.*");
+      final Pattern VERSION = Pattern.compile("(\\d+)(?:\\.(\\d+))?(?:\\.(\\d+))?.*");
       Matcher m = VERSION.matcher(name);
       if (!m.matches()) {
         return null;
       }
       try {
         int major = Integer.parseInt(m.group(1));
-        return new BzrVersion(major, parseOrNull(m.group(2)), parseOrNull(m.group(3)), parseOrNull(m.group(4)));
+        return new BzrVersion(major, parseOrNull(m.group(2)), parseOrNull(m.group(3)));
       }
       catch (NumberFormatException e) {
         LOG.info("Unexpected NFE when parsing [" + name + "]", e);

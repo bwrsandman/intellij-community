@@ -162,7 +162,7 @@ public class BzrCherryPickStepdefs {
 
 
     final String RECORD_SEPARATOR = "@";
-    boolean fullBody = BzrVersionSpecialty.STARTED_USING_RAW_BODY_IN_FORMAT.existsIn(myVcs.getVersion());
+    boolean fullBody = true;  // BzrVersionSpecialty.STARTED_USING_RAW_BODY_IN_FORMAT.existsIn(myVcs.getVersion());
     String data= fullBody ? "%B" : "%s%b";
     String output = BzrExecutor.bzr("log -%s --pretty=%s%s", String.valueOf(commitNum), data, RECORD_SEPARATOR);
     List<String> actualMessages = Arrays.asList(output.split(RECORD_SEPARATOR));

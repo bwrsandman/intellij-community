@@ -27,28 +27,10 @@ import org.jetbrains.annotations.NotNull;
  */
 public enum BzrVersionSpecialty {
 
-  /**
-   * This version of git has "--progress" parameter in long-going remote commands: clone, fetch, pull, push.
-   * Note that other commands (like merge) don't have this parameter in this version yet.
-   */
-  ABLE_TO_USE_PROGRESS_IN_REMOTE_COMMANDS {
-    @Override
-    public boolean existsIn(@NotNull BzrVersion version) {
-      return version.isLaterOrEqual(new BzrVersion(1, 7, 1, 1));
-    }
-  },
-
   NEEDS_QUOTES_IN_STASH_NAME {
     @Override
     public boolean existsIn(@NotNull BzrVersion version) {
       return version.getType().equals(BzrVersion.Type.CYGWIN);
-    }
-  },
-
-  STARTED_USING_RAW_BODY_IN_FORMAT {
-    @Override
-    public boolean existsIn(@NotNull BzrVersion version) {
-      return version.isLaterOrEqual(new BzrVersion(1, 7, 2, 0));
     }
   };
 

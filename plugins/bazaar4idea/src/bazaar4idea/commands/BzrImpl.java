@@ -52,7 +52,7 @@ public class BzrImpl implements Bzr {
   }
 
   /**
-   * Calls 'git init' on the specified directory.
+   * Calls 'bzr init' on the specified directory.
    */
   @NotNull
   @Override
@@ -197,7 +197,7 @@ public class BzrImpl implements Bzr {
     }
     catch (VcsException e) {
       // this is critical, because we need to show the list of unmerged commits, and it shouldn't happen => inform user and developer
-      throw new BzrExecutionException("Couldn't get [git log " + range + "] on repository [" + repository.getRoot() + "]", e);
+      throw new BzrExecutionException("Couldn't get [bzr log " + range + "] on repository [" + repository.getRoot() + "]", e);
     }
   }
 

@@ -93,7 +93,7 @@ public class BzrVcsPanel {
                                              version.toString()),
                                BzrBundle.getString("find.bzr.success.title"));
     } else {
-      Messages.showWarningDialog(myRootPanel, BzrBundle.message("find.bzr.unsupported.message", version.toString(), BzrVersion.MIN),
+      Messages.showWarningDialog(myRootPanel, BzrBundle.message("find.bzr.unsupported.message", version.toString()),
                                  BzrBundle.getString("find.bzr.success.title"));
     }
   }
