@@ -19,7 +19,6 @@ import bazaar4idea.BzrVcs;
 import bazaar4idea.commands.Bzr;
 import bazaar4idea.commands.BzrCommandResult;
 import bazaar4idea.commands.BzrStandardProgressAnalyzer;
-import bazaar4idea.jgit.BzrHttpAdapter;
 import bazaar4idea.update.BzrFetchResult;
 import bazaar4idea.update.BzrFetcher;
 import com.intellij.dvcs.ui.DvcsBundle;
@@ -109,14 +108,8 @@ public class BzrCheckoutProvider implements CheckoutProvider {
 
   public static boolean doClone(@NotNull Project project, @NotNull ProgressIndicator indicator, @NotNull Bzr bzr,
                                 @NotNull String directoryName, @NotNull String parentDirectory, @NotNull String sourceRepositoryURL) {
-    if (BzrHttpAdapter.shouldUseJGit(sourceRepositoryURL)) {
-      BzrFetchResult result = BzrHttpAdapter.cloneRepository(project, new File(parentDirectory, directoryName), sourceRepositoryURL);
-      BzrFetcher.displayFetchResult(project, result, "Clone failed", result.getErrors());
-      return result.isSuccess();
-    }
-    else {
-      return cloneNatively(project, indicator, bzr, new File(parentDirectory), sourceRepositoryURL, directoryName);
-    }
+
+    return cloneNatively(project, indicator, bzr, new File(parentDirectory), sourceRepositoryURL, directoryName);
   }
 
   private static boolean cloneNatively(@NotNull Project project, @NotNull final ProgressIndicator indicator,

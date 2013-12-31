@@ -20,7 +20,6 @@ import bazaar4idea.BzrPlatformFacade;
 import bazaar4idea.BzrVcs;
 import bazaar4idea.commands.BzrCommandResult;
 import bazaar4idea.commands.BzrCompoundResult;
-import bazaar4idea.jgit.BzrHttpAdapter;
 import bazaar4idea.push.BzrSimplePushResult;
 import bazaar4idea.repo.BzrRemote;
 import bazaar4idea.repo.BzrRepository;
@@ -174,15 +173,7 @@ class BzrDeleteRemoteBranchOperation extends BzrBranchOperation {
       LOG.warn("No urls are defined for remote: " + remote);
       return BzrCommandResult.error("There is no urls defined for remote " + remote.getName());
     }
-    if (BzrHttpAdapter.shouldUseJGit(remoteUrl)) {
-      String fullBranchName = branchName.startsWith(BzrBranch.REFS_HEADS_PREFIX) ? branchName : BzrBranch.REFS_HEADS_PREFIX + branchName;
-      String spec = ":" + fullBranchName;
-      BzrSimplePushResult simplePushResult = BzrHttpAdapter.push(repository, remote.getName(), remoteUrl, spec);
-      return convertSimplePushResultToCommandResult(simplePushResult);
-    }
-    else {
-      return pushDeletionNatively(repository, remoteName, remoteUrl, branchName);
-    }
+    return pushDeletionNatively(repository, remoteName, remoteUrl, branchName);
   }
 
   @NotNull

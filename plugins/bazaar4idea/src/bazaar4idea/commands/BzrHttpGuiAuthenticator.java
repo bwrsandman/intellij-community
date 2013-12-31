@@ -15,7 +15,6 @@
  */
 package bazaar4idea.commands;
 
-import bazaar4idea.jgit.BzrHttpAuthDataProvider;
 import bazaar4idea.remote.BzrRememberedInputs;
 import com.intellij.ide.passwordSafe.PasswordSafe;
 import com.intellij.ide.passwordSafe.PasswordSafeException;
@@ -92,7 +91,7 @@ class BzrHttpGuiAuthenticator implements BzrHttpAuthenticator {
   @NotNull
   public String askUsername(@NotNull String url) {
     url = adjustUrl(url);
-    AuthData authData = getSavedAuthData(myProject, url);
+    AuthData authData = null; // getSavedAuthData(myProject, url);
     String login = null;
     String password = null;
     if (authData != null) {
@@ -189,39 +188,6 @@ class BzrHttpGuiAuthenticator implements BzrHttpAuthenticator {
       return "http" + url.substring(prefix.length());
     }
     return url;
-  }
-
-  @Nullable
-  private static AuthData getSavedAuthData(@NotNull Project project, @NotNull String url) {
-    String userName = BzrRememberedInputs.getInstance().getUserNameForUrl(url);
-    if (userName == null) {
-      return trySavedAuthDataFromProviders(url);
-    }
-    String key = makeKey(url, userName);
-    final PasswordSafe passwordSafe = PasswordSafe.getInstance();
-    try {
-      String password = passwordSafe.getPassword(project, PASS_REQUESTER, key);
-      if (password != null) {
-        return new AuthData(userName, password);
-      }
-      return trySavedAuthDataFromProviders(url);
-    }
-    catch (PasswordSafeException e) {
-      LOG.info("Couldn't get the password for key [" + key + "]", e);
-      return null;
-    }
-  }
-
-  @Nullable
-  private static AuthData trySavedAuthDataFromProviders(@NotNull String url) {
-    BzrHttpAuthDataProvider[] extensions = BzrHttpAuthDataProvider.EP_NAME.getExtensions();
-    for (BzrHttpAuthDataProvider provider : extensions) {
-      AuthData authData = provider.getAuthData(url);
-      if (authData != null) {
-        return authData;
-      }
-    }
-    return null;
   }
 
   /**
