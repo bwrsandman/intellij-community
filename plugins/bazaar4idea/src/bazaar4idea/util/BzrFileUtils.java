@@ -190,9 +190,9 @@ public class BzrFileUtils {
   @NotNull
   private static List<String> excludeIgnoredFiles(@NotNull Project project, @NotNull VirtualFile root,
                                                   @NotNull List<String> paths) throws VcsException {
-    BzrSimpleHandler handler = new BzrSimpleHandler(project, root, BzrCommand.LS_FILES);
+    BzrSimpleHandler handler = new BzrSimpleHandler(project, root, BzrCommand.LS);
     handler.setSilent(true);
-    handler.addParameters("--ignored", "--others", "--exclude-standard");
+    handler.addParameters("--ignored", "--unknown", "--from-root", "--recursive");
     handler.endOptions();
     handler.addParameters(paths);
     String output = handler.run();

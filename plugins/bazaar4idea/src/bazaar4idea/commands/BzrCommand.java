@@ -46,7 +46,7 @@ public class BzrCommand {
   public static final BzrCommand INIT = write("init");
   public static final BzrCommand INFO = read("info");
   public static final BzrCommand LOG = read("log");
-  public static final BzrCommand LS_FILES = read("ls-files");
+  public static final BzrCommand LS = read("ls");
   public static final BzrCommand MERGE = write("merge");
   public static final BzrCommand MERGE_BASE = read("merge-base");
   public static final BzrCommand PULL = write("pull");

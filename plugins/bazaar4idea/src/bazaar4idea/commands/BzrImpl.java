@@ -100,15 +100,15 @@ public class BzrImpl implements Bzr {
                                                        @Nullable List<String> relativePaths)
     throws VcsException {
     final Set<VirtualFile> untrackedFiles = new HashSet<VirtualFile>();
-    BzrSimpleHandler h = new BzrSimpleHandler(project, root, BzrCommand.LS_FILES);
-    h.setSilent(true);
-    h.addParameters("--exclude-standard", "--others", "-z");
-    h.endOptions();
+    BzrSimpleHandler handler = new BzrSimpleHandler(project, root, BzrCommand.LS);
+    handler.setSilent(true);
+    handler.addParameters("--unknown", "--null", "--recursive", "--from-root");
+    handler.endOptions();
     if (relativePaths != null) {
-      h.addParameters(relativePaths);
+      handler.addParameters(relativePaths);
     }
 
-    final String output = h.run();
+    final String output = handler.run();
     if (StringUtil.isEmptyOrSpaces(output)) {
       return untrackedFiles;
     }
@@ -402,10 +402,10 @@ public class BzrImpl implements Bzr {
   @NotNull
   @Override
   public BzrCommandResult getUnmergedFiles(@NotNull BzrRepository repository) {
-    BzrLineHandler h = new BzrLineHandler(repository.getProject(), repository.getRoot(), BzrCommand.LS_FILES);
-    h.addParameters("--unmerged");
-    h.setSilent(true);
-    return run(h);
+    BzrLineHandler handler = new BzrLineHandler(repository.getProject(), repository.getRoot(), BzrCommand.LS);
+    handler.addParameters("--unmerged", "--from-root", "--recursive");
+    handler.setSilent(true);
+    return run(handler);
   }
 
   /**

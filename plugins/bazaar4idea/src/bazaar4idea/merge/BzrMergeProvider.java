@@ -253,12 +253,13 @@ public class BzrMergeProvider implements MergeProvider2 {
           Map<String, Conflict> cs = new HashMap<String, Conflict>();
           VirtualFile root = e.getKey();
           List<VirtualFile> files = e.getValue();
-          BzrSimpleHandler h = new BzrSimpleHandler(myProject, root, BzrCommand.LS_FILES);
-          h.setStdoutSuppressed(true);
-          h.setSilent(true);
-          h.addParameters("--exclude-standard", "--unmerged", "-t", "-z");
-          h.endOptions();
-          String output = h.run();
+          BzrSimpleHandler handler = new BzrSimpleHandler(myProject, root, BzrCommand.LS);
+          handler.setStdoutSuppressed(true);
+          handler.setSilent(true);
+          // TODO find a parallel to git ls-files -t
+          handler.addParameters("--unknown", "--null", "--recursive", "--from-root", "-t");
+          handler.endOptions();
+          String output = handler.run();
           StringScanner s = new StringScanner(output);
           while (s.hasMoreData()) {
             if (!"M".equals(s.spaceToken())) {
