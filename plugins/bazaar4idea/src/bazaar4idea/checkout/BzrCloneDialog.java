@@ -45,9 +45,9 @@ public class BzrCloneDialog extends CloneDvcsDialog {
    */
   protected boolean test(@NotNull String url) {
     final BzrLineHandlerPasswordRequestAware handler =
-      new BzrLineHandlerPasswordRequestAware(myProject, new File("."), BzrCommand.LS_REMOTE);
+      new BzrLineHandlerPasswordRequestAware(myProject, new File("."), BzrCommand.INFO);
     handler.setUrl(url);
-    handler.addParameters(url, "master");
+    handler.addParameters(url);
     BzrTask task = new BzrTask(myProject, handler, DvcsBundle.message("clone.testing", url));
     BzrTaskResult result = task.executeModal();
     boolean authFailed = handler.hadAuthRequest();

@@ -46,9 +46,9 @@ public class BzrCommand {
   public static final BzrCommand DIFF = read("diff");
   public static final BzrCommand FETCH = read("fetch");  // fetch is a read-command, because it doesn't modify the index
   public static final BzrCommand INIT = write("init");
+  public static final BzrCommand INFO = read("info");
   public static final BzrCommand LOG = read("log");
   public static final BzrCommand LS_FILES = read("ls-files");
-  public static final BzrCommand LS_REMOTE = read("ls-remote");
   public static final BzrCommand MERGE = write("merge");
   public static final BzrCommand MERGE_BASE = read("merge-base");
   public static final BzrCommand PULL = write("pull");

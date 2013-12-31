@@ -170,7 +170,7 @@ public class BzrTask {
   }
 
   private void commonOnSuccess(final Object LOCK, final BzrTaskResultHandler resultHandler) {
-    BzrTaskResult res = !myHandler.errors().isEmpty() ? BzrTaskResult.BAZAAR_ERROR : BzrTaskResult.OK;
+    BzrTaskResult res = myHandler.errors().isEmpty() ? BzrTaskResult.OK : BzrTaskResult.BAZAAR_ERROR;
     resultHandler.run(res);
     synchronized (LOCK) {
       LOCK.notifyAll();
