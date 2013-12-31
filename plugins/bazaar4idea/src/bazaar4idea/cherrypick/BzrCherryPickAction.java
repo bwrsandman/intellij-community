@@ -38,7 +38,7 @@ import com.intellij.openapi.project.Project;
 import com.intellij.util.Function;
 import com.intellij.util.containers.ContainerUtil;
 import com.intellij.vcs.log.*;
-import icons.Git4ideaIcons;
+import icons.Bzr4ideaIcons;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -55,7 +55,7 @@ public class BzrCherryPickAction extends DumbAwareAction {
   @NotNull private final Set<Hash> myIdsInProgress;
 
   public BzrCherryPickAction() {
-    super("Cherry-pick", "Cherry-pick", Git4ideaIcons.CherryPick);
+    super("Cherry-pick", "Cherry-pick", Bzr4ideaIcons.CherryPick);
     myBzr = ServiceManager.getService(Bzr.class);
     myPlatformFacade = ServiceManager.getService(BzrPlatformFacade.class);
     myIdsInProgress = ContainerUtil.newHashSet();

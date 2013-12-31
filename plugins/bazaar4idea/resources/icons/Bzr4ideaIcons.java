@@ -23,9 +23,9 @@ import javax.swing.*;
  * NOTE THIS FILE IS AUTO-GENERATED
  * DO NOT EDIT IT BY HAND, run build/scripts/icons.gant instead
  */
-public class Git4ideaIcons {
+public class Bzr4ideaIcons {
   private static Icon load(String path) {
-    return IconLoader.getIcon(path, Git4ideaIcons.class);
+    return IconLoader.getIcon(path, Bzr4ideaIcons.class);
   }
 
   public static final Icon Ball0 = load("/icons/ball0.png"); // 8x8

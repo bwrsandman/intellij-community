@@ -21,7 +21,7 @@ import com.intellij.ui.Gray;
 import com.intellij.ui.table.JBTable;
 import com.intellij.util.ArrayUtil;
 import com.intellij.util.ui.UIUtil;
-import icons.Git4ideaIcons;
+import icons.Bzr4ideaIcons;
 import org.jetbrains.annotations.Nullable;
 
 import javax.swing.*;
@@ -375,7 +375,7 @@ public class GraphGutter {
           if (inCurrentBranch) {
             icon = myStyle.getNodeIcon(correctedWire);
           } else {
-            icon = Git4ideaIcons.Greyball;
+            icon = Bzr4ideaIcons.Greyball;
           }
 
           icon.paintIcon(this, graphics, startXPoint + 1, upBound + myRowHeight/2 - 3);
@@ -479,9 +479,9 @@ public class GraphGutter {
     }
   }
 
-  private final static Icon[] ourIcons = new Icon[] {Git4ideaIcons.Ball0, Git4ideaIcons.Ball1,
-    Git4ideaIcons.Ball2, Git4ideaIcons.Ball3, Git4ideaIcons.Ball4,
-    Git4ideaIcons.Ball5, Git4ideaIcons.Ball6, Git4ideaIcons.Ball7};
+  private final static Icon[] ourIcons = new Icon[] {Bzr4ideaIcons.Ball0, Bzr4ideaIcons.Ball1,
+    Bzr4ideaIcons.Ball2, Bzr4ideaIcons.Ball3, Bzr4ideaIcons.Ball4,
+    Bzr4ideaIcons.Ball5, Bzr4ideaIcons.Ball6, Bzr4ideaIcons.Ball7};
 
   public static enum PresentationStyle {
     multicolour() {

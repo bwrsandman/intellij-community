@@ -31,7 +31,7 @@ import com.intellij.util.text.DateFormatUtil;
 import com.intellij.util.ui.UIUtil;
 import com.intellij.vcsUtil.UIVcsUtil;
 import bazaar4idea.history.browser.CachedRefs;
-import icons.Git4ideaIcons;
+import icons.Bzr4ideaIcons;
 import org.jetbrains.annotations.NotNull;
 
 import javax.swing.*;
@@ -183,7 +183,7 @@ public class BzrLogDetailsPanel {
     final String currentBranch = myCommit.getCurrentBranch();
     myMarksPanel.removeAll();
     if (myMarkProcessor.process(myCommit.getShortHash())) {
-      myMarksPanel.add(new JLabel(Git4ideaIcons.Star));
+      myMarksPanel.add(new JLabel(Bzr4ideaIcons.Star));
     }
     for (String s : myCommit.getLocalBranches()) {
       myMarksPanel.add(new JLabel(new CaptionIcon(BzrLogUI.Colors.local, font, s, myMarksPanel, CaptionIcon.Form.SQUARE, false,
