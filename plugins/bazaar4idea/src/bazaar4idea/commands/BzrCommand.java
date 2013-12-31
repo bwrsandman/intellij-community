@@ -35,10 +35,9 @@ import org.jetbrains.annotations.NotNull;
 public class BzrCommand {
 
   public static final BzrCommand ADD = write("add");
-  public static final BzrCommand BLAME = read("blame");
+  public static final BzrCommand BLAME = read("blame"); // annotate
   public static final BzrCommand BRANCH = read("branch");
   public static final BzrCommand CHECKOUT = write("checkout");
-  public static final BzrCommand CHECK_ATTR = read("check-attr");
   public static final BzrCommand COMMIT = write("commit");
   public static final BzrCommand CONFIG = read("config");
   public static final BzrCommand CHERRY_PICK = write("cherry-pick");
