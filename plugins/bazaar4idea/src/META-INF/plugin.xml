@@ -172,8 +172,8 @@
                         serviceInterface="bazaar4idea.history.wholeTree.BzrCommitsSequentially"/>
     <applicationService serviceInterface="bazaar4idea.config.BzrVcsApplicationSettings"
                         serviceImplementation="bazaar4idea.config.BzrVcsApplicationSettings"/>
-    <applicationService serviceInterface="org.jetbrains.bazaar4idea.ssh.BzrXmlRpcSshService"
-                        serviceImplementation="org.jetbrains.bazaar4idea.ssh.BzrXmlRpcSshService"/>
+    <applicationService serviceInterface="bazaar4idea.ssh.BzrXmlRpcSshService"
+                        serviceImplementation="bazaar4idea.ssh.BzrXmlRpcSshService"/>
     <applicationService serviceInterface="bazaar4idea.commands.BzrHttpAuthService"
                         serviceImplementation="bazaar4idea.commands.BzrHttpAuthServiceImpl" />
     <applicationService serviceInterface="bazaar4idea.rebase.BzrRebaseEditorService"

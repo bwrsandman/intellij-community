@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.jetbrains.bazaar4idea.ssh;
+package bazaar4idea.ssh;
 
 import com.intellij.openapi.util.io.FileUtilRt;
 import com.intellij.util.ArrayUtilRt;
@@ -21,7 +21,7 @@ import com.trilead.ssh2.*;
 import com.trilead.ssh2.crypto.PEMDecoder;
 import org.jetbrains.annotations.NonNls;
 import org.jetbrains.annotations.Nullable;
-import org.jetbrains.bazaar4idea.BazaarExternalApp;
+import bazaar4idea.BazaarExternalApp;
 
 import java.io.*;
 import java.util.*;

@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.jetbrains.bazaar4idea.ssh;
+package bazaar4idea.ssh;
 
 import com.intellij.BundleBase;
 import org.jetbrains.annotations.NonNls;
@@ -35,7 +35,7 @@ public class SSHMainBundle {
 
   private static Reference<ResourceBundle> ourBundle;
   @NonNls
-  private static final String BUNDLE = "org.jetbrains.bazaar4idea.ssh.SSHMainBundle";
+  private static final String BUNDLE = "bazaar4idea.ssh.SSHMainBundle";
 
   private SSHMainBundle() {
   }

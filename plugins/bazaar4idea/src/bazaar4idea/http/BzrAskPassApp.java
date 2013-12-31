@@ -13,12 +13,12 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.jetbrains.bazaar4idea.http;
+package bazaar4idea.http;
 
 import com.intellij.openapi.util.Pair;
 import com.intellij.openapi.util.text.StringUtilRt;
 import org.jetbrains.annotations.NotNull;
-import org.jetbrains.bazaar4idea.BazaarExternalApp;
+import bazaar4idea.BazaarExternalApp;
 
 public class BzrAskPassApp implements BazaarExternalApp {
 

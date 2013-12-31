@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.jetbrains.bazaar4idea;
+package bazaar4idea;
 
 /**
  * Marker interface for external Java applications which are started by the Bazaar process, when it needs to communicate with user.
