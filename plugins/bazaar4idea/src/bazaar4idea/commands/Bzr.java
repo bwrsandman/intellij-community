@@ -114,10 +114,6 @@ public interface Bzr {
   BzrCommandResult getUnmergedFiles(@NotNull BzrRepository repository);
 
   @NotNull
-  BzrCommandResult checkAttr(@NotNull BzrRepository repository, @NotNull Collection<String> attributes,
-                             @NotNull Collection<VirtualFile> files);
-
-  @NotNull
   BzrCommandResult stashSave(@NotNull BzrRepository repository, @NotNull String message);
 
   @NotNull

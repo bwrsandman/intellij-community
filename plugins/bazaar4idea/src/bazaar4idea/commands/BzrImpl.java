@@ -160,17 +160,6 @@ public class BzrImpl implements Bzr {
 
   @NotNull
   @Override
-  public BzrCommandResult checkAttr(@NotNull BzrRepository repository, @NotNull Collection<String> attributes,
-                                    @NotNull Collection<VirtualFile> files) {
-    final BzrLineHandler h = new BzrLineHandler(repository.getProject(), repository.getRoot(), BzrCommand.CHECK_ATTR);
-    h.addParameters(new ArrayList<String>(attributes));
-    h.endOptions();
-    h.addRelativeFiles(files);
-    return run(h);
-  }
-
-  @NotNull
-  @Override
   public BzrCommandResult stashSave(@NotNull BzrRepository repository, @NotNull String message) {
     final BzrLineHandler h = new BzrLineHandler(repository.getProject(), repository.getRoot(), BzrCommand.STASH);
     h.addParameters("save");

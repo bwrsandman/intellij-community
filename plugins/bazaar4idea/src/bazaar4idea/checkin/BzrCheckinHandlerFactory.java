@@ -21,11 +21,6 @@ import bazaar4idea.BzrVcs;
 import bazaar4idea.commands.Bzr;
 import bazaar4idea.config.BzrConfigUtil;
 import bazaar4idea.config.BzrVcsSettings;
-import bazaar4idea.config.BzrVersion;
-import bazaar4idea.config.BzrVersionSpecialty;
-import bazaar4idea.crlf.BzrCrlfDialog;
-import bazaar4idea.crlf.BzrCrlfProblemsDetector;
-import bazaar4idea.crlf.BzrCrlfUtil;
 import bazaar4idea.i18n.BzrBundle;
 import bazaar4idea.repo.BzrRepository;
 import bazaar4idea.repo.BzrRepositoryManager;
@@ -37,7 +32,6 @@ import com.intellij.openapi.progress.Task;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.ui.Messages;
 import com.intellij.openapi.util.Pair;
-import com.intellij.openapi.util.text.StringUtil;
 import com.intellij.openapi.vcs.CheckinProjectPanel;
 import com.intellij.openapi.vcs.FilePath;
 import com.intellij.openapi.vcs.ProjectLevelVcsManager;
@@ -49,7 +43,6 @@ import com.intellij.openapi.vcs.checkin.VcsCheckinHandlerFactory;
 import com.intellij.openapi.vfs.VirtualFile;
 import com.intellij.util.PairConsumer;
 import com.intellij.util.ui.UIUtil;
-import com.intellij.xml.util.XmlStringUtil;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -96,75 +89,8 @@ public class BzrCheckinHandlerFactory extends VcsCheckinHandlerFactory {
         if (result != ReturnResult.COMMIT) {
           return result;
         }
-        result = warnAboutCrlfIfNeeded();
-        if (result != ReturnResult.COMMIT) {
-          return result;
-        }
       }
       return ReturnResult.COMMIT;
-    }
-
-    @NotNull
-    private ReturnResult warnAboutCrlfIfNeeded() {
-      BzrVcsSettings settings = BzrVcsSettings.getInstance(myProject);
-      if (!settings.warnAboutCrlf()) {
-        return ReturnResult.COMMIT;
-      }
-
-      final BzrPlatformFacade platformFacade = ServiceManager.getService(myProject, BzrPlatformFacade.class);
-      final Bzr bzr = ServiceManager.getService(Bzr.class);
-
-      final Collection<VirtualFile> files = myPanel.getVirtualFiles(); // deleted files aren't included, but for them we don't care about CRLFs.
-      final AtomicReference<BzrCrlfProblemsDetector> crlfHelper = new AtomicReference<BzrCrlfProblemsDetector>();
-      ProgressManager.getInstance().run(
-        new Task.Modal(myProject, "Checking for line separator issues...", true) {
-          @Override
-          public void run(@NotNull ProgressIndicator indicator) {
-            crlfHelper.set(
-              BzrCrlfProblemsDetector.detect(BzrCheckinHandlerFactory.MyCheckinHandler.this.myProject, platformFacade, bzr, files));
-          }
-        });
-
-      if (crlfHelper.get() == null) { // detection cancelled
-        return ReturnResult.CANCEL;
-      }
-
-      if (crlfHelper.get().shouldWarn()) {
-        final BzrCrlfDialog dialog = new BzrCrlfDialog(myProject);
-        UIUtil.invokeAndWaitIfNeeded(new Runnable() {
-          @Override
-          public void run() {
-            dialog.show();
-          }
-        });
-        int decision = dialog.getExitCode();
-        if  (decision == BzrCrlfDialog.CANCEL) {
-          return ReturnResult.CANCEL;
-        }
-        else {
-          if (decision == BzrCrlfDialog.SET) {
-            VirtualFile anyRoot = myPanel.getRoots().iterator().next(); // config will be set globally => any root will do.
-            setCoreAutoCrlfAttribute(anyRoot);
-          }
-          else {
-            if (dialog.dontWarnAgain()) {
-              settings.setWarnAboutCrlf(false);
-            }
-          }
-          return ReturnResult.COMMIT;
-        }
-      }
-      return ReturnResult.COMMIT;
-    }
-
-    private void setCoreAutoCrlfAttribute(@NotNull VirtualFile aRoot) {
-      try {
-        BzrConfigUtil.setValue(myProject, aRoot, BzrConfigUtil.CORE_AUTOCRLF, BzrCrlfUtil.RECOMMENDED_VALUE, "--global");
-      }
-      catch (VcsException e) {
-        // it is not critical: the user just will get the dialog again next time
-        LOG.warn("Couldn't globally set core.autocrlf in " + aRoot, e);
-      }
     }
 
     private ReturnResult checkUserName() {

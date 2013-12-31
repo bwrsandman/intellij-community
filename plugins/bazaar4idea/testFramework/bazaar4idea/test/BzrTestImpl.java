@@ -94,21 +94,6 @@ public class BzrTestImpl implements Bzr {
 
   @NotNull
   @Override
-  public BzrCommandResult checkAttr(@NotNull final BzrRepository repository, @NotNull Collection<String> attributes,
-                                    @NotNull Collection<VirtualFile> files) {
-    cd(repository);
-    Collection<String> relativePaths = Collections2.transform(files, new Function<VirtualFile, String>() {
-      @Override
-      public String apply(VirtualFile input) {
-        return FileUtil.getRelativePath(repository.getRoot().getPath(), input.getPath(), '/');
-      }
-    });
-    String output = BzrExecutor.bzr("check-attr %s -- %s", join(attributes, " "), join(relativePaths, " "));
-    return commandResult(output);
-  }
-
-  @NotNull
-  @Override
   public BzrCommandResult stashSave(@NotNull BzrRepository repository, @NotNull String message) {
     return execute(repository, "stash save " + message);
   }
