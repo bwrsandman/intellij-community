@@ -38,11 +38,6 @@ public class BzrCloneDialog extends CloneDvcsDialog {
     super(project, BzrUtil.DOT_BZR);
   }
 
-  /*
-   * JGit doesn't have ls-remote command independent from repository yet.
-   * That way, we have a hack here: if http response asked for a password, then the url is at least valid and existant, and we consider
-   * that the test passed.
-   */
   protected boolean test(@NotNull String url) {
     final BzrLineHandlerPasswordRequestAware handler =
       new BzrLineHandlerPasswordRequestAware(myProject, new File("."), BzrCommand.INFO);

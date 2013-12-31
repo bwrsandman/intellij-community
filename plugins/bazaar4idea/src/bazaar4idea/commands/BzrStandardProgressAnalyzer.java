@@ -31,7 +31,7 @@ import java.util.regex.Pattern;
 public class BzrStandardProgressAnalyzer implements BzrProgressAnalyzer {
 
   // progress of each operation is stored here. this is an overhead since operations go one by one,
-  // but it looks simpler than storing current operation, checking that ther was no skipped, etc.
+  // but it looks simpler than storing current operation, checking that there was no skipped, etc.
   private TObjectDoubleHashMap<Operation> myOperationsProgress = new TObjectDoubleHashMap<Operation>(4);
 
   public static BzrLineHandlerListener createListener(final ProgressIndicator indicator) {
@@ -67,7 +67,8 @@ public class BzrStandardProgressAnalyzer implements BzrProgressAnalyzer {
       }
     },
     COMPRESSING_OBJECTS(".*Compressing objects: +(\\d{1,3})%.*", 0.1),
-    RECEIVING_OR_WRITING_OBJECTS(".*(?:Receiving|Writing) objects: +(\\d{1,3})%.*", 0.8), // receiving on fetch, writing on push
+    RECEIVING_OBJECTS("\".*Estimate (\\d{1,10})/(\\d{1,10})$", 0.8), // Receiving from branch
+    GIT_RECEIVING_OR_WRITING_OBJECTS(".*(?:Receiving|Writing) objects: +(\\d{1,3})%.*", 0.8), // receiving on fetch, writing on push
     RESOLVING_DELTAS(".*Resolving deltas: +(\\d{1,3})%.*", 0.05);
 
     private Pattern myPattern;
@@ -93,7 +94,14 @@ public class BzrStandardProgressAnalyzer implements BzrProgressAnalyzer {
       final Matcher matcher = operation.myPattern.matcher(output);
       if (matcher.matches()) {
         try {
-          double operationProgress = operation.getProgress(Integer.parseInt(matcher.group(1))); // progress of this operation
+          double operationProgress = 0; // progress of this operation
+          if (matcher.groupCount() == 2){
+            operationProgress = operation.getProgress(Integer.parseInt(matcher.group(1))) /
+                                operation.getProgress(Integer.parseInt(matcher.group(2)));
+          }
+          else {
+            operationProgress = operation.getProgress(Integer.parseInt(matcher.group(1)));
+          }
           myOperationsProgress.put(operation, operationProgress);
         } catch (NumberFormatException e) {
           return -1;

@@ -495,10 +495,10 @@ public abstract class BzrHandler {
   protected abstract void startHandlingStreams();
 
   /**
-   * @return a command line with full path to executable replace to "git"
+   * @return a command line with full path to executable replace to "bzr"
    */
   public String printableCommandLine() {
-    return unescapeCommandLine(myCommandLine.getCommandLineString("git"));
+    return unescapeCommandLine(myCommandLine.getCommandLineString("bzr"));
   }
 
   /**
@@ -701,7 +701,7 @@ public abstract class BzrHandler {
   public void runInCurrentThread(@Nullable Runnable postStartAction) {
     //LOG.assertTrue(!ApplicationManager.getApplication().isDispatchThread(), "Bazaar process should never start in the dispatch thread.");
 
-        final BzrVcs vcs = BzrVcs.getInstance(myProject);
+    final BzrVcs vcs = BzrVcs.getInstance(myProject);
     if (vcs == null) { return; }
 
     boolean suspendable = false;
@@ -814,14 +814,14 @@ public abstract class BzrHandler {
     if (myStartTime > 0) {
       long time = System.currentTimeMillis() - myStartTime;
       if (!LOG.isDebugEnabled() && time > LONG_TIME) {
-        LOG.info(String.format("git %s took %s ms. Command parameters: %n%s", myCommand, time, myCommandLine.getCommandLineString()));
+        LOG.info(String.format("bzr %s took %s ms. Command parameters: %n%s", myCommand, time, myCommandLine.getCommandLineString()));
       }
       else {
-        LOG.debug(String.format("git %s took %s ms", myCommand, time));
+        LOG.debug(String.format("bzr %s took %s ms", myCommand, time));
       }
     }
     else {
-      LOG.debug(String.format("git %s finished.", myCommand));
+      LOG.debug(String.format("bzr %s finished.", myCommand));
     }
   }
 

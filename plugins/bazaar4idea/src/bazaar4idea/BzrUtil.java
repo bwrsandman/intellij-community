@@ -861,7 +861,7 @@ public class BzrUtil {
         catch (final VcsException e) {
           UIUtil.invokeLaterIfNeeded(new Runnable() {
             public void run() {
-              BzrUIUtil.showOperationError(project, e, "git show");
+              BzrUIUtil.showOperationError(project, e, "bzr show");
             }
           });
         }
