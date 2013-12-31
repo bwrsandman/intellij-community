@@ -69,7 +69,7 @@ import com.intellij.util.ui.ColumnInfo;
 import com.intellij.util.ui.UIUtil;
 import com.intellij.vcsUtil.MoreAction;
 import bazaar4idea.history.browser.*;
-import icons.Git4ideaIcons;
+import icons.Bzr4ideaIcons;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -1392,8 +1392,8 @@ public class BzrLogUI implements Disposable {
         final int tagsSize = commit.getTags().size();
 
         if (marked) {
-          myPanel.add(new JLabel(Git4ideaIcons.Star));
-          myCurrentWidth += Git4ideaIcons.Star.getIconWidth();
+          myPanel.add(new JLabel(Bzr4ideaIcons.Star));
+          myCurrentWidth += Bzr4ideaIcons.Star.getIconWidth();
         }
         if (localSize + remoteSize > 0) {
           final CommitI commitI = myTableModel.getCommitAt(row);
@@ -1958,7 +1958,7 @@ public class BzrLogUI implements Disposable {
     private boolean myIsSelected;
 
     public MyShowTreeAction() {
-      super(SHOW_GRAPH_TITLE, SHOW_GRAPH_DESCRIPTION, Git4ideaIcons.Branch);
+      super(SHOW_GRAPH_TITLE, SHOW_GRAPH_DESCRIPTION, Bzr4ideaIcons.Branch);
       myIsSelected = mySettings.isShowTree();
     }
 
@@ -2389,7 +2389,7 @@ public class BzrLogUI implements Disposable {
 
   public class MyToggleCommitMark extends DumbAwareAction {
     public MyToggleCommitMark() {
-      super("Mark", "Mark", Git4ideaIcons.Star);
+      super("Mark", "Mark", Bzr4ideaIcons.Star);
     }
 
     @Override
