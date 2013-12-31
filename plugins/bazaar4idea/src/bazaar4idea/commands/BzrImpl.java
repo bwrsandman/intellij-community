@@ -131,11 +131,9 @@ public class BzrImpl implements Bzr {
   @NotNull
   public BzrCommandResult clone(@NotNull Project project, @NotNull File parentDirectory, @NotNull String url,
                                 @NotNull String clonedDirectoryName, @NotNull BzrLineHandlerListener... listeners) {
-    BzrLineHandlerPasswordRequestAware handler = new BzrLineHandlerPasswordRequestAware(project, parentDirectory, BzrCommand.CLONE);
+    BzrLineHandlerPasswordRequestAware handler = new BzrLineHandlerPasswordRequestAware(project, parentDirectory, BzrCommand.BRANCH);
     handler.setUrl(url);
-    handler.addParameters("--progress");
-    handler.addParameters(url);
-    handler.addParameters(clonedDirectoryName);
+    handler.addParameters(url, clonedDirectoryName);
     addListeners(handler, listeners);
     return run(handler);
   }

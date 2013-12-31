@@ -42,7 +42,6 @@ public class BzrCommand {
   public static final BzrCommand COMMIT = write("commit");
   public static final BzrCommand CONFIG = read("config");
   public static final BzrCommand CHERRY_PICK = write("cherry-pick");
-  public static final BzrCommand CLONE = write("clone");
   public static final BzrCommand DIFF = read("diff");
   public static final BzrCommand FETCH = read("fetch");  // fetch is a read-command, because it doesn't modify the index
   public static final BzrCommand INIT = write("init");

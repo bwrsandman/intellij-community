@@ -16,7 +16,6 @@
 package bazaar4idea;
 
 import bazaar4idea.cherrypick.BzrCherryPicker;
-import bazaar4idea.config.BzrVersionSpecialty;
 import bazaar4idea.log.BzrContentRevisionFactory;
 import bazaar4idea.test.BzrExecutor;
 import com.google.common.base.Function;
@@ -148,7 +147,7 @@ public class BzrCherryPickStepdefs {
 
   @Then("^the last commit is$")
   public void the_last_commit_is(String message) throws Throwable {
-    git_log_should_return(1, message);
+    bzr_log_should_return(1, message);
   }
 
   @Then("^the last commit is (.+)$")
@@ -157,7 +156,7 @@ public class BzrCherryPickStepdefs {
   }
 
   @Then("^`bzr log -(\\d+)` should return$")
-  public void git_log_should_return(int commitNum, String messages) throws Throwable {
+  public void bzr_log_should_return(int commitNum, String messages) throws Throwable {
     List<String> expectedMessages = Arrays.asList(messages.split("-----"));
 
 

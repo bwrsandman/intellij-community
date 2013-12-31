@@ -18,13 +18,13 @@ package bazaar4idea.commands;
 /**
  * BzrProgressAnalyzer is used by {@link BzrTask} to update progress indicator with the current operation progress.
  * To use it in BzrTask call {@link BzrTask#setProgressAnalyzer(BzrProgressAnalyzer)}.
- * There is {@link BzrStandardProgressAnalyzer} which should be suitable for most git tasks.
+ * There is {@link BzrStandardProgressAnalyzer} which should be suitable for most Bazaar tasks.
  * @author Kirill Likhodedov
  */
 public interface BzrProgressAnalyzer {
   /**
    * Analyzes the Bazaar process output line and returns the value of the progress indicator.
-   * @param output Bazaar process output line (e.g. "Receiving objects: 67%).
+   * @param output Bazaar process output line (e.g. "Estimate 98/1030").
    * @return completed fraction of the progress or -1 if the line doesn't mean anything to the analyzer.
    */
   double analyzeProgress(String output);
