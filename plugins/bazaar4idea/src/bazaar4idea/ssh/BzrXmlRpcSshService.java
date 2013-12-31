@@ -13,12 +13,12 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.jetbrains.bazaar4idea.ssh;
+package bazaar4idea.ssh;
 
 import bazaar4idea.commands.BzrSSHGUIHandler;
 import com.trilead.ssh2.KnownHosts;
 import org.jetbrains.annotations.NotNull;
-import org.jetbrains.bazaar4idea.util.ScriptGenerator;
+import bazaar4idea.util.ScriptGenerator;
 
 import java.util.Vector;
 
@@ -34,7 +34,7 @@ public class BzrXmlRpcSshService extends BzrXmlRpcHandlerService<BzrSSHGUIHandle
   @Override
   protected void customizeScriptGenerator(@NotNull ScriptGenerator generator) {
     generator.addClasses(KnownHosts.class);
-    generator.addResource(SSHMainBundle.class, "/org/jetbrains/bazaar4idea/ssh/SSHMainBundle.properties");
+    generator.addResource(SSHMainBundle.class, "/bazaar4idea/ssh/SSHMainBundle.properties");
   }
 
   @NotNull

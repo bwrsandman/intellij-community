@@ -25,7 +25,7 @@ import org.apache.commons.codec.DecoderException;
 import org.apache.xmlrpc.XmlRpcClientLite;
 import org.jetbrains.annotations.NonNls;
 import org.jetbrains.annotations.NotNull;
-import org.jetbrains.bazaar4idea.util.ScriptGenerator;
+import bazaar4idea.util.ScriptGenerator;
 import org.jetbrains.ide.BuiltInServerManager;
 
 import java.util.Map;

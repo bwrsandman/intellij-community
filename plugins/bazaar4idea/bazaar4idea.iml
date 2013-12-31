@@ -36,7 +36,6 @@
     <orderEntry type="module" module-name="platform-api" />
     <orderEntry type="library" name="Guava" level="project" />
     <orderEntry type="module" module-name="lang-impl" />
-    <orderEntry type="module" module-name="bazaar4idea-rt" />
     <orderEntry type="module" module-name="images" />
     <orderEntry type="module-library">
       <library name="ini4j-0.5.2-patched">
@@ -46,17 +45,6 @@
         <JAVADOC />
         <SOURCES>
           <root url="jar://$MODULE_DIR$/lib/ini4j/ini4j-0.5.2-patched-sources.zip!/" />
-        </SOURCES>
-      </library>
-    </orderEntry>
-    <orderEntry type="module-library">
-      <library name="jgit-2.1.0">
-        <CLASSES>
-          <root url="jar://$MODULE_DIR$/lib/jgit/org.eclipse.jgit-2.1.0.201209190230-r.jar!/" />
-        </CLASSES>
-        <JAVADOC />
-        <SOURCES>
-          <root url="jar://$MODULE_DIR$/lib/jgit/org.eclipse.jgit-2.1.0.201209190230-r_source.zip!/" />
         </SOURCES>
       </library>
     </orderEntry>

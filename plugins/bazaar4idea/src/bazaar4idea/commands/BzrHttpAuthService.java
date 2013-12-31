@@ -19,10 +19,10 @@ import com.intellij.openapi.application.ModalityState;
 import com.intellij.openapi.project.Project;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
-import org.jetbrains.bazaar4idea.http.BzrAskPassApp;
-import org.jetbrains.bazaar4idea.http.BzrAskPassXmlRpcHandler;
-import org.jetbrains.bazaar4idea.ssh.BzrXmlRpcHandlerService;
-import org.jetbrains.bazaar4idea.util.ScriptGenerator;
+import bazaar4idea.http.BzrAskPassApp;
+import bazaar4idea.http.BzrAskPassXmlRpcHandler;
+import bazaar4idea.ssh.BzrXmlRpcHandlerService;
+import bazaar4idea.util.ScriptGenerator;
 
 /**
  * Provides the authentication mechanism for Bazaar HTTP connections.
