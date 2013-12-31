@@ -25,7 +25,6 @@ import bazaar4idea.config.BzrConfigUtil;
 import bazaar4idea.config.BzrVcsSettings;
 import bazaar4idea.config.UpdateMethod;
 import bazaar4idea.history.BzrHistoryUtils;
-import bazaar4idea.jgit.BzrHttpAdapter;
 import bazaar4idea.repo.BzrBranchTrackInfo;
 import bazaar4idea.repo.BzrRemote;
 import bazaar4idea.repo.BzrRepository;
@@ -324,13 +323,8 @@ public final class BzrPusher {
     }
     String url = pushUrls.iterator().next();
     BzrSimplePushResult pushResult;
-    if (BzrHttpAdapter.shouldUseJGit(url)) {
-      pushResult = BzrHttpAdapter.push(repository, remote.getName(), url, formPushSpec(pushSpec, remote));
-    }
-    else {
-      pushResult = pushNatively(repository, pushSpec, url);
-    }
-    
+    pushResult = pushNatively(repository, pushSpec, url);
+
     if (pushResult.getType() == BzrSimplePushResult.Type.SUCCESS) {
       setUpstream(repository, pushSpec.getSource(), pushSpec.getRemote(),  pushSpec.getDest());
     }
