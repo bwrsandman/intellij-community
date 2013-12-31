@@ -104,8 +104,9 @@ class BzrOldChangesCollector extends BzrChangesCollector {
       if (!BzrChangeUtils.isHeadMissing(ex)) {
         throw ex;
       }
-      BzrSimpleHandler handler = new BzrSimpleHandler(myProject, myVcsRoot, BzrCommand.LS_FILES);
-      handler.addParameters("--cached");
+      BzrSimpleHandler handler = new BzrSimpleHandler(myProject, myVcsRoot, BzrCommand.LS);
+      //handler.addParameters("--cached");
+      handler.addParameters("--recursive", "--from-root");
       handler.setSilent(true);
       handler.setStdoutSuppressed(true);
       // During init diff does not works because HEAD
@@ -134,22 +135,25 @@ class BzrOldChangesCollector extends BzrChangesCollector {
       return;
     }
     // prepare handler
-    BzrSimpleHandler handler = new BzrSimpleHandler(myProject, myVcsRoot, BzrCommand.LS_FILES);
-    handler.addParameters("-v", "--unmerged");
+    BzrSimpleHandler handler = new BzrSimpleHandler(myProject, myVcsRoot, BzrCommand.LS);
+    // TODO find equivalent to git ls-files -v --unmerged
+    handler.addParameters("-v", "--unmerged", "--from-root", "--recursive");
     handler.setSilent(true);
     handler.setStdoutSuppressed(true);
     // run handler and collect changes
     parseFiles(handler.run());
     // prepare handler
-    handler = new BzrSimpleHandler(myProject, myVcsRoot, BzrCommand.LS_FILES);
-    handler.addParameters("-v", "--others", "--exclude-standard");
+    handler = new BzrSimpleHandler(myProject, myVcsRoot, BzrCommand.LS);
+    // TODO find equivalent to git ls-files -v
+    handler.addParameters("-v", "--unknown", "--from-root", "--recursive");
     handler.setSilent(true);
     handler.setStdoutSuppressed(true);
     handler.endOptions();
     handler.addRelativePaths(dirtyPaths);
     if(handler.isLargeCommandLine()) {
-      handler = new BzrSimpleHandler(myProject, myVcsRoot, BzrCommand.LS_FILES);
-      handler.addParameters("-v", "--others", "--exclude-standard");
+      handler = new BzrSimpleHandler(myProject, myVcsRoot, BzrCommand.LS);
+      // TODO find equivalent to git ls-files -v
+      handler.addParameters("-v", "--unknown", "--from-root", "--recursive");
       handler.setSilent(true);
       handler.setStdoutSuppressed(true);
       handler.endOptions();

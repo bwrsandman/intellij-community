@@ -83,10 +83,11 @@ public class MergeChangeCollector {
    */
   public @NotNull Set<String> getUnmergedPaths() throws VcsException {
     String root = myRoot.getPath();
-    final BzrSimpleHandler h = new BzrSimpleHandler(myProject, myRoot, BzrCommand.LS_FILES);
-    h.setSilent(true);
-    h.addParameters("--unmerged");
-    final String result = h.run();
+    final BzrSimpleHandler handler = new BzrSimpleHandler(myProject, myRoot, BzrCommand.LS);
+    handler.setSilent(true);
+    // TODO find a parallel to git ls-files --unmergeed
+    handler.addParameters("--unmerged", "--from-root", "--recursive");
+    final String result = handler.run();
 
     final Set<String> paths = new HashSet<String>();
     for (StringScanner s = new StringScanner(result); s.hasMoreData();) {
