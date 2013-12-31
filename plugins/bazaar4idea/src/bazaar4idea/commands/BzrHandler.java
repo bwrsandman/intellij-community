@@ -51,7 +51,7 @@ import java.util.*;
 import java.util.concurrent.LinkedBlockingQueue;
 
 /**
- * A handler for git commands
+ * A handler for Bazaar commands
  */
 public abstract class BzrHandler {
   protected final Project myProject;
