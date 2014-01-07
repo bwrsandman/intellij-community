@@ -180,7 +180,7 @@ public class BzrFileUtils {
         continue;
       }
       BzrSimpleHandler handler = new BzrSimpleHandler(project, root, BzrCommand.ADD);
-      handler.addParameters("--ignore-errors");
+      handler.addParameters("--quiet");
       handler.endOptions();
       handler.addParameters(paths);
       handler.run();
@@ -189,19 +189,26 @@ public class BzrFileUtils {
 
   @NotNull
   private static List<String> excludeIgnoredFiles(@NotNull Project project, @NotNull VirtualFile root,
-                                                  @NotNull List<String> paths) throws VcsException {
+                                                  @NotNull List<String> relativePaths) throws VcsException {
     BzrSimpleHandler handler = new BzrSimpleHandler(project, root, BzrCommand.LS);
     handler.setSilent(true);
-    handler.addParameters("--ignored", "--unknown", "--from-root", "--recursive");
+    handler.addParameters("--ignored", "--from-root", "--recursive");
     handler.endOptions();
-    handler.addParameters(paths);
+    //handler.addParameters(paths);
     String output = handler.run();
 
-    List<String> nonIgnoredFiles = new ArrayList<String>(paths.size());
+    List<String> nonIgnoredFiles = new ArrayList<String>(relativePaths.size());
     Set<String> ignoredPaths = new HashSet<String>(Arrays.asList(StringUtil.splitByLines(output)));
-    for (String pathToCheck : paths) {
-      if (!ignoredPaths.contains(pathToCheck)) {
-        nonIgnoredFiles.add(pathToCheck);
+    for (String relPath : relativePaths) {
+      VirtualFile f = root.findFileByRelativePath(relPath);
+      if (f == null) {
+        // files was created on disk, but VirtualFile hasn't yet been created,
+        // when the BzrChangeProvider has already been requested about changes.
+        LOG.info(String.format("VirtualFile for path [%s] is null", relPath));
+        continue;
+      }
+      if (!BzrFileUtils.recursiveUpContains(ignoredPaths, f, root.getPath())) {
+        nonIgnoredFiles.add(relPath);
       }
     }
     return nonIgnoredFiles;
@@ -244,6 +251,13 @@ public class BzrFileUtils {
   private static boolean onlyCaseChanged(@NotNull String one, @NotNull String second) {
     return one.compareToIgnoreCase(second) == 0;
   }
-  
 
+  public static boolean recursiveUpContains(Set<String> fileNames, VirtualFile file, String relativeRoot) {
+    String targetName = file.getPath();
+    if (relativeRoot.length() >= targetName.length()) {
+      return false;
+    }
+    targetName = targetName.substring(relativeRoot.length() + 1, targetName.length());
+    return fileNames.contains(targetName) || recursiveUpContains(fileNames, file.getParent(), relativeRoot);
+  }
 }
