@@ -135,13 +135,7 @@ public class BzrConfig {
     Ini ini = new Ini();
     ini.getConfig().setMultiOption(true);  // duplicate keys (e.g. url in [remote])
     ini.getConfig().setTree(false);        // don't need tree structure: it corrupts url in section name (e.g. [url "http://github.com/"]
-    try {
-      ini.load(configFile);
-    }
-    catch (IOException e) {
-      LOG.error(new RepoStateException("Couldn't load .git/config file at " + configFile.getPath(), e));
-      return new BzrConfig(Collections.<Remote>emptyList(), Collections.<Url>emptyList(), Collections.<BranchConfig>emptyList());
-    }
+    // TODO read conf from .bzr/branch/branches.conf
 
     IdeaPluginDescriptor plugin = platformFacade.getPluginByClassName(BzrConfig.class.getName());
     ClassLoader classLoader = plugin == null ? null : plugin.getPluginClassLoader(); // null if IDEA is started from IDEA

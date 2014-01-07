@@ -94,7 +94,7 @@ public class BzrInit extends DumbAwareAction {
         if (project.isDefault()) {
           return;
         }
-        final String path = root.equals(finalBaseDir) ? "" : root.getPath();
+        final String path = root.equals(project.getBaseDir()) ? "" : root.getPath();
         BzrVcs.runInBackground(new Task.Backgroundable(project, BzrBundle.getString("common.refreshing")) {
           @Override
           public void run(@NotNull ProgressIndicator indicator) {
