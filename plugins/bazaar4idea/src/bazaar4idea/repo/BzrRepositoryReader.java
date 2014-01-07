@@ -52,7 +52,7 @@ class BzrRepositoryReader {
 
   private static final Logger LOG = Logger.getInstance(BzrRepositoryReader.class);
 
-  private static Pattern BRANCH_PATTERN          = Pattern.compile("ref: refs/heads/(\\S+)"); // branch reference in .git/HEAD
+  private static Pattern REVISION_PATTERN        = Pattern.compile("(\\d+) (\\S+)");           // revision in .bzr/branch/last-revision
   // this format shouldn't appear, but we don't want to fail because of a space
   private static Pattern BRANCH_WEAK_PATTERN     = Pattern.compile(" *(ref:)? */?refs/heads/(\\S+)");
   private static Pattern COMMIT_PATTERN          = Pattern.compile("[0-9a-fA-F]+"); // commit hash
@@ -60,20 +60,43 @@ class BzrRepositoryReader {
   @NonNls private static final String REFS_HEADS_PREFIX = "refs/heads/";
   @NonNls private static final String REFS_REMOTES_PREFIX = "refs/remotes/";
 
-  @NotNull private final File          myBzrDir;         // .bzr/
-  @NotNull private final File          myHeadFile;       // .git/HEAD
-  @NotNull private final File          myRefsHeadsDir;   // .git/refs/heads/
-  @NotNull private final File          myRefsRemotesDir; // .git/refs/remotes/
-  @NotNull private final File          myPackedRefsFile; // .git/packed-refs
+  @NotNull private final File myBzrDir;            // .bzr/
+  @NotNull private final File myBranchDir;         // .bzr/branch/
+  @NotNull private final File myBranchConf;        // .bzr/branch/branch.conf
+  @NotNull private final File myBranchFormatFile;  // .bzr/branch/format
+  @NotNull private final File myLastRevisionFile;  // .bzr/branch/last-revision
+  @NotNull private final File myTagsFile;          // .bzr/branch/tags
+  @NotNull private final File myBranchLockDir;     // .bzr/branch-lock/
+  @NotNull private final File myCheckoutDir;       // .bzr/checkout/
+  @NotNull private final File myRepositoryDir;     // .bzr/repository/
 
   BzrRepositoryReader(@NotNull File bzrDir) {
     myBzrDir = bzrDir;
-    RepositoryUtil.assertFileExists(myBzrDir, ".git directory not found in " + bzrDir);
-    myHeadFile = new File(myBzrDir, "HEAD");
-    RepositoryUtil.assertFileExists(myHeadFile, ".git/HEAD file not found in " + bzrDir);
-    myRefsHeadsDir = new File(new File(myBzrDir, "refs"), "heads");
-    myRefsRemotesDir = new File(new File(myBzrDir, "refs"), "remotes");
-    myPackedRefsFile = new File(myBzrDir, "packed-refs");
+    RepositoryUtil.assertFileExists(myBzrDir, ".bzr directory not found in " + bzrDir);
+    // .bzr/
+    myBranchDir = new File(myBzrDir, "branch");
+    RepositoryUtil.assertFileExists(myBranchDir, ".bzr/branch directory not found in " + bzrDir);
+    // .bzr/branch
+    myBranchConf = new File(myBranchDir, "branch.conf");
+    RepositoryUtil.assertFileExists(myBranchConf, ".bzr/branch/branch.conf file not found in " + bzrDir);
+    myBranchFormatFile = new File(myBranchDir, "format");
+    RepositoryUtil.assertFileExists(myBranchFormatFile, ".bzr/branch/format file not found in " + bzrDir);
+    myLastRevisionFile = new File(myBranchDir, "last-revision");
+    RepositoryUtil.assertFileExists(myLastRevisionFile, ".bzr/branch/last-revision file not found in " + bzrDir);
+    myTagsFile = new File(myBranchDir, "tags");
+    RepositoryUtil.assertFileExists(myTagsFile, ".bzr/branch/tags file not found in " + bzrDir);
+
+    myBranchLockDir = new File(myBzrDir, "branch-lock");
+    RepositoryUtil.assertFileExists(myBranchLockDir, ".bzr/branch-lock directory not found in " + bzrDir);
+    // .bzr/branch-lock
+
+    myCheckoutDir = new File(myBzrDir, "checkout");
+    RepositoryUtil.assertFileExists(myCheckoutDir, ".bzr/checkout directory not found in " + bzrDir);
+    // .bzr/checkout
+
+    myRepositoryDir = new File(myBzrDir, "repository");
+    RepositoryUtil.assertFileExists(myRepositoryDir, ".bzr/repository directory not found in " + bzrDir);
+    // .bzr/repositories
   }
 
   @Nullable
@@ -210,27 +233,7 @@ class BzrRepositoryReader {
    */
   @Nullable
   private String findBranchRevisionInPackedRefs(final String ref) {
-    if (!myPackedRefsFile.exists()) {
-      return null;
-    }
-
-    final AtomicReference<String> hashRef = new AtomicReference<String>();
-    readPackedRefsFile(new PackedRefsLineResultHandler() {
-      @Override
-      public void handleResult(String hash, String branchName) {
-        if (hash == null || branchName == null) {
-          return;
-        }
-        if (branchName.endsWith(ref)) {
-          hashRef.set(shortBuffer(hash));
-          stop();
-        }
-      }
-    });
-    if (hashRef.get() != null) {
-      return hashRef.get();
-    }
-
+    // TODO make bzr
     return null;
   }
 
@@ -238,25 +241,10 @@ class BzrRepositoryReader {
     RepositoryUtil.tryOrThrow(new Callable<String>() {
       @Override
       public String call() throws Exception {
-        BufferedReader reader = null;
-        try {
-          reader = new BufferedReader(new FileReader(myPackedRefsFile));
-          String line;
-          while ((line = reader.readLine()) != null) {
-            parsePackedRefsLine(line, handler);
-            if (handler.stopped()) {
-              return null;
-            }
-          }
-        }
-        finally {
-          if (reader != null) {
-            reader.close();
-          }
-        }
+        // TODO make bzr
         return null;
       }
-    }, myPackedRefsFile);
+    }, null);
   }
 
   /**
@@ -265,14 +253,14 @@ class BzrRepositoryReader {
    */
   private Map<String, File> readLocalBranches() {
     final Map<String, File> branches = new HashMap<String, File>();
-    if (!myRefsHeadsDir.exists()) {
+    if (!myCheckoutDir.exists()) {
       return branches;
     }
-    FileUtil.processFilesRecursively(myRefsHeadsDir, new Processor<File>() {
+    FileUtil.processFilesRecursively(myCheckoutDir, new Processor<File>() {
       @Override
       public boolean process(File file) {
         if (!file.isDirectory()) {
-          String relativePath = FileUtil.getRelativePath(myRefsHeadsDir, file);
+          String relativePath = FileUtil.getRelativePath(myCheckoutDir, file);
           if (relativePath != null) {
             branches.put(FileUtil.toSystemIndependentName(relativePath), file);
           }
@@ -332,10 +320,10 @@ class BzrRepositoryReader {
   @NotNull
   private Set<BzrRemoteBranch> readUnpackedRemoteBranches(@NotNull final Collection<BzrRemote> remotes) {
     final Set<BzrRemoteBranch> branches = new HashSet<BzrRemoteBranch>();
-    if (!myRefsRemotesDir.exists()) {
+    if (!myRepositoryDir.exists()) {
       return branches;
     }
-    FileUtil.processFilesRecursively(myRefsRemotesDir, new Processor<File>() {
+    FileUtil.processFilesRecursively(myRepositoryDir, new Processor<File>() {
       @Override
       public boolean process(File file) {
         if (!file.isDirectory() && !file.getName().equalsIgnoreCase(BzrRepositoryFiles.HEAD)) {
@@ -366,7 +354,8 @@ class BzrRepositoryReader {
   private BzrBranchesCollection readPackedBranches(@NotNull final Collection<BzrRemote> remotes) {
     final Set<BzrLocalBranch> localBranches = new HashSet<BzrLocalBranch>();
     final Set<BzrRemoteBranch> remoteBranches = new HashSet<BzrRemoteBranch>();
-    if (!myPackedRefsFile.exists()) {
+    // TODO make bzr
+    if (true) {
       return BzrBranchesCollection.EMPTY;
     }
 
@@ -401,19 +390,19 @@ class BzrRepositoryReader {
 
   @NotNull
   private Head readHead() {
-    String headContent = RepositoryUtil.tryLoadFile(myHeadFile);
-    Matcher matcher = BRANCH_PATTERN.matcher(headContent);
+    String headContent = RepositoryUtil.tryLoadFile(myLastRevisionFile);
+    Matcher matcher = REVISION_PATTERN.matcher(headContent);
     if (matcher.matches()) {
-      return new Head(true, matcher.group(1));
+      return new Head(true, matcher.group(1), matcher.group(2));
     }
 
     if (COMMIT_PATTERN.matcher(headContent).matches()) {
-      return new Head(false, headContent);
+      return new Head(false, headContent, "");
     }
     matcher = BRANCH_WEAK_PATTERN.matcher(headContent);
     if (matcher.matches()) {
       LOG.info(".git/HEAD has not standard format: [" + headContent + "]. We've parsed branch [" + matcher.group(1) + "]");
-      return new Head(true, matcher.group(1));
+      return new Head(true, matcher.group(1), "");
     }
     throw new RepoStateException("Invalid format of the .git/HEAD file: \n" + headContent);
   }
@@ -495,11 +484,13 @@ class BzrRepositoryReader {
    */
   private static class Head {
     @NotNull private final String ref;
+    private final String info;
     private final boolean isBranch;
 
-    Head(boolean branch, @NotNull String ref) {
+    Head(boolean branch, @NotNull String r, String i) {
       isBranch = branch;
-      this.ref = ref;
+      ref = r;
+      info = i;
     }
   }
 
