@@ -193,7 +193,4 @@
     <vcs.taskHandler implementation="bazaar4idea.BzrTaskHandler"/>
   </extensions>
 
-  <extensionPoints>
-    <extensionPoint qualifiedName="Bazaar4Idea.BzrHttpAuthDataProvider" interface="bazaar4idea.jgit.BzrHttpAuthDataProvider"/>
-  </extensionPoints>
 </idea-plugin>

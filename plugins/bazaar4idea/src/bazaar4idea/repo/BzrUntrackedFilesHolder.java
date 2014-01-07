@@ -272,7 +272,7 @@ public class BzrUntrackedFilesHolder implements Disposable, BulkFileListener {
 
   private boolean gitignoreChanged(@NotNull String path) {
     // TODO watch file stored in core.excludesfile
-    return path.endsWith(".gitignore") || myRepositoryFiles.isExclude(path);
+    return path.endsWith(".bzrignore") || myRepositoryFiles.isExclude(path);
   }
 
   @Nullable
