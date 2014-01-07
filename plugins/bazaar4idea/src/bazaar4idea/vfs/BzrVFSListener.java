@@ -179,7 +179,7 @@ public class BzrVFSListener extends VcsVFSListener {
 
       public void execute(@NotNull VirtualFile root, @NotNull List<FilePath> files) throws VcsException {
         final File rootFile = new File(root.getPath());
-        BzrFileUtils.delete(myProject, root, files, "--ignore-unmatch");
+        BzrFileUtils.delete(myProject, root, files, "--quiet");
         if (myProject != null && !myProject.isDisposed()) {
           VcsFileUtil.markFilesDirty(myProject, files);
         }

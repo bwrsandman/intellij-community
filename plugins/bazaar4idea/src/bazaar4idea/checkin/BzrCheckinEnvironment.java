@@ -396,7 +396,7 @@ public class BzrCheckinEnvironment implements CheckinEnvironment {
     }
     if (!removed.isEmpty()) {
       try {
-        BzrFileUtils.delete(project, root, removed, "--ignore-unmatch");
+        BzrFileUtils.delete(project, root, removed, "--quiet");
       }
       catch (VcsException ex) {
         exceptions.add(ex);

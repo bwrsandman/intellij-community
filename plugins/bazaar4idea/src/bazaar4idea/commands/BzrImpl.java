@@ -22,7 +22,7 @@ import bazaar4idea.history.BzrHistoryUtils;
 import bazaar4idea.push.BzrPushSpec;
 import bazaar4idea.repo.BzrRemote;
 import bazaar4idea.repo.BzrRepository;
-import com.intellij.openapi.diagnostic.Logger;
+import bazaar4idea.util.BzrFileUtils;import com.intellij.openapi.diagnostic.Logger;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.util.Key;
 import com.intellij.openapi.util.text.StringUtil;
@@ -99,14 +99,16 @@ public class BzrImpl implements Bzr {
                                                        @NotNull VirtualFile root,
                                                        @Nullable List<String> relativePaths)
     throws VcsException {
+    final Set<String> untrackedFileNames = new HashSet<String>();
     final Set<VirtualFile> untrackedFiles = new HashSet<VirtualFile>();
     BzrSimpleHandler handler = new BzrSimpleHandler(project, root, BzrCommand.LS);
     handler.setSilent(true);
     handler.addParameters("--unknown", "--null", "--recursive", "--from-root");
     handler.endOptions();
-    if (relativePaths != null) {
-      handler.addParameters(relativePaths);
-    }
+    // Bazaar doesn't support listing files
+    //if (relativePaths != null) {
+    //  handler.addParameters(relativePaths);
+    //}
 
     final String output = handler.run();
     if (StringUtil.isEmptyOrSpaces(output)) {
@@ -114,18 +116,25 @@ public class BzrImpl implements Bzr {
     }
 
     for (String relPath : output.split("\u0000")) {
+      untrackedFileNames.add(relPath);
+    }
+    // We filter out paths we from relativePaths
+    for (String relPath : relativePaths) {
       VirtualFile f = root.findFileByRelativePath(relPath);
       if (f == null) {
         // files was created on disk, but VirtualFile hasn't yet been created,
         // when the BzrChangeProvider has already been requested about changes.
         LOG.info(String.format("VirtualFile for path [%s] is null", relPath));
-      } else {
+        continue;
+      }
+      if (BzrFileUtils.recursiveUpContains(untrackedFileNames, f, root.getPath())) {
         untrackedFiles.add(f);
       }
     }
 
     return untrackedFiles;
   }
+
   
   @Override
   @NotNull
