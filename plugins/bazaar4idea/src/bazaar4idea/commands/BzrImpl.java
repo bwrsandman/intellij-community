@@ -57,12 +57,12 @@ public class BzrImpl implements Bzr {
   @NotNull
   @Override
   public BzrCommandResult init(@NotNull Project project, @NotNull VirtualFile root, @NotNull BzrLineHandlerListener... listeners) {
-    BzrLineHandler h = new BzrLineHandler(project, root, BzrCommand.INIT);
+    BzrLineHandler handler = new BzrLineHandler(project, root, BzrCommand.INIT);
     for (BzrLineHandlerListener listener : listeners) {
-      h.addLineListener(listener);
+      handler.addLineListener(listener);
     }
-    h.setSilent(false);
-    return run(h);
+    handler.setSilent(false);
+    return run(handler);
   }
 
   /**

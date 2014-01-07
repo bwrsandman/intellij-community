@@ -111,7 +111,7 @@ public class BzrIntegrationEnabler {
         myPlatformFacade.runReadAction(new Runnable() {
           @Override
           public void run() {
-            myPlatformFacade.getLocalFileSystem().refreshAndFindFileByPath(projectDir.getPath() + "/.git");
+            myPlatformFacade.getLocalFileSystem().refreshAndFindFileByPath(projectDir.getPath() + "/.bzr");
           }
         });
       }

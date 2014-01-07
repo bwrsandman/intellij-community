@@ -57,7 +57,7 @@ public class BzrRepositoryImpl extends RepositoryImpl implements BzrRepository, 
     super(project, rootDir, parentDisposable);
     myPlatformFacade = facade;
     myBzrDir = BzrUtil.findBzrDir(rootDir);
-    assert myBzrDir != null : ".git directory wasn't found under " + rootDir.getPresentableUrl();
+    assert myBzrDir != null : ".bzr directory wasn't found under " + rootDir.getPresentableUrl();
     myReader = new BzrRepositoryReader(VfsUtilCore.virtualToIoFile(myBzrDir));
     if (!light) {
       myUntrackedFilesHolder = new BzrUntrackedFilesHolder(this);
@@ -183,7 +183,7 @@ public class BzrRepositoryImpl extends RepositoryImpl implements BzrRepository, 
   @NotNull
   private static BzrRepoInfo readRepoInfo(@NotNull BzrRepository repository, @NotNull BzrPlatformFacade platformFacade,
                                           @NotNull BzrRepositoryReader reader, @Nullable BzrRepoInfo previousInfo) {
-    File configFile = new File(VfsUtilCore.virtualToIoFile(repository.getBzrDir()), "config");
+    File configFile = new File(new File(VfsUtilCore.virtualToIoFile(repository.getBzrDir()), "branch"), "branch.conf");
     BzrConfig config = BzrConfig.read(platformFacade, configFile);
     Collection<BzrRemote> remotes = config.parseRemotes();
     TempState tempState = readRepository(reader, remotes);
