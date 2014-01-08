@@ -54,7 +54,6 @@ public class BzrCommand {
   public static final BzrCommand REBASE = writeSuspendable("rebase");
   public static final BzrCommand REMOTE = read("remote");
   public static final BzrCommand RESET = write("reset");
-  public static final BzrCommand REV_LIST = read("rev-list");
   public static final BzrCommand REV_PARSE = read("rev-parse");
   public static final BzrCommand RM = write("rm");
   public static final BzrCommand SHOW = read("show");
@@ -62,6 +61,7 @@ public class BzrCommand {
   public static final BzrCommand STATUS = read("status");
   public static final BzrCommand TAG = read("tag");
   public static final BzrCommand UPDATE_INDEX = write("update-index");
+  public static final BzrCommand VERSION_INFO = read("version-info");
 
   /**
    * Name of environment variable that specifies editor for Bazaar

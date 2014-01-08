@@ -208,9 +208,9 @@ public class BzrRevisionNumber implements ShortVcsRevisionNumber {
    * @throws VcsException if there is a problem with running git
    */
   public static BzrRevisionNumber resolve(Project project, VirtualFile vcsRoot, @NonNls String rev) throws VcsException {
-    BzrSimpleHandler h = new BzrSimpleHandler(project, vcsRoot, BzrCommand.REV_LIST);
-    h.setSilent(true);
-    h.addParameters("--timestamp", "--max-count=1", rev);
+    BzrSimpleHandler h = new BzrSimpleHandler(project, vcsRoot, BzrCommand.VERSION_INFO);
+    //h.setSilent(true);
+    h.addParameters(rev);
     h.endOptions();
     final String output = h.run();
     return parseRevlistOutputAsRevisionNumber(h, output);

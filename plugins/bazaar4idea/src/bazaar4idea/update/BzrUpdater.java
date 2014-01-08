@@ -174,9 +174,8 @@ public abstract class BzrUpdater {
   }
 
   protected boolean hasRemoteChanges(@NotNull String currentBranch, @NotNull String remoteBranch) throws VcsException {
-    BzrSimpleHandler handler = new BzrSimpleHandler(myProject, myRoot, BzrCommand.REV_LIST);
-    handler.setSilent(true);
-    handler.addParameters("-1");
+    BzrSimpleHandler handler = new BzrSimpleHandler(myProject, myRoot, BzrCommand.VERSION_INFO);
+    //handler.setSilent(true);
     handler.addParameters(currentBranch + ".." + remoteBranch);
     String output = handler.run();
     return output != null && !output.isEmpty();

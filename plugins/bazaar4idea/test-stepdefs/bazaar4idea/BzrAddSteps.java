@@ -74,7 +74,7 @@ public class BzrAddSteps {
     VirtualFile vf = myProjectDir.findFileByRelativePath(filePath);
     assertNotNull(vf);
     BzrRepository repo = myPlatformFacade.getRepositoryManager(myProject).getRepositoryForFile(vf);
-    String status = bzr(repo, "status --porcelain " + vf.getPath());
+    String status = bzr(repo, "status --short " + vf.getPath());
     assertTrue("File status is not added: " + status, 'A' == status.charAt(0));
   }
 }

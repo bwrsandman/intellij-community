@@ -186,23 +186,36 @@ public class BzrChangeUtils {
   @NotNull
   public static BzrRevisionNumber resolveReference(@NotNull Project project, @NotNull VirtualFile vcsRoot,
                                                    @NotNull String reference) throws VcsException {
-    BzrSimpleHandler handler = new BzrSimpleHandler(project, vcsRoot, BzrCommand.REV_LIST);
-    handler.addParameters("--timestamp", "--max-count=1", reference);
+    BzrSimpleHandler handler = new BzrSimpleHandler(project, vcsRoot, BzrCommand.VERSION_INFO);
+    handler.addParameters(reference);
     handler.endOptions();
-    handler.setSilent(true);
+    //handler.setSilent(true);
     String output = handler.run();
-    StringTokenizer stk = new StringTokenizer(output, "\n\r \t", false);
-    if (!stk.hasMoreTokens()) {
-      BzrSimpleHandler dh = new BzrSimpleHandler(project, vcsRoot, BzrCommand.LOG);
-      dh.addParameters("-1", "HEAD");
-      dh.setSilent(true);
-      String out = dh.run();
-      LOG.info("Diagnostic output from 'git log -1 HEAD': [" + out + "]");
-      throw new VcsException(String.format("The string '%s' does not represent a revision number. Output: [%s]\n Root: %s",
-                                           reference, output, vcsRoot));
+    String[] lines = StringUtil.splitByLines(output);
+    String revision_id = "";
+    String date = "";
+    String build_date = "";
+    String revno = "";
+    String branch_nick = "";
+    for (int i = 0; i < lines.length; ++i) {
+      List<String> split = StringUtil.split(lines[i], ": ");
+      assert (split.size() == 2);
+      String title = split.get(0);
+      String data = split.get(1);
+      if (title.equals("revision-id")) {
+        revision_id = data;
+      } else if (title.equals("date")) {
+        date = data;
+      } else if (title.equals("build-date")) {
+        build_date = data;
+      } else if (title.equals("revno")) {
+        revno = data;
+      } else if (title.equals("branch-nick")) {
+        branch_nick = data;
+      }
     }
-    Date timestamp = BzrUtil.parseTimestampWithNFEReport(stk.nextToken(), handler, output);
-    return new BzrRevisionNumber(stk.nextToken(), timestamp);
+    Date timestamp = BzrUtil.parseTimestampWithNFEReport(date, handler, output);
+    return new BzrRevisionNumber(revno, timestamp);
   }
 
   /**
