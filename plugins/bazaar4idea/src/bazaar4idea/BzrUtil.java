@@ -244,7 +244,7 @@ public class BzrUtil {
    * Sort files by vcs root
    *
    * @param files        files to sort.
-   * @param ignoreNonBzr if true, non-git files are ignored
+   * @param ignoreNonBzr if true, non-Bazaar files are ignored
    * @return the map from root to the files under the root
    * @throws VcsException if non git files are passed when {@code ignoreNonBzr} is false
    */
@@ -910,22 +910,22 @@ public class BzrUtil {
   }
 
   /**
-   * git diff --name-only [--cached]
-   * @return true if there is anything in the unstaged/staging area, false if the unstraed/staging area is empty.
+   * bzr status --short --versioned
+   * @return true if there is anything in the unstaged/staging area, false if the unstaged/staging area is empty.
    * @param staged if true checks the staging area, if false checks unstaged files.
    * @param project
    * @param root
    */
   public static boolean hasLocalChanges(boolean staged, Project project, VirtualFile root) throws VcsException {
-    final BzrSimpleHandler diff = new BzrSimpleHandler(project, root, BzrCommand.DIFF);
-    diff.addParameters("--name-only");
-    if (staged) {
-      diff.addParameters("--cached");
-    }
-    diff.setStdoutSuppressed(true);
-    diff.setStderrSuppressed(true);
-    diff.setSilent(true);
-    final String output = diff.run();
+    final BzrSimpleHandler handler = new BzrSimpleHandler(project, root, BzrCommand.STATUS);
+    handler.addParameters("--short", "--versioned");
+    //if (staged) {
+    //  handler.addParameters("--cached");
+    //}
+    handler.setStdoutSuppressed(true);
+    handler.setStderrSuppressed(true);
+    //handler.setSilent(true);
+    final String output = handler.run();
     return !output.trim().isEmpty();
   }
 
