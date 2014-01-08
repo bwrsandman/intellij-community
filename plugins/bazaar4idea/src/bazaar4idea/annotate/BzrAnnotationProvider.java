@@ -170,7 +170,7 @@ public class BzrAnnotationProvider implements AnnotationProvider, VcsCacheableAn
     for (StringScanner s = new StringScanner(output); s.hasMoreData();) {
       // parse header line
       String commitHash = s.spaceToken();
-      if (commitHash.equals(BzrRevisionNumber.NOT_COMMITTED_HASH)) {
+      if (commitHash.equals(BzrRevisionNumber.NOT_COMMITTED_REVNO)) {
         commitHash = null;
       }
       s.spaceToken(); // skip revision line number

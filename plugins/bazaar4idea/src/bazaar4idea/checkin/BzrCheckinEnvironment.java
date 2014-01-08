@@ -259,14 +259,14 @@ public class BzrCheckinEnvironment implements CheckinEnvironment {
     HashSet<FilePath> realAdded = new HashSet<FilePath>();
     HashSet<FilePath> realRemoved = new HashSet<FilePath>();
     // perform diff
-    BzrSimpleHandler diff = new BzrSimpleHandler(project, root, BzrCommand.DIFF);
-    diff.setSilent(true);
-    diff.setStdoutSuppressed(true);
-    diff.addParameters("--diff-filter=ADMRUX", "--name-status", "HEAD");
-    diff.endOptions();
+    BzrSimpleHandler handler = new BzrSimpleHandler(project, root, BzrCommand.DIFF);
+    //handler.setSilent(true);
+    handler.setStdoutSuppressed(true);
+    handler.addParameters("--diff-filter=ADMRUX", "--name-status", "HEAD");
+    handler.endOptions();
     String output;
     try {
-      output = diff.run();
+      output = handler.run();
     }
     catch (VcsException ex) {
       exceptions.add(ex);
@@ -333,7 +333,7 @@ public class BzrCheckinEnvironment implements CheckinEnvironment {
     }
     // perform merge commit
     try {
-      BzrSimpleHandler handler = new BzrSimpleHandler(project, root, BzrCommand.COMMIT);
+      handler = new BzrSimpleHandler(project, root, BzrCommand.COMMIT);
       handler.addParameters("-F", messageFile.getAbsolutePath());
       if (author != null) {
         handler.addParameters("--author=" + author);

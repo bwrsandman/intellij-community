@@ -77,7 +77,6 @@
       <separator/>
     </group>
 
-    <action id="Bazaar.CherryPick" class="bazaar4idea.cherrypick.BzrCherryPickAction" text="Cherry-Pick" icon="Bazaar4ideaIcons.CherryPick"/>
     <action id="Bazaar.CheckoutRevision" class="bazaar4idea.actions.BzrCheckoutRevisionAction" text="Checkout Revision"/>
     <action id="Bazaar.CreateNewBranch" class="bazaar4idea.actions.BzrCreateNewBranchAction" text="New Branch"
             description="Create new branch starting from the selected commit"/>

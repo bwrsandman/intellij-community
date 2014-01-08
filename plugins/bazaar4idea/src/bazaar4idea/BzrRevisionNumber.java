@@ -35,6 +35,8 @@ import java.util.StringTokenizer;
  */
 public class BzrRevisionNumber implements ShortVcsRevisionNumber {
 
+  public static final int NOT_COMMITTED_REVNO = 0;
+
   @NotNull private final int myRevNo;
   /**
    * the date when revision created

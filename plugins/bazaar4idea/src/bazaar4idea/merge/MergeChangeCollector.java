@@ -157,7 +157,7 @@ public class MergeChangeCollector {
     }
     String root = myRoot.getPath();
     BzrSimpleHandler h = new BzrSimpleHandler(myProject, myRoot, BzrCommand.DIFF);
-    h.setSilent(true);
+    //h.setSilent(true);
     // note that moves are not detected here
     h.addParameters("--name-status", "--diff-filter=ADMRUX", revisions);
     for (StringScanner s = new StringScanner(h.run()); s.hasMoreData();) {

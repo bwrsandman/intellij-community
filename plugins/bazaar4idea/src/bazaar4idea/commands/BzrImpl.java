@@ -172,13 +172,13 @@ public class BzrImpl implements Bzr {
   @NotNull
   @Override
   public BzrCommandResult diff(@NotNull BzrRepository repository, @NotNull List<String> parameters, @NotNull String range) {
-    final BzrLineHandler diff = new BzrLineHandler(repository.getProject(), repository.getRoot(), BzrCommand.DIFF);
-    diff.addParameters(parameters);
-    diff.addParameters(range);
-    diff.setStdoutSuppressed(true);
-    diff.setStderrSuppressed(true);
-    diff.setSilent(true);
-    return run(diff);
+    final BzrLineHandler handler = new BzrLineHandler(repository.getProject(), repository.getRoot(), BzrCommand.DIFF);
+    handler.addParameters(parameters);
+    handler.addParameters(range);
+    handler.setStdoutSuppressed(true);
+    handler.setStderrSuppressed(true);
+    //handler.setSilent(true);
+    return run(handler);
   }
 
   @NotNull

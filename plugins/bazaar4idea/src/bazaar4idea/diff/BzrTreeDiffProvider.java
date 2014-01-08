@@ -55,7 +55,7 @@ public class BzrTreeDiffProvider implements TreeDiffProvider {
       for (List<String> pathList : VcsFileUtil.chunkPaths(vcsRoot, files)) {
         BzrSimpleHandler handler = new BzrSimpleHandler(myProject, vcsRoot, BzrCommand.DIFF);
         handler.addParameters("--name-status", "--diff-filter=ADCRUX", "-M", "HEAD..." + searcher.getRemote().getFullName());
-        handler.setSilent(true);
+        //handler.setSilent(true);
         handler.setStdoutSuppressed(true);
         handler.endOptions();
         handler.addParameters(pathList);

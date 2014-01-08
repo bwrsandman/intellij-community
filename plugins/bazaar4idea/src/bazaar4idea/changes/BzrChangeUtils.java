@@ -381,7 +381,7 @@ public class BzrChangeUtils {
       for (String parent : parents) {
         final BzrRevisionNumber parentRevision = resolveReference(project, root, parent);
         BzrSimpleHandler diffHandler = new BzrSimpleHandler(project, root, BzrCommand.DIFF);
-        diffHandler.setSilent(true);
+        //diffHandler.setSilent(true);
         diffHandler.addParameters("--name-status", "-M", parentRevision.asString(), thisRevision.asString());
         String diff = diffHandler.run();
         parseChanges(project, root, thisRevision, parentRevision, diff, changes, null);
@@ -450,7 +450,7 @@ public class BzrChangeUtils {
                                                  @NotNull String diffRange, @Nullable Collection<FilePath> dirtyPaths) {
     BzrSimpleHandler handler = new BzrSimpleHandler(project, root, BzrCommand.DIFF);
     handler.addParameters("--name-status", "--diff-filter=ADCMRUXT", "-M", diffRange);
-    handler.setSilent(true);
+    //handler.setSilent(true);
     handler.setStdoutSuppressed(true);
     handler.endOptions();
     if (dirtyPaths != null) {

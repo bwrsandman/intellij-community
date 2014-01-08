@@ -135,7 +135,7 @@ public class BzrUpdateLocallyModifiedDialog extends DialogWrapper {
     String rootPath = root.getPath();
     BzrSimpleHandler h = new BzrSimpleHandler(project, root, BzrCommand.DIFF);
     h.addParameters("--name-status");
-    h.setSilent(true);
+    //h.setSilent(true);
     h.setStdoutSuppressed(true);
     StringScanner s = new StringScanner(h.run());
     while (s.hasMoreData()) {
