@@ -18,6 +18,7 @@ package bazaar4idea.checkin;
 import bazaar4idea.BzrPlatformFacade;
 import bazaar4idea.BzrUtil;
 import bazaar4idea.commands.BzrCommand;
+import bazaar4idea.commands.BzrSimpleHandler;
 import bazaar4idea.config.BzrConfigUtil;
 import bazaar4idea.config.BzrVcsSettings;
 import bazaar4idea.history.NewBzrUsersComponent;
@@ -52,7 +53,6 @@ import com.intellij.util.ui.UIUtil;
 import com.intellij.vcs.log.VcsFullCommitDetails;
 import com.intellij.vcsUtil.VcsFileUtil;
 import com.intellij.vcsUtil.VcsUtil;
-import bazaar4idea.commands.BzrSimpleHandler;
 import org.jetbrains.annotations.NonNls;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -75,7 +75,7 @@ public class BzrCheckinEnvironment implements CheckinEnvironment {
   @NonNls private static final String BZR_COMMIT_MSG_FILE_EXT = ".txt"; // the file extension for commit message file
 
   private final Project myProject;
-  public static final SimpleDateFormat COMMIT_DATE_FORMAT = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+  public static final SimpleDateFormat COMMIT_DATE_FORMAT = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss ZZZZ");
   private final VcsDirtyScopeManager myDirtyScopeManager;
   private final BzrVcsSettings mySettings;
 
@@ -468,7 +468,7 @@ public class BzrCheckinEnvironment implements CheckinEnvironment {
    * @param nextCommitAmend      true, if the commit should be amended
    * @param nextCommitAuthorDate Author date timestamp to override the date of the commit or null if this overriding is not needed.
    * @return a simple handler that does the task
-   * @throws VcsException in case of git problem
+   * @throws VcsException in case of bzr problem
    */
   private static void commit(Project project,
                              VirtualFile root,
@@ -486,12 +486,12 @@ public class BzrCheckinEnvironment implements CheckinEnvironment {
       else {
         amend = true;
       }
-      handler.addParameters("--only", "-F", message.getAbsolutePath());
+      handler.addParameters("-F", message.getAbsolutePath());
       if (nextCommitAuthor != null) {
         handler.addParameters("--author=" + nextCommitAuthor);
       }
       if (nextCommitAuthorDate != null) {
-        handler.addParameters("--date", COMMIT_DATE_FORMAT.format(nextCommitAuthorDate));
+        handler.addParameters("--commit-time", COMMIT_DATE_FORMAT.format(nextCommitAuthorDate));
       }
       handler.endOptions();
       handler.addParameters(paths);
