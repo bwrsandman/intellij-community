@@ -54,13 +54,12 @@ public class BzrConfigUtil {
    */
   public static void getValues(Project project, VirtualFile root, String keyMask, Map<String, String> result) throws VcsException {
     BzrSimpleHandler h = new BzrSimpleHandler(project, root, BzrCommand.CONFIG);
-    h.setSilent(true);
-    h.addParameters("--null");
-    if (keyMask != null) {
-      h.addParameters("--get-regexp", keyMask);
-    } else {
-      h.addParameters("-l");
-    }
+    //h.setSilent(true);
+    //if (keyMask != null) {
+    //  h.addParameters("--get-regexp", keyMask);
+    //} else {
+    //  h.addParameters("-l");
+    //}
     String output = h.run();
     int start = 0;
     int pos;
@@ -88,12 +87,12 @@ public class BzrConfigUtil {
   public static List<Pair<String, String>> getAllValues(Project project, VirtualFile root, @NonNls String key) throws VcsException {
     List<Pair<String, String>> result = new ArrayList<Pair<String, String>>();
     BzrSimpleHandler h = new BzrSimpleHandler(project, root, BzrCommand.CONFIG);
-    h.setSilent(true);
-    h.addParameters("--null", "--get-all", key);
+    //h.setSilent(true);
+    h.addParameters("--all", key);
     String output = h.run();
     int start = 0;
     int pos;
-    while ((pos = output.indexOf('\u0000', start)) != -1) {
+    while ((pos = output.indexOf('\n', start)) != -1) {
       String value = output.substring(start, pos);
       start = pos + 1;
       result.add(new Pair<String, String>(key, value));
@@ -114,11 +113,11 @@ public class BzrConfigUtil {
   @Nullable
   public static String getValue(Project project, VirtualFile root, @NonNls String key) throws VcsException {
     BzrSimpleHandler h = new BzrSimpleHandler(project, root, BzrCommand.CONFIG);
-    h.setSilent(true);
+    //h.setSilent(true);
     h.ignoreErrorCode(1);
-    h.addParameters("--null", "--get", key);
+    h.addParameters(key);
     String output = h.run();
-    int pos = output.indexOf('\u0000');
+    int pos = output.indexOf('\n');
     if (h.getExitCode() != 0 || pos == -1) {
       return null;
     }
@@ -213,33 +212,17 @@ public class BzrConfigUtil {
   }
 
   /**
-   * Unset the current value
-   *
-   * @param project the project
-   * @param root    the git root
-   * @param key     the key to unset
-   * @throws VcsException if there is a problem with running git
-   */
-  public static void unsetValue(Project project, VirtualFile root, String key) throws VcsException {
-    BzrSimpleHandler h = new BzrSimpleHandler(project, root, BzrCommand.CONFIG);
-    h.setSilent(true);
-    h.ignoreErrorCode(1);
-    h.addParameters("--unset", key);
-    h.run();
-  }
-
-  /**
    * Set the value
    *
    * @param project the project
    * @param root    the git root
    * @param key     the key to set
    * @param value   the value to set
-   * @throws VcsException if there is a problem with running git
+   * @throws VcsException if there is a problem with running bzr
    */
   public static void setValue(Project project, VirtualFile root, String key, String value, String... additionalParameters) throws VcsException {
     BzrSimpleHandler h = new BzrSimpleHandler(project, root, BzrCommand.CONFIG);
-    h.setSilent(true);
+    //h.setSilent(true);
     h.ignoreErrorCode(1);
     h.addParameters(additionalParameters);
     h.addParameters(key, value);
