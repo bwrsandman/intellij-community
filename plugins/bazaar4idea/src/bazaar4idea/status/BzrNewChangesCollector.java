@@ -38,9 +38,7 @@ import bazaar4idea.commands.BzrSimpleHandler;
 import bazaar4idea.repo.BzrUntrackedFilesHolder;
 import org.jetbrains.annotations.NotNull;
 
-import java.util.Collection;
-import java.util.HashSet;
-import java.util.Set;
+import java.util.*;
 
 class BzrNewChangesCollector extends BzrChangesCollector {
 
@@ -111,10 +109,10 @@ class BzrNewChangesCollector extends BzrChangesCollector {
 
   private BzrSimpleHandler statusHandler(Collection<FilePath> dirtyPaths) {
     BzrSimpleHandler handler = new BzrSimpleHandler(myProject, myVcsRoot, BzrCommand.STATUS);
-    final String[] params = {"--porcelain", "-z", "--untracked-files=no"};   // untracked files are stored separately
+    final String[] params = {"--short", "--versioned"};   // untracked files are stored separately
     handler.addParameters(params);
-    handler.setSilent(true);
-    handler.setStdoutSuppressed(true);
+    //handler.setSilent(true);
+    //handler.setStdoutSuppressed(true);
     handler.endOptions();
     handler.addRelativePaths(dirtyPaths);
     if (handler.isLargeCommandLine()) {
@@ -132,10 +130,9 @@ class BzrNewChangesCollector extends BzrChangesCollector {
   private void parseOutput(@NotNull String output, @NotNull BzrHandler handler) throws VcsException {
     VcsRevisionNumber head = getHead();
 
-    final String[] split = output.split("\u0000");
+    List<String> split = Arrays.asList(StringUtil.splitByLines(output));
 
-    for (int pos = 0; pos < split.length; pos++) {
-      String line = split[pos];
+    for (String line: split) {
       if (StringUtil.isEmptyOrSpaces(line)) { // skip empty lines if any (e.g. the whole output may be empty on a clean working tree).
         continue;
       }
@@ -174,9 +171,9 @@ class BzrNewChangesCollector extends BzrChangesCollector {
           }
           break;
 
-        case 'C':
+        //case 'C':
           //noinspection AssignmentToForLoopParameter
-          pos += 1;  // read the "from" filepath which is separated also by NUL character.
+          //pos += 1;  // read the "from" filepath which is separated also by NUL character.
           // NB: no "break" here!
           // we treat "Copy" as "Added", but we still have to read the old path not to break the format parsing.
         case 'A':
@@ -214,19 +211,19 @@ class BzrNewChangesCollector extends BzrChangesCollector {
           }
           break;
 
-        case 'R':
-          //noinspection AssignmentToForLoopParameter
-          pos += 1;  // read the "from" filepath which is separated also by NUL character.
-          String oldFilename = split[pos];
-
-          if (yStatus == 'D') {
-            reportDeleted(filepath, head);
-          } else if (yStatus == ' ' || yStatus == 'M' || yStatus == 'T') {
-            reportRename(filepath, oldFilename, head);
-          } else {
-            throwYStatus(output, handler, line, xStatus, yStatus);
-          }
-          break;
+        //case 'R':
+        //  //noinspection AssignmentToForLoopParameter
+        //  pos += 1;  // read the "from" filepath which is separated also by NUL character.
+        //  String oldFilename = split[pos];
+        //
+        //  if (yStatus == 'D') {
+        //    reportDeleted(filepath, head);
+        //  } else if (yStatus == ' ' || yStatus == 'M' || yStatus == 'T') {
+        //    reportRename(filepath, oldFilename, head);
+        //  } else {
+        //    throwYStatus(output, handler, line, xStatus, yStatus);
+        //  }
+        //  break;
 
         case 'T'://TODO
           if (yStatus == ' ' || yStatus == 'M') {

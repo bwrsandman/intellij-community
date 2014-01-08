@@ -214,9 +214,8 @@ public class BzrUnstashDialog extends DialogWrapper {
         String resolvedStash;
         String selectedStash = getSelectedStash().getStash();
         try {
-          BzrSimpleHandler h = new BzrSimpleHandler(project, root, BzrCommand.REV_LIST);
-          h.setSilent(true);
-          h.addParameters("--timestamp", "--max-count=1");
+          BzrSimpleHandler h = new BzrSimpleHandler(project, root, BzrCommand.VERSION_INFO);
+          //h.setSilent(true);
           addStashParameter(h, selectedStash);
           h.endOptions();
           final String output = h.run();

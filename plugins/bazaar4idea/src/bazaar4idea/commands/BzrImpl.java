@@ -344,8 +344,7 @@ public class BzrImpl implements Bzr {
   @NotNull
   @Override
   public BzrCommandResult tip(@NotNull BzrRepository repository, @NotNull String branchName) {
-    final BzrLineHandler h = new BzrLineHandler(repository.getProject(), repository.getRoot(), BzrCommand.REV_LIST);
-    h.addParameters("-1");
+    final BzrLineHandler h = new BzrLineHandler(repository.getProject(), repository.getRoot(), BzrCommand.VERSION_INFO);
     h.addParameters(branchName);
     return run(h);
   }
