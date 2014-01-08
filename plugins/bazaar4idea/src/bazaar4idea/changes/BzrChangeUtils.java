@@ -262,21 +262,6 @@ public class BzrChangeUtils {
   }
 
   @Nullable
-  public static String getCommitAbbreviation(final Project project, final VirtualFile root, final SHAHash hash) {
-    BzrSimpleHandler h = new BzrSimpleHandler(project, root, BzrCommand.LOG);
-    h.setSilent(true);
-    h.addParameters("--max-count=1", "--pretty=%h", "--encoding=UTF-8", "\"" + hash.getValue() + "\"", "--");
-    try {
-      final String output = h.run().trim();
-      if (StringUtil.isEmptyOrSpaces(output)) return null;
-      return output.trim();
-    }
-    catch (VcsException e) {
-      return null;
-    }
-  }
-
-  @Nullable
   public static SHAHash commitExists(final Project project, final VirtualFile root, final String anyReference,
                                      List<VirtualFile> paths, final String... parameters) {
     BzrSimpleHandler h = new BzrSimpleHandler(project, root, BzrCommand.LOG);
@@ -397,7 +382,7 @@ public class BzrChangeUtils {
         final BzrRevisionNumber parentRevision = resolveReference(project, root, parent);
         BzrSimpleHandler diffHandler = new BzrSimpleHandler(project, root, BzrCommand.DIFF);
         diffHandler.setSilent(true);
-        diffHandler.addParameters("--name-status", "-M", parentRevision.getRev(), thisRevision.getRev());
+        diffHandler.addParameters("--name-status", "-M", parentRevision.asString(), thisRevision.asString());
         String diff = diffHandler.run();
         parseChanges(project, root, thisRevision, parentRevision, diff, changes, null);
 
@@ -408,10 +393,6 @@ public class BzrChangeUtils {
     }
     String changeListName = String.format("%s(%s)", commentSubject, revisionNumber);
     return new BzrCommittedChangeList(changeListName, fullComment, committerName, thisRevision, commitDate, changes, revertable);
-  }
-
-  public static long longForSHAHash(String revisionNumber) {
-    return Long.parseLong(revisionNumber.substring(0, 15), 16) << 4 + Integer.parseInt(revisionNumber.substring(15, 16), 16);
   }
 
   @NotNull

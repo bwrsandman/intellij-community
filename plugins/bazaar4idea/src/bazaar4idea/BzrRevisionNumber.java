@@ -34,15 +34,8 @@ import java.util.StringTokenizer;
  * Bazaar revision number
  */
 public class BzrRevisionNumber implements ShortVcsRevisionNumber {
-  /**
-   * the hash from 40 zeros representing not yet created commit
-   */
-  public static final String NOT_COMMITTED_HASH = StringUtil.repeat("0", 40);
 
-  /**
-   * the revision number (40 character hashcode, tag, or reference). In some cases incomplete hashcode could be used.
-   */
-  @NotNull private final String myRevisionHash;
+  @NotNull private final int myRevNo;
   /**
    * the date when revision created
    */
@@ -57,7 +50,7 @@ public class BzrRevisionNumber implements ShortVcsRevisionNumber {
    */
   public BzrRevisionNumber(@NonNls @NotNull String version) {
     // TODO review usages
-    myRevisionHash = version;
+    myRevNo =  StringUtil.parseInt(version, 0);
     myTimestamp = new Date();
   }
 
@@ -69,17 +62,12 @@ public class BzrRevisionNumber implements ShortVcsRevisionNumber {
    */
   public BzrRevisionNumber(@NotNull String version, @NotNull Date timeStamp) {
     myTimestamp = timeStamp;
-    myRevisionHash = version;
+    myRevNo = StringUtil.parseInt(version, 0);
   }
 
   @NotNull
   public String asString() {
-    return myRevisionHash;
-  }
-
-  @Override
-  public String toShortString() {
-    return asString().substring(0, 7);
+    return Integer.toString(myRevNo);
   }
 
   /**
@@ -94,16 +82,8 @@ public class BzrRevisionNumber implements ShortVcsRevisionNumber {
    * @return revision number
    */
   @NotNull
-  public String getRev() {
-    return myRevisionHash;
-  }
-
-  /**
-   * @return the short revision number. The revision number likely unambiguously identify local revision, however in rare cases there could be conflicts.
-   */
-  @NotNull
-  public String getShortRev() {
-    return BzrUtil.getShortHash(myRevisionHash);
+  public int getRev() {
+    return myRevNo;
   }
 
   /**
@@ -114,52 +94,17 @@ public class BzrRevisionNumber implements ShortVcsRevisionNumber {
 
     if (crev instanceof BzrRevisionNumber) {
       BzrRevisionNumber other = (BzrRevisionNumber)crev;
-      if ((other.myRevisionHash != null) && myRevisionHash.equals(other.myRevisionHash)) {
+      if  (myRevNo == other.myRevNo) {
         return 0;
-      }
-
-      if ((other.myRevisionHash.indexOf("[") > 0) && (other.myTimestamp != null)) {
-        return myTimestamp.compareTo(other.myTimestamp);
-      }
-
-      // check for parent revs
-      String otherName = null;
-      String thisName = null;
-      int otherParents = -1;
-      int thisParent = -1;
-
-      if (other.myRevisionHash.contains("~")) {
-        int tildeIndex = other.myRevisionHash.indexOf('~');
-        otherName = other.myRevisionHash.substring(0, tildeIndex);
-        otherParents = Integer.parseInt(other.myRevisionHash.substring(tildeIndex));
-      }
-
-      if (myRevisionHash.contains("~")) {
-        int tildeIndex = myRevisionHash.indexOf('~');
-        thisName = myRevisionHash.substring(0, tildeIndex);
-        thisParent = Integer.parseInt(myRevisionHash.substring(tildeIndex));
-      }
-
-      if (otherName == null && thisName == null) {
-        final int result = myTimestamp.compareTo(other.myTimestamp);
-        if (result == 0) {
-          // it can NOT be 0 - it would mean that revisions are equal but they have different hash codes
-          // but this is NOT correct. but we don't know here how to sort
-          return myRevisionHash.compareTo(other.myRevisionHash);
-        }
-        return result;
-      }
-      else if (otherName == null) {
+      } else if (myRevNo > other.myRevNo) {
+        return -1; // the compared revision is my ancestor
+      } else if (myRevNo < other.myRevNo) {
         return 1;  // I am an ancestor of the compared revision
       }
-      else if (thisName == null) {
-        return -1; // the compared revision is my ancestor
-      }
-      else {
-        return thisParent - otherParents;  // higher relative rev numbers are older ancestors
+      if (other.myTimestamp != null) {
+        return myTimestamp.compareTo(other.myTimestamp);
       }
     }
-
     return -1;
   }
 
@@ -170,32 +115,7 @@ public class BzrRevisionNumber implements ShortVcsRevisionNumber {
 
     BzrRevisionNumber test = (BzrRevisionNumber)obj;
     // TODO normalize revision string?
-    return myRevisionHash.equals(test.myRevisionHash);
-  }
-
-  @Override
-  public int hashCode() {
-    return myRevisionHash.hashCode();
-  }
-
-  /**
-   * @return a revision string that refers to the parent revision relatively
-   *         to the current one. The git operator "~" is used. Note that in case of merges,
-   *         the first revision of several will referred.
-   */
-  public String getParentRevisionStr() {
-    String rev = myRevisionHash;
-    int bracketIdx = rev.indexOf("[");
-    if (bracketIdx > 0) {
-      rev = myRevisionHash.substring(bracketIdx + 1, myRevisionHash.indexOf("]"));
-    }
-
-    int tildeIndex = rev.indexOf("~");
-    if (tildeIndex > 0) {
-      int n = Integer.parseInt(rev.substring(tildeIndex)) + 1;
-      return rev.substring(0, tildeIndex) + "~" + n;
-    }
-    return rev + "~1";
+    return myRevNo == test.myRevNo;
   }
 
   /**
@@ -226,6 +146,11 @@ public class BzrRevisionNumber implements ShortVcsRevisionNumber {
 
   @Override
   public String toString() {
-    return myRevisionHash;
+    return Integer.toString(myRevNo);
+  }
+
+  @Override
+  public String toShortString() {
+    return this.toString();
   }
 }
