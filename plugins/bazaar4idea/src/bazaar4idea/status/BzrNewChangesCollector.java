@@ -127,10 +127,40 @@ class BzrNewChangesCollector extends BzrChangesCollector {
   }
 
   // handler is here for debugging purposes in the case of parse error
+  /*
+      Status flags are used to summarise changes to the working tree in a concise
+    manner.  They are in the form:
+
+       xxx   <filename>
+
+    where the columns' meanings are as follows.
+
+    Column 1 - versioning/renames:
+
+      + File versioned
+      - File unversioned
+      R File renamed
+      ? File unknown
+      X File nonexistent (and unknown to bzr)
+      C File has conflicts
+      P Entry for a pending merge (not a file)
+
+    Column 2 - contents:
+
+      N File created
+      D File deleted
+      K File kind changed
+      M File modified
+
+    Column 3 - execute:
+
+      * The execute bit was changed
+
+   */
   private void parseOutput(@NotNull String output, @NotNull BzrHandler handler) throws VcsException {
     VcsRevisionNumber head = getHead();
 
-    List<String> split = Arrays.asList(StringUtil.splitByLines(output));
+    List<String> split = Arrays.asList(StringUtil.splitByLinesDontTrim(output));
 
     for (String line: split) {
       if (StringUtil.isEmptyOrSpaces(line)) { // skip empty lines if any (e.g. the whole output may be empty on a clean working tree).
@@ -138,13 +168,14 @@ class BzrNewChangesCollector extends BzrChangesCollector {
       }
 
       // format: XY_filename where _ stands for space.
-      if (line.length() < 4) { // X, Y, space and at least one symbol for the file
+      if (line.length() < 5) { // X, Y, space and at least one symbol for the file
         throwGFE("Line is too short.", handler, output, line, '0', '0');
       }
-      final String xyStatus = line.substring(0, 2);
-      final String filepath = line.substring(3); // skipping the space
-      final char xStatus = xyStatus.charAt(0);
-      final char yStatus = xyStatus.charAt(1);
+      final String xyzStatus = line.substring(0, 3);
+      final String filepath = line.substring(4); // skipping the space
+      final char xStatus = xyzStatus.charAt(0);
+      final char yStatus = xyzStatus.charAt(1);
+      final char zStatus = xyzStatus.charAt(2);
 
       switch (xStatus) {
         case ' ':
@@ -152,95 +183,51 @@ class BzrNewChangesCollector extends BzrChangesCollector {
             reportModified(filepath, head);
           } else if (yStatus == 'D') {
             reportDeleted(filepath, head);
-          } else if (yStatus == 'T') {
-            reportTypeChanged(filepath, head);
-          } else if (yStatus == 'U') {
-            reportConflict(filepath, head);
-          } else {
-            throwYStatus(output, handler, line, xStatus, yStatus);
-          }
-          break;
-
-        case 'M':
-          if (yStatus == ' ' || yStatus == 'M' || yStatus == 'T') {
-            reportModified(filepath, head);
-          } else if (yStatus == 'D') {
-            reportDeleted(filepath, head);
-          } else {
-            throwYStatus(output, handler, line, xStatus, yStatus);
-          }
-          break;
-
-        //case 'C':
-          //noinspection AssignmentToForLoopParameter
-          //pos += 1;  // read the "from" filepath which is separated also by NUL character.
-          // NB: no "break" here!
-          // we treat "Copy" as "Added", but we still have to read the old path not to break the format parsing.
-        case 'A':
-          if (yStatus == 'M' || yStatus == ' ' || yStatus == 'T') {
+          } else if (yStatus == 'K') {
+            reportKindChanged(filepath, head);
+          } else if (yStatus == 'N') {
             reportAdded(filepath);
-          } else if (yStatus == 'D') {
-            // added + deleted => no change (from IDEA point of view).
-          } else if (yStatus == 'U' || yStatus == 'A') { // AU - unmerged, added by us; AA - unmerged, both added
-            reportConflict(filepath, head);
+          } else {
+            throwYStatus(output, handler, line, xStatus, yStatus);
+          }
+          break;
+
+        case '+':
+          if (yStatus == 'N') {
+            reportAdded(filepath);
+          } else if (yStatus == '!') {
+            throwYStatus(output, handler, line, xStatus, yStatus);
           }  else {
             throwYStatus(output, handler, line, xStatus, yStatus);
           }
           break;
 
-        case 'D':
-          if (yStatus == 'M' || yStatus == ' ' || yStatus == 'T') {
-            reportDeleted(filepath, head);
-          } else if (yStatus == 'U') { // DU - unmerged, deleted by us
-            reportConflict(filepath, head);
-          } else if (yStatus == 'D') { // DD - unmerged, both deleted
-            // TODO
-            // currently not displaying, because "both deleted" conflicts can't be handled by our conflict resolver.
-            // see IDEA-63156
-          } else {
+        case '-':
+          if (yStatus == 'N') {
+            reportAdded(filepath);
+          }  else {
             throwYStatus(output, handler, line, xStatus, yStatus);
           }
           break;
 
-        case 'U':
-          if (yStatus == 'U' || yStatus == 'A' || yStatus == 'D' || yStatus == 'T') {
-            // UU - unmerged, both modified; UD - unmerged, deleted by them; UA - umerged, added by them
-            reportConflict(filepath, head);
-          } else {
-            throwYStatus(output, handler, line, xStatus, yStatus);
-          }
-          break;
-
-        //case 'R':
-        //  //noinspection AssignmentToForLoopParameter
-        //  pos += 1;  // read the "from" filepath which is separated also by NUL character.
-        //  String oldFilename = split[pos];
-        //
-        //  if (yStatus == 'D') {
-        //    reportDeleted(filepath, head);
-        //  } else if (yStatus == ' ' || yStatus == 'M' || yStatus == 'T') {
-        //    reportRename(filepath, oldFilename, head);
-        //  } else {
-        //    throwYStatus(output, handler, line, xStatus, yStatus);
-        //  }
-        //  break;
-
-        case 'T'://TODO
-          if (yStatus == ' ' || yStatus == 'M') {
-            reportTypeChanged(filepath, head);
+        case 'R':
+          if (yStatus == ' ') {
+            reportRename(StringUtil.split(filepath, " => ").get(1), StringUtil.split(filepath, " => ").get(0), head);
           } else if (yStatus == 'D') {
-            reportDeleted(filepath, head);
+            reportDeleted(StringUtil.split(filepath, " => ").get(0), head);
           } else {
             throwYStatus(output, handler, line, xStatus, yStatus);
           }
+          break;
+
+        case 'C':
+          reportConflict(filepath, head);
           break;
 
         case '?':
+        case 'X':
           throwGFE("Unexpected unversioned file flag.", handler, output, line, xStatus, yStatus);
           break;
-
-        case '!':
-          throwGFE("Unexpected ignored file flag.", handler, output, line, xStatus, yStatus);
 
         default:
           throwGFE("Unexpected symbol as xStatus.", handler, output, line, xStatus, yStatus);
@@ -294,7 +281,7 @@ class BzrNewChangesCollector extends BzrChangesCollector {
     reportChange(FileStatus.MODIFIED, before, after);
   }
 
-  private void reportTypeChanged(String filepath, VcsRevisionNumber head) throws VcsException {
+  private void reportKindChanged(String filepath, VcsRevisionNumber head) throws VcsException {
     ContentRevision before = BzrContentRevision.createRevision(myVcsRoot, filepath, head, myProject, false, true, false);
     ContentRevision after = BzrContentRevision.createRevisionForTypeChange(myProject, myVcsRoot, filepath, null, false);
     reportChange(FileStatus.MODIFIED, before, after);

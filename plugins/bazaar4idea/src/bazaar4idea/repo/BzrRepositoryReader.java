@@ -277,10 +277,9 @@ class BzrRepositoryReader {
    */
   BzrBranchesCollection readBranches(@NotNull Collection<BzrRemote> remotes) {
     Set<BzrLocalBranch> localBranches = readUnpackedLocalBranches();
-    Set<BzrRemoteBranch> remoteBranches = readUnpackedRemoteBranches(remotes);
     BzrBranchesCollection packedBranches = readPackedBranches(remotes);
     localBranches.addAll(packedBranches.getLocalBranches());
-    remoteBranches.addAll(packedBranches.getRemoteBranches());
+    Collection<BzrRemoteBranch> remoteBranches = packedBranches.getRemoteBranches();
     return new BzrBranchesCollection(localBranches, remoteBranches);
   }
 
@@ -311,39 +310,6 @@ class BzrRepositoryReader {
       LOG.error("Couldn't read " + branchFile, e);
     }
     return null;
-  }
-
-  /**
-   * @return list of branches from refs/remotes.
-   * @param remotes
-   */
-  @NotNull
-  private Set<BzrRemoteBranch> readUnpackedRemoteBranches(@NotNull final Collection<BzrRemote> remotes) {
-    final Set<BzrRemoteBranch> branches = new HashSet<BzrRemoteBranch>();
-    if (!myRepositoryDir.exists()) {
-      return branches;
-    }
-    FileUtil.processFilesRecursively(myRepositoryDir, new Processor<File>() {
-      @Override
-      public boolean process(File file) {
-        if (!file.isDirectory() && !file.getName().equalsIgnoreCase(BzrRepositoryFiles.HEAD)) {
-          final String relativePath = FileUtil.getRelativePath(myBzrDir, file);
-          if (relativePath != null) {
-            String branchName = FileUtil.toSystemIndependentName(relativePath);
-            String hash = loadHashFromBranchFile(file);
-            Hash h = createHash(hash);
-            if (h != null) {
-              BzrRemoteBranch remoteBranch = BzrBranchUtil.parseRemoteBranch(branchName, h, remotes);
-              if (remoteBranch != null) {
-                branches.add(remoteBranch);
-              }
-            }
-          }
-        }
-        return true;
-      }
-    });
-    return branches;
   }
 
   /**
@@ -405,56 +371,6 @@ class BzrRepositoryReader {
       return new Head(true, matcher.group(1), "");
     }
     throw new RepoStateException("Invalid format of the .git/HEAD file: \n" + headContent);
-  }
-
-  /**
-   * Parses a line from the .git/packed-refs file.
-   * Passes the parsed hash-branch pair to the resultHandler.
-   * Comments, tags and incorrectly formatted lines are ignored, and (null, null) is passed to the handler then.
-   * Using a special handler may seem to be an overhead, but it is to avoid code duplication in two methods that parse packed-refs.
-   */
-  private static void parsePackedRefsLine(@NotNull String line, @NotNull PackedRefsLineResultHandler resultHandler) {
-    try {
-      line = line.trim();
-      char firstChar = line.isEmpty() ? 0 : line.charAt(0);
-      if (firstChar == '#') { // ignoring comments
-        return;
-      }
-      if (firstChar == '^') {
-        // ignoring the hash which an annotated tag above points to
-        return;
-      }
-      String hash = null;
-      int i;
-      for (i = 0; i < line.length(); i++) {
-        char c = line.charAt(i);
-        if (!Character.isLetterOrDigit(c)) {
-          hash = line.substring(0, i);
-          break;
-        }
-      }
-      String branch = null;
-      int start = i;
-      if (hash != null && start < line.length() && line.charAt(start++) == ' ') {
-        for (i = start; i < line.length(); i++) {
-          char c = line.charAt(i);
-          if (Character.isWhitespace(c)) {
-            break;
-          }
-        }
-        branch = line.substring(start, i);
-      }
-
-      if (hash != null && branch != null) {
-        resultHandler.handleResult(hash.trim(), branch);
-      }
-      else {
-        LOG.info("Ignoring invalid packed-refs line: [" + line + "]");
-      }
-    }
-    finally {
-      resultHandler.handleResult(null, null);
-    }
   }
 
   @NotNull
