@@ -41,7 +41,7 @@ public class BzrCommittedChangeList extends CommittedChangeListImpl implements V
                                 Date commitDate,
                                 Collection<Change> changes,
                                 boolean isModifiable) {
-    super(name, comment, committerName, BzrChangeUtils.longForSHAHash(revisionNumber.asString()), commitDate, changes);
+    super(name, comment, committerName, revisionNumber.getRev(), commitDate, changes);
     myRevisionNumber = revisionNumber;
     myModifiable = isModifiable;
   }
