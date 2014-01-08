@@ -59,6 +59,8 @@ import java.io.File;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.nio.charset.Charset;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.*;
 
 /**
@@ -101,6 +103,8 @@ public class BzrUtil {
       return input != null;
     }
   };
+
+  public static final SimpleDateFormat COMMIT_DATE_FORMAT = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss ZZZZ");
 
   /**
    * A private constructor to suppress instance creation
@@ -274,10 +278,8 @@ public class BzrUtil {
    * @param value a value to parse
    * @return timestamp as {@link Date} object
    */
-  private static Date parseTimestamp(String value) {
-    final long parsed;
-    parsed = Long.parseLong(value.trim());
-    return new Date(parsed * 1000);
+  private static Date parseTimestamp(String value) throws ParseException {
+    return COMMIT_DATE_FORMAT.parse(value);
   }
 
   /**
@@ -286,14 +288,14 @@ public class BzrUtil {
    * In some cases git output gets corrupted and this method is intended to catch the reason, why.
    * @param value      Value to parse.
    * @param handler    Bazaar handler that was called to received the output.
-   * @param gitOutput  Bazaar output.
+   * @param bzrOutput  Bazaar output.
    * @return Parsed Date or <code>new Date</code> in the case of error.
    */
-  public static Date parseTimestampWithNFEReport(String value, BzrHandler handler, String gitOutput) {
+  public static Date parseTimestampWithNFEReport(String value, BzrHandler handler, String bzrOutput) {
     try {
       return parseTimestamp(value);
-    } catch (NumberFormatException e) {
-      LOG.error("annotate(). NFE. Handler: " + handler + ". Output: " + gitOutput, e);
+    } catch (ParseException e) {
+      LOG.error("annotate(). NFE. Handler: " + handler + ". Output: " + bzrOutput, e);
       return  new Date();
     }
   }

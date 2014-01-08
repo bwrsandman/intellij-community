@@ -75,7 +75,6 @@ public class BzrCheckinEnvironment implements CheckinEnvironment {
   @NonNls private static final String BZR_COMMIT_MSG_FILE_EXT = ".txt"; // the file extension for commit message file
 
   private final Project myProject;
-  public static final SimpleDateFormat COMMIT_DATE_FORMAT = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss ZZZZ");
   private final VcsDirtyScopeManager myDirtyScopeManager;
   private final BzrVcsSettings mySettings;
 
@@ -491,7 +490,7 @@ public class BzrCheckinEnvironment implements CheckinEnvironment {
         handler.addParameters("--author=" + nextCommitAuthor);
       }
       if (nextCommitAuthorDate != null) {
-        handler.addParameters("--commit-time", COMMIT_DATE_FORMAT.format(nextCommitAuthorDate));
+        handler.addParameters("--commit-time", BzrUtil.COMMIT_DATE_FORMAT.format(nextCommitAuthorDate));
       }
       handler.endOptions();
       handler.addParameters(paths);

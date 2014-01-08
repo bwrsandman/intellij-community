@@ -93,7 +93,7 @@ public class BzrContentRevision implements ContentRevision {
 
   private byte[] loadContent() throws VcsException {
     VirtualFile root = BzrUtil.getBzrRoot(myFile);
-    return BzrFileUtils.getFileContent(myProject, root, myRevision.getRev(), VcsFileUtil.relativePath(root, myFile));
+    return BzrFileUtils.getFileContent(myProject, root, myRevision.asString(), VcsFileUtil.relativePath(root, myFile));
   }
 
   @NotNull
