@@ -118,19 +118,33 @@ public class BzrImpl implements Bzr {
     for (String relPath : output.split("\u0000")) {
       untrackedFileNames.add(relPath);
     }
-    // We filter out paths we from relativePaths
-    for (String relPath : relativePaths) {
-      VirtualFile f = root.findFileByRelativePath(relPath);
-      if (f == null) {
-        // files was created on disk, but VirtualFile hasn't yet been created,
-        // when the BzrChangeProvider has already been requested about changes.
-        LOG.info(String.format("VirtualFile for path [%s] is null", relPath));
-        continue;
+    if (relativePaths != null) {
+      // We filter out paths we from relativePaths
+      for (String relPath : relativePaths) {
+        VirtualFile f = root.findFileByRelativePath(relPath);
+        if (f == null) {
+          // files was created on disk, but VirtualFile hasn't yet been created,
+          // when the BzrChangeProvider has already been requested about changes.
+          LOG.info(String.format("VirtualFile for path [%s] is null", relPath));
+          continue;
+        }
+        if (BzrFileUtils.recursiveUpContains(untrackedFileNames, f, root.getPath())) {
+          untrackedFiles.add(f);
+        }
       }
-      if (BzrFileUtils.recursiveUpContains(untrackedFileNames, f, root.getPath())) {
-        untrackedFiles.add(f);
+    } else {
+      for (String relPath: untrackedFileNames) {
+        VirtualFile f = root.findFileByRelativePath(relPath);
+        if (f == null) {
+          // files was created on disk, but VirtualFile hasn't yet been created,
+          // when the GitChangeProvider has already been requested about changes.
+          LOG.info(String.format("VirtualFile for path [%s] is null", relPath));
+        } else {
+          untrackedFiles.add(f);
+        }
       }
     }
+
 
     return untrackedFiles;
   }
