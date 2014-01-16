@@ -159,14 +159,8 @@ public class BzrFetcher {
       LOG.error(message);
       return new FetchParams(BzrFetchResult.error(new Exception(message)));
     }
-    BzrBranchTrackInfo trackInfo = BzrBranchUtil.getTrackInfoForBranch(repository, currentBranch);
-    if (trackInfo == null) {
-      String message = "Tracked info is null for branch " + currentBranch + "\n Repository: " + repository;
-      LOG.error(message);
-      return new FetchParams(BzrFetchResult.error(new Exception(message)));
-    }
 
-    BzrRemote remote = trackInfo.getRemote();
+    BzrRemote remote = ((BzrRemote[])repository.getRemotes().toArray())[0];
     String url = remote.getFirstUrl();
     if (url == null) {
       String message = "URL is null for remote " + remote.getName();
@@ -174,7 +168,7 @@ public class BzrFetcher {
       return new FetchParams(BzrFetchResult.error(new Exception(message)));
     }
 
-    return new FetchParams(remote, trackInfo.getRemoteBranch(), url);
+    return new FetchParams(remote, null, url);
   }
 
   @NotNull

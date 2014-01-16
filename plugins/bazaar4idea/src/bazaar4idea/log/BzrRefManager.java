@@ -88,32 +88,12 @@ public class BzrRefManager implements VcsLogRefManager {
         if (ref2.getName().equals(ORIGIN_MASTER)) {
           return 1;
         }
-        if (hasTrackingBranch(ref1) && !hasTrackingBranch(ref2)) {
-          return -1;
-        }
-        if (!hasTrackingBranch(ref1) && hasTrackingBranch(ref2)) {
-          return 1;
-        }
         return ref1.getName().compareTo(ref2.getName());
       }
 
       return ref1.getName().compareTo(ref2.getName());
     }
   };
-
-  private boolean hasTrackingBranch(@NotNull final VcsRef ref) {
-    BzrRepository repo = myRepositoryManager.getRepositoryForRoot(ref.getRoot());
-    if (repo == null) {
-      LOG.error("Undefined root " + ref.getRoot());
-      return false;
-    }
-    return ContainerUtil.find(repo.getBranchTrackInfos(), new Condition<BzrBranchTrackInfo>() {
-      @Override
-      public boolean value(BzrBranchTrackInfo info) {
-        return info.getRemoteBranch().getNameForLocalOperations().equals(ref.getName());
-      }
-    }) != null;
-  }
 
   public BzrRefManager(@NotNull RepositoryManager<BzrRepository> repositoryManager) {
     myRepositoryManager = repositoryManager;
@@ -147,8 +127,6 @@ public class BzrRefManager implements VcsLogRefManager {
       }
 
       Set<String> locals = getLocalBranches(repository);
-      Set<String> tracked = getTrackedRemoteBranches(repository);
-      Map<String, BzrRemote> nonTracked = getNonTrackedRemoteBranches(repository);
 
       for (VcsRef ref : refsInRoot) {
         if (ref.getType() == HEAD) {
@@ -159,12 +137,6 @@ public class BzrRefManager implements VcsLogRefManager {
         String refName = ref.getName();
         if (locals.contains(refName)) {
           localBranches.add(ref);
-        }
-        else if (tracked.contains(refName)) {
-          trackedBranches.add(ref);
-        }
-        else if (nonTracked.containsKey(refName)) {
-          remoteRefGroups.putValue(nonTracked.get(refName), ref);
         }
         else {
           LOG.warn("Didn't find ref neither in local nor in remote branches: " + ref);
@@ -189,41 +161,6 @@ public class BzrRefManager implements VcsLogRefManager {
       @Override
       public String fun(BzrBranch branch) {
         return branch.getName();
-      }
-    });
-  }
-
-  @NotNull
-  private static Set<String> getTrackedRemoteBranches(@NotNull BzrRepository repository) {
-    Set<BzrRemoteBranch> all = new HashSet<BzrRemoteBranch>(repository.getBranches().getRemoteBranches());
-    Set<String> tracked = new HashSet<String>();
-    for (BzrBranchTrackInfo info : repository.getBranchTrackInfos()) {
-      BzrRemoteBranch trackedRemoteBranch = info.getRemoteBranch();
-      if (all.contains(trackedRemoteBranch)) { // check that this branch really exists, not just written in .git/config
-        tracked.add(trackedRemoteBranch.getName());
-      }
-    }
-    return tracked;
-  }
-
-  @NotNull
-  private static Map<String, BzrRemote> getNonTrackedRemoteBranches(@NotNull BzrRepository repository) {
-    Set<BzrRemoteBranch> all = new HashSet<BzrRemoteBranch>(repository.getBranches().getRemoteBranches());
-    Set<String> tracked = getTrackedRemoteBranchesFromConfig(repository);
-    Map<String, BzrRemote> nonTracked = ContainerUtil.newHashMap();
-    for (BzrRemoteBranch remoteBranch : all) {
-      if (!tracked.contains(remoteBranch.getName())) {
-        nonTracked.put(remoteBranch.getName(), remoteBranch.getRemote());
-      }
-    }
-    return nonTracked;
-  }
-
-  private static Set<String> getTrackedRemoteBranchesFromConfig(BzrRepository repository) {
-    return ContainerUtil.map2Set(repository.getBranchTrackInfos(), new Function<BzrBranchTrackInfo, String>() {
-      @Override
-      public String fun(BzrBranchTrackInfo trackInfo) {
-        return trackInfo.getRemoteBranch().getName();
       }
     });
   }

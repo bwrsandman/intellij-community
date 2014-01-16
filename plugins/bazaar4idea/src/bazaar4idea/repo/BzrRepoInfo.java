@@ -39,22 +39,19 @@ public class BzrRepoInfo {
   @NotNull private final Set<BzrRemote> myRemotes;
   @NotNull private final Set<BzrLocalBranch> myLocalBranches;
   @NotNull private final Set<BzrRemoteBranch> myRemoteBranches;
-  @NotNull private final Set<BzrBranchTrackInfo> myBranchTrackInfos;
 
   public BzrRepoInfo(@Nullable BzrLocalBranch currentBranch,
                      @Nullable String currentRevision,
                      @NotNull Repository.State state,
                      @NotNull Collection<BzrRemote> remotes,
                      @NotNull Collection<BzrLocalBranch> localBranches,
-                     @NotNull Collection<BzrRemoteBranch> remoteBranches,
-                     @NotNull Collection<BzrBranchTrackInfo> branchTrackInfos) {
+                     @NotNull Collection<BzrRemoteBranch> remoteBranches) {
     myCurrentBranch = currentBranch;
     myCurrentRevision = currentRevision;
     myState = state;
     myRemotes = new LinkedHashSet<BzrRemote>(remotes);
     myLocalBranches = new LinkedHashSet<BzrLocalBranch>(localBranches);
     myRemoteBranches = new LinkedHashSet<BzrRemoteBranch>(remoteBranches);
-    myBranchTrackInfos = new LinkedHashSet<BzrBranchTrackInfo>(branchTrackInfos);
   }
 
   @Nullable
@@ -75,11 +72,6 @@ public class BzrRepoInfo {
   @NotNull
   public Collection<BzrRemoteBranch> getRemoteBranches() {
     return myRemoteBranches;
-  }
-
-  @NotNull
-  public Collection<BzrBranchTrackInfo> getBranchTrackInfos() {
-    return myBranchTrackInfos;
   }
 
   @Nullable
@@ -103,7 +95,6 @@ public class BzrRepoInfo {
     if (myCurrentRevision != null ? !myCurrentRevision.equals(info.myCurrentRevision) : info.myCurrentRevision != null) return false;
     if (myCurrentBranch != null ? !myCurrentBranch.equals(info.myCurrentBranch) : info.myCurrentBranch != null) return false;
     if (!myRemotes.equals(info.myRemotes)) return false;
-    if (!myBranchTrackInfos.equals(info.myBranchTrackInfos)) return false;
     if (!areEqual(myLocalBranches, info.myLocalBranches)) return false;
     if (!areEqual(myRemoteBranches, info.myRemoteBranches)) return false;
 
@@ -118,14 +109,13 @@ public class BzrRepoInfo {
     result = 31 * result + myRemotes.hashCode();
     result = 31 * result + myLocalBranches.hashCode();
     result = 31 * result + myRemoteBranches.hashCode();
-    result = 31 * result + myBranchTrackInfos.hashCode();
     return result;
   }
 
   @Override
   public String toString() {
-    return String.format("BzrRepoInfo{current=%s, remotes=%s, localBranches=%s, remoteBranches=%s, trackInfos=%s}",
-                         myCurrentBranch, myRemotes, myLocalBranches, myRemoteBranches, myBranchTrackInfos);
+    return String.format("BzrRepoInfo{current=%s, remotes=%s, localBranches=%s, remoteBranches=%s}",
+                         myCurrentBranch, myRemotes, myLocalBranches, myRemoteBranches);
   }
 
   private static <T extends BzrBranch> boolean areEqual(Collection<T> c1, Collection<T> c2) {

@@ -17,6 +17,7 @@ package bazaar4idea.changes;
 
 import bazaar4idea.history.BzrHistoryUtils;
 import bazaar4idea.history.browser.BzrHeavyCommit;
+import bazaar4idea.repo.BzrRemote;
 import bazaar4idea.repo.BzrRepository;
 import com.intellij.openapi.diagnostic.Logger;
 import com.intellij.openapi.project.Project;
@@ -82,12 +83,8 @@ public class BzrCommittedChangeListProvider implements CommittedChangesProvider<
     if (currentBranch == null) {
       return null;
     }
-    BzrRemoteBranch trackedBranch = currentBranch.findTrackedBranch(repository);
-    if (trackedBranch == null) {
-      return null;
-    }
     File rootFile = new File(bzrRoot.getPath());
-    return new BzrRepositoryLocation(trackedBranch.getRemote().getFirstUrl(), rootFile);
+    return new BzrRepositoryLocation(((BzrRemote)(repository.getRemotes().toArray()[0])).getFirstUrl(), rootFile);
   }
 
   public RepositoryLocation getLocationFor(FilePath root, String repositoryPath) {

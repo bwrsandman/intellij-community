@@ -63,20 +63,15 @@ class BzrDeleteRemoteBranchOperation extends BzrBranchOperation {
   @Override
   protected void execute() {
     final Collection<BzrRepository> repositories = getRepositories();
-    final Collection<String> trackingBranches = findTrackingBranches(myBranchName, repositories);
     String currentBranch = BzrBranchUtil.getCurrentBranchOrRev(repositories);
     boolean currentBranchTracksBranchToDelete = false;
-    if (trackingBranches.contains(currentBranch)) {
-      currentBranchTracksBranchToDelete = true;
-      trackingBranches.remove(currentBranch);
-    }
 
     final AtomicReference<DeleteRemoteBranchDecision> decision = new AtomicReference<DeleteRemoteBranchDecision>();
     final boolean finalCurrentBranchTracksBranchToDelete = currentBranchTracksBranchToDelete;
     UIUtil.invokeAndWaitIfNeeded(new Runnable() {
       @Override
       public void run() {
-        decision.set(confirmBranchDeletion(myBranchName, trackingBranches, finalCurrentBranchTracksBranchToDelete, repositories));
+        decision.set(confirmBranchDeletion(myBranchName, new ArrayList<String>(), finalCurrentBranchTracksBranchToDelete, repositories));
       }
     });
 
@@ -85,18 +80,6 @@ class BzrDeleteRemoteBranchOperation extends BzrBranchOperation {
       boolean deletedSuccessfully = doDeleteRemote(myBranchName, repositories);
       if (deletedSuccessfully) {
         final Collection<String> successfullyDeletedLocalBranches = new ArrayList<String>(1);
-        if (decision.get().deleteTracking()) {
-          for (final String branch : trackingBranches) {
-            getIndicator().setText("Deleting " + branch);
-            new BzrDeleteBranchOperation(myProject, myFacade, myBzr, myUiHandler, repositories, branch) {
-              @Override
-              protected void notifySuccess(@NotNull String message) {
-                // do nothing - will display a combo notification for all deleted branches below
-                successfullyDeletedLocalBranches.add(branch);
-              }
-            }.execute();
-          }
-        }
         notifySuccessfulDeletion(myBranchName, successfullyDeletedLocalBranches);
       }
     }
@@ -124,11 +107,6 @@ class BzrDeleteRemoteBranchOperation extends BzrBranchOperation {
   @Override
   protected String getOperationName() {
     throw new UnsupportedOperationException();
-  }
-
-  @NotNull
-  private static Collection<String> findTrackingBranches(@NotNull String remoteBranch, @NotNull Collection<BzrRepository> repositories) {
-    return new BzrMultiRootBranchConfig(repositories).getTrackingBranches(remoteBranch);
   }
 
   private boolean doDeleteRemote(@NotNull String branchName, @NotNull Collection<BzrRepository> repositories) {

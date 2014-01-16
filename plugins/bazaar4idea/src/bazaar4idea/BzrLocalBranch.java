@@ -49,14 +49,4 @@ public class BzrLocalBranch extends BzrBranch {
   public String toString() {
     return super.toString();
   }
-
-  @Nullable
-  public BzrRemoteBranch findTrackedBranch(@NotNull BzrRepository repository) {
-    for (BzrBranchTrackInfo info : repository.getBranchTrackInfos()) {
-      if (info.getLocalBranch().equals(this)) {
-        return info.getRemoteBranch();
-      }
-    }
-    return null;
-  }
 }

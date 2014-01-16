@@ -101,18 +101,6 @@ public class LowLevelAccessImpl implements LowLevelAccess {
     refs.setCollection(branches);
     final BzrBranch current = repository.getCurrentBranch();
     refs.setCurrentBranch(current);
-    if (current != null) {
-      final Collection<BzrBranchTrackInfo> infos = repository.getBranchTrackInfos();
-      for (BzrBranchTrackInfo info : infos) {
-        if (info.getLocalBranch().equals(current)) {
-          String fullName = info.getRemoteBranch().getFullName();
-          fullName = fullName.startsWith(BzrBranch.REFS_REMOTES_PREFIX)
-                     ? fullName.substring(BzrBranch.REFS_REMOTES_PREFIX.length()) : fullName;
-          refs.setTrackedRemoteName(fullName);
-          break;
-        }
-      }
-    }
     refs.setUsername(BzrConfigUtil.getValue(myProject, myRoot, BzrConfigUtil.USER_NAME));
     final String head = repository.getCurrentRevision();
     if (head != null) {

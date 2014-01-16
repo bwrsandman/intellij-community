@@ -96,9 +96,6 @@ public interface BzrRepository extends Repository {
   @NotNull
   Collection<BzrRemote> getRemotes();
 
-  @NotNull
-  Collection<BzrBranchTrackInfo> getBranchTrackInfos();
-
   boolean isRebaseInProgress();
 
   boolean isOnBranch();

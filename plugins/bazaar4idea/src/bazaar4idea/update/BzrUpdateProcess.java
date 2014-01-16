@@ -124,7 +124,7 @@ public class BzrUpdateProcess {
     }
 
     // check if update is possible
-    if (checkRebaseInProgress() || isMergeInProgress() || areUnmergedFiles() || !checkTrackedBranchesConfigured()) {
+    if (checkRebaseInProgress() || isMergeInProgress() || areUnmergedFiles()) {
       return BzrUpdateResult.NOT_READY;
     }
 
@@ -304,48 +304,6 @@ public class BzrUpdateProcess {
   // fetch all roots. If an error happens, return false and notify about errors.
   private boolean fetchAndNotify() {
     return new BzrFetcher(myProject, myProgressIndicator, false).fetchRootsAndNotify(myRepositories, "Update failed", false);
-  }
-
-  /**
-   * For each root check that the repository is on branch, and this branch is tracking a remote branch,
-   * and the remote branch exists.
-   * If it is not true for at least one of roots, notify and return false.
-   * If branch configuration is OK for all roots, return true.
-   */
-  private boolean checkTrackedBranchesConfigured() {
-    LOG.info("checking tracked branch configuration...");
-    for (BzrRepository repository : myRepositories) {
-      VirtualFile root = repository.getRoot();
-      final BzrLocalBranch branch = repository.getCurrentBranch();
-      if (branch == null) {
-        LOG.info("checkTrackedBranchesConfigured: current branch is null in " + repository);
-        notifyImportantError(myProject, "Can't update: no current branch",
-                             "You are in 'detached HEAD' state, which means that you're not on any branch" +
-                             rootStringIfNeeded(root) +
-                             "Checkout a branch to make update possible.");
-        return false;
-      }
-      BzrBranchTrackInfo trackInfo = BzrBranchUtil.getTrackInfoForBranch(repository, branch);
-      if (trackInfo == null) {
-        final String branchName = branch.getName();
-        LOG.info(String.format("checkTrackedBranchesConfigured: no track info for current branch %s in %s", branch, repository));
-        notifyImportantError(myProject, "Can't update: no tracked branch",
-                             "No tracked branch configured for branch " + code(branchName) +
-                             rootStringIfNeeded(root) +
-                             "To make your branch track a remote branch call, for example,<br/>" +
-                             "<code>git branch --set-upstream " + branchName + " origin/" + branchName + "</code>");
-        return false;
-      }
-      myTrackedBranches.put(root, new BzrBranchPair(branch, trackInfo.getRemoteBranch()));
-    }
-    return true;
-  }
-
-  private String rootStringIfNeeded(@NotNull VirtualFile root) {
-    if (myRepositories.size() < 2) {
-      return ".<br/>";
-    }
-    return "<br/>in Bazaar repository " + code(root.getPresentableUrl()) + "<br/>";
   }
 
   /**

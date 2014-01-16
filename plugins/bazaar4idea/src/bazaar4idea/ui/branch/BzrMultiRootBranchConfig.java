@@ -93,55 +93,7 @@ public class BzrMultiRootBranchConfig {
    */
   @Nullable
   public String getTrackedBranch(@NotNull String branch) {
-    String trackedName = null;
-    for (BzrRepository repository : myRepositories) {
-      BzrRemoteBranch tracked = getTrackedBranch(repository, branch);
-      if (tracked == null) {
-        return null;
-      }
-      if (trackedName == null) {
-        trackedName = tracked.getNameForLocalOperations();
-      }
-      else if (!trackedName.equals(tracked.getNameForLocalOperations())) {
-        return null;
-      }
-    }
-    return trackedName;
-  }
-
-  /**
-   * Returns local branches which track the given remote branch. Usually there is 0 or 1 such branches.
-   */
-  @NotNull
-  public Collection<String> getTrackingBranches(@NotNull String remoteBranch) {
-    Collection<String> trackingBranches = null;
-    for (BzrRepository repository : myRepositories) {
-      Collection<String> tb = getTrackingBranches(repository, remoteBranch);
-      if (trackingBranches == null) {
-        trackingBranches = tb;
-      }
-      else {
-        trackingBranches = ContainerUtil.intersection(trackingBranches, tb);
-      }
-    }
-    return trackingBranches == null ? Collections.<String>emptyList() : trackingBranches;
-  }
-
-  @NotNull
-  public static Collection<String> getTrackingBranches(@NotNull BzrRepository repository, @NotNull String remoteBranch) {
-    Collection<String> trackingBranches = new ArrayList<String>(1);
-    for (BzrBranchTrackInfo trackInfo : repository.getBranchTrackInfos()) {
-      if (remoteBranch.equals(trackInfo.getRemote().getName() + "/" + trackInfo.getRemoteBranch())) {
-        trackingBranches.add(trackInfo.getLocalBranch().getName());
-      }
-    }
-    return trackingBranches;
-  }
-
-  @Nullable
-  private static BzrRemoteBranch getTrackedBranch(@NotNull BzrRepository repository, @NotNull String branchName) {
-    BzrLocalBranch branch = BzrBranchUtil.findLocalBranchByName(repository, branchName);
-    return branch == null ? null : branch.findTrackedBranch(repository);
+    return "TODO: getTrackedBranch " + branch;
   }
 
   @Override

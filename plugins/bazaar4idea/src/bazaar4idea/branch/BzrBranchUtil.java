@@ -77,20 +77,6 @@ public class BzrBranchUtil {
 
   private BzrBranchUtil() {}
 
-  /**
-   * Returns the tracking information about the given branch in the given repository,
-   * or null if there is no such information (i.e. if the branch doesn't have a tracking branch).
-   */
-  @Nullable
-  public static BzrBranchTrackInfo getTrackInfoForBranch(@NotNull BzrRepository repository, @NotNull BzrLocalBranch branch) {
-    for (BzrBranchTrackInfo trackInfo : repository.getBranchTrackInfos()) {
-      if (trackInfo.getLocalBranch().equals(branch)) {
-        return trackInfo;
-      }
-    }
-    return null;
-  }
-
   @NotNull
   static String getCurrentBranchOrRev(@NotNull Collection<BzrRepository> repositories) {
     if (repositories.size() > 1) {

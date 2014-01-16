@@ -215,13 +215,11 @@ public class BzrPullDialog extends DialogWrapper {
       return;
     }
 
-    BzrBranchTrackInfo trackInfo = BzrUtil.getTrackInfoForCurrentBranch(repository);
-    String currentRemoteBranch = trackInfo == null ? null : trackInfo.getRemoteBranch().getNameForLocalOperations();
     List<BzrRemoteBranch> remoteBranches = new ArrayList<BzrRemoteBranch>(repository.getBranches().getRemoteBranches());
     Collections.sort(remoteBranches);
     for (BzrBranch remoteBranch : remoteBranches) {
       if (belongsToRemote(remoteBranch, selectedRemote)) {
-        myBranchChooser.addElement(remoteBranch.getName(), remoteBranch.getName().equals(currentRemoteBranch));
+        myBranchChooser.addElement(remoteBranch.getName(), true);
       }
     }
 
@@ -261,18 +259,12 @@ public class BzrPullDialog extends DialogWrapper {
       return null;
     }
 
-    BzrBranchTrackInfo trackInfo = BzrUtil.getTrackInfoForCurrentBranch(repository);
-    if (trackInfo != null) {
-      return trackInfo.getRemote();
+    BzrRemote origin = getOriginRemote(remotes);
+    if (origin != null) {
+      return origin;
     }
     else {
-      BzrRemote origin = getOriginRemote(remotes);
-      if (origin != null) {
-        return origin;
-      }
-      else {
-        return remotes.iterator().next();
-      }
+      return remotes.iterator().next();
     }
   }
 

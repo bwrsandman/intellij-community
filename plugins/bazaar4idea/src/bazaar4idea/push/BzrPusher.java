@@ -334,40 +334,31 @@ public final class BzrPusher {
 
   private static void setUpstream(@NotNull BzrRepository repository,
                                   @NotNull BzrLocalBranch source, @NotNull BzrRemote remote, @NotNull BzrRemoteBranch dest) {
-    if (!branchTrackingInfoIsSet(repository, source)) {
-      Project project = repository.getProject();
-      VirtualFile root = repository.getRoot();
-      String branchName = source.getName();
-      try {
-        boolean rebase = getMergeOrRebaseConfig(project, root);
-        BzrConfigUtil.setValue(project, root, "branch." + branchName + ".remote", remote.getName());
-        BzrConfigUtil
-          .setValue(project, root, "branch." + branchName + ".merge", BzrBranch.REFS_HEADS_PREFIX + dest.getNameForRemoteOperations());
-        if (rebase) {
-          BzrConfigUtil.setValue(project, root, "branch." + branchName + ".rebase", "true");
-        }
-      }
-      catch (VcsException e) {
-        LOG.error(String.format("Couldn't set up tracking for source branch %s, target branch %s, remote %s in root %s",
-                                source, dest, remote, repository), e);
-        Notificator.getInstance(project).notify(BzrVcs.NOTIFICATION_GROUP_ID, "", "Couldn't set up branch tracking",
-                                                        NotificationType.ERROR);
-      }
-    }
+    //if (!branchTrackingInfoIsSet(repository, source)) {
+    //  Project project = repository.getProject();
+    //  VirtualFile root = repository.getRoot();
+    //  String branchName = source.getName();
+    //  try {
+    //    boolean rebase = getMergeOrRebaseConfig(project, root);
+    //    BzrConfigUtil.setValue(project, root, "branch." + branchName + ".remote", remote.getName());
+    //    BzrConfigUtil
+    //      .setValue(project, root, "branch." + branchName + ".merge", BzrBranch.REFS_HEADS_PREFIX + dest.getNameForRemoteOperations());
+    //    if (rebase) {
+    //      BzrConfigUtil.setValue(project, root, "branch." + branchName + ".rebase", "true");
+    //    }
+    //  }
+    //  catch (VcsException e) {
+    //    LOG.error(String.format("Couldn't set up tracking for source branch %s, target branch %s, remote %s in root %s",
+    //                            source, dest, remote, repository), e);
+    //    Notificator.getInstance(project).notify(BzrVcs.NOTIFICATION_GROUP_ID, "", "Couldn't set up branch tracking",
+    //                                                    NotificationType.ERROR);
+    //  }
+    //}
   }
 
   private static boolean getMergeOrRebaseConfig(Project project, VirtualFile root) throws VcsException {
     String autoSetupRebase = BzrConfigUtil.getValue(project, root, BzrConfigUtil.BRANCH_AUTOSETUP_REBASE);
     return autoSetupRebase != null && (autoSetupRebase.equals("remote") || autoSetupRebase.equals("always"));
-  }
-
-  private static boolean branchTrackingInfoIsSet(@NotNull BzrRepository repository, @NotNull BzrLocalBranch source) {
-    for (BzrBranchTrackInfo trackInfo : repository.getBranchTrackInfos()) {
-      if (trackInfo.getLocalBranch().equals(source)) {
-        return true;
-      }
-    }
-    return false;
   }
 
   @NotNull

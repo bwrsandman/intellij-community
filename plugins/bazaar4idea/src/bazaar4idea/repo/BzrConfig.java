@@ -15,26 +15,17 @@
  */
 package bazaar4idea.repo;
 
-import bazaar4idea.BzrLocalBranch;
-import bazaar4idea.BzrRemoteBranch;
 import bazaar4idea.BzrPlatformFacade;
-import bazaar4idea.branch.BzrBranchUtil;
+import bazaar4idea.BzrUtil;
 import com.intellij.dvcs.repo.RepoStateException;
-import com.intellij.ide.plugins.IdeaPluginDescriptor;
 import com.intellij.openapi.diagnostic.Logger;
-import com.intellij.openapi.util.Condition;
 import com.intellij.openapi.util.Pair;
-import com.intellij.openapi.util.text.StringUtil;
-import com.intellij.util.ArrayUtil;
 import com.intellij.util.Function;
 import com.intellij.util.containers.ContainerUtil;
-import org.ini4j.Ini;
-import org.ini4j.Profile;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-import java.io.File;
-import java.io.IOException;
+import java.io.*;
 import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -50,44 +41,24 @@ import java.util.regex.Pattern;
  */
 public class BzrConfig {
 
-  /**
-   * Special remote typical for git-svn configuration:
-   * <pre>[branch "trunk]
-   *   remote = .
-   *   merge = refs/remotes/trunk
-   * </pre>
-   * @deprecated Use {@link bazaar4idea.BzrSvnRemoteBranch}
-   */
-  @Deprecated
-  public static final String DOT_REMOTE = ".";
-
   private static final Logger LOG = Logger.getInstance(BzrConfig.class);
 
-  private static final Pattern REMOTE_SECTION = Pattern.compile("(?:svn-)?remote \"(.*)\"");
+  private static final Pattern REMOTE_SECTION = Pattern.compile("(\\S*)\\s*=\\s*(\\S*)");
   private static final Pattern URL_SECTION = Pattern.compile("url \"(.*)\"");
-  private static final Pattern BRANCH_INFO_SECTION = Pattern.compile("branch \"(.*)\"");
-  private static final Pattern BRANCH_COMMON_PARAMS_SECTION = Pattern.compile("branch");
 
   @NotNull private final Collection<Remote> myRemotes;
   @NotNull private final Collection<Url> myUrls;
-  @NotNull private final Collection<BranchConfig> myTrackedInfos;
 
 
-  private BzrConfig(@NotNull Collection<Remote> remotes, @NotNull Collection<Url> urls, @NotNull Collection<BranchConfig> trackedInfos) {
+  private BzrConfig(@NotNull Collection<Remote> remotes, @NotNull Collection<Url> urls) {
     myRemotes = remotes;
     myUrls = urls;
-    myTrackedInfos = trackedInfos;
   }
 
   /**
-   * <p>Returns Bazaar remotes defined in {@code .git/config}.</p>
+   * <p>Returns Bazaar remotes defined in {@code .bzr/branch/branch.conf}.</p>
    *
-   * <p>Remote is returned with all transformations (such as {@code pushUrl, url.<base>.insteadOf}) already applied to it.
-   *    See {@link BzrRemote} for details.</p>
-   *
-   * <p><b>Note:</b> remotes can be defined separately in {@code .git/remotes} directory, by creating a file for each remote with
-   *    remote parameters written in the file. This method returns ONLY remotes defined in {@code .git/config}.</p>
-   * @return Bazaar remotes defined in {@code .git/config}.
+   * @return Bazaar remotes defined in {@code .bzr/branch/branch.conf}.
    */
   @NotNull
   Collection<BzrRemote> parseRemotes() {
@@ -105,24 +76,7 @@ public class BzrConfig {
   private static BzrRemote convertRemoteToBzrRemote(@NotNull Collection<Url> urls, @NotNull Remote remote) {
     UrlsAndPushUrls substitutedUrls = substituteUrls(urls, remote);
     return new BzrRemote(remote.myName, substitutedUrls.getUrls(), substitutedUrls.getPushUrls(),
-                         remote.getFetchSpecs(), computePushSpec(remote));
-  }
-
-  /**
-   * Create branch tracking information based on the information defined in {@code .git/config}.
-   */
-  @NotNull
-  Collection<BzrBranchTrackInfo> parseTrackInfos(@NotNull final Collection<BzrLocalBranch> localBranches,
-                                                 @NotNull final Collection<BzrRemoteBranch> remoteBranches) {
-    return ContainerUtil.mapNotNull(myTrackedInfos, new Function<BranchConfig, BzrBranchTrackInfo>() {
-      @Override
-      public BzrBranchTrackInfo fun(BranchConfig config) {
-        if (config != null) {
-          return convertBranchConfig(config, localBranches, remoteBranches);
-        }
-        return null;
-      }
-    });
+                         null, null);
   }
 
   /**
@@ -132,209 +86,45 @@ public class BzrConfig {
    */
   @NotNull
   static BzrConfig read(@NotNull BzrPlatformFacade platformFacade, @NotNull File configFile) {
-    Ini ini = new Ini();
-    ini.getConfig().setMultiOption(true);  // duplicate keys (e.g. url in [remote])
-    ini.getConfig().setTree(false);        // don't need tree structure: it corrupts url in section name (e.g. [url "http://github.com/"]
+
     // TODO read conf from .bzr/branch/branches.conf
 
-    IdeaPluginDescriptor plugin = platformFacade.getPluginByClassName(BzrConfig.class.getName());
-    ClassLoader classLoader = plugin == null ? null : plugin.getPluginClassLoader(); // null if IDEA is started from IDEA
+    Pair<Collection<Remote>, Collection<Url>> remotesAndUrls = parseRemotes(configFile);
 
-    Pair<Collection<Remote>, Collection<Url>> remotesAndUrls = parseRemotes(ini, classLoader);
-    Collection<BranchConfig> trackedInfos = parseTrackedInfos(ini, classLoader);
-    
-    return new BzrConfig(remotesAndUrls.getFirst(), remotesAndUrls.getSecond(), trackedInfos);
+    return new BzrConfig(remotesAndUrls.getFirst(), remotesAndUrls.getSecond());
   }
 
   @NotNull
-  private static Collection<BranchConfig> parseTrackedInfos(@NotNull Ini ini, @Nullable ClassLoader classLoader) {
-    Collection<BranchConfig> configs = new ArrayList<BranchConfig>();
-    for (Map.Entry<String, Profile.Section> stringSectionEntry : ini.entrySet()) {
-      String sectionName = stringSectionEntry.getKey();
-      Profile.Section section = stringSectionEntry.getValue();
-      if (sectionName.startsWith("branch")) {
-        BranchConfig branchConfig = parseBranchSection(sectionName, section,  classLoader);
-        if (branchConfig != null) {
-          configs.add(branchConfig);
-        }
-      }
-    }
-    return configs;
-  }
-
-  @Nullable
-  private static BzrBranchTrackInfo convertBranchConfig(@Nullable BranchConfig branchConfig,
-                                                        @NotNull Collection<BzrLocalBranch> localBranches,
-                                                        @NotNull Collection<BzrRemoteBranch> remoteBranches) {
-    if (branchConfig == null) {
-      return null;
-    }
-    final String branchName = branchConfig.getName();
-    String remoteName = branchConfig.getBean().getRemote();
-    String mergeName = branchConfig.getBean().getMerge();
-    String rebaseName = branchConfig.getBean().getRebase();
-
-    if (StringUtil.isEmptyOrSpaces(mergeName) && StringUtil.isEmptyOrSpaces(rebaseName)) {
-      LOG.info("No branch." + branchName + ".merge/rebase item in the .git/config");
-      return null;
-    }
-    if (StringUtil.isEmptyOrSpaces(remoteName)) {
-      LOG.info("No branch." + branchName + ".remote item in the .git/config");
-      return null;
-    }
-
-    boolean merge = mergeName != null;
-    final String remoteBranchName = (merge ? mergeName : rebaseName);
-    assert remoteName != null;
-    assert remoteBranchName != null;
-
-    BzrLocalBranch localBranch = findLocalBranch(branchName, localBranches);
-    BzrRemoteBranch remoteBranch = BzrBranchUtil.findRemoteBranchByName(remoteBranchName, remoteName, remoteBranches);
-    if (localBranch == null || remoteBranch == null) {
-      return null;
-    }
-    return new BzrBranchTrackInfo(localBranch, remoteBranch, merge);
-  }
-
-  @Nullable
-  private static BzrLocalBranch findLocalBranch(@NotNull String branchName, @NotNull Collection<BzrLocalBranch> localBranches) {
-    final String name = BzrBranchUtil.stripRefsPrefix(branchName);
-    try {
-      return ContainerUtil.find(localBranches, new Condition<BzrLocalBranch>() {
-        @Override
-        public boolean value(@Nullable BzrLocalBranch input) {
-          assert input != null;
-          return input.getName().equals(name);
-        }
-      });
-    }
-    catch (NoSuchElementException e) {
-      LOG.info("Couldn't find branch with name " + name);
-      return null;
-    }
-  }
-
-  @Nullable
-  private static BranchConfig parseBranchSection(String sectionName, Profile.Section section, @Nullable ClassLoader classLoader) {
-    BranchBean branchBean = section.as(BranchBean.class, classLoader);
-    Matcher matcher = BRANCH_INFO_SECTION.matcher(sectionName);
-    if (matcher.matches()) {
-      return new BranchConfig(matcher.group(1), branchBean);
-    }
-    if (BRANCH_COMMON_PARAMS_SECTION.matcher(sectionName).matches()) {
-      LOG.debug(String.format("Common branch option(s) defined .git/config. sectionName: %s%n section: %s", sectionName, section));
-      return null;
-    }
-    LOG.error(String.format("Invalid branch section format in .git/config. sectionName: %s%n section: %s", sectionName, section));
-    return null;
-  }
-
-  @NotNull
-  private static Pair<Collection<Remote>, Collection<Url>> parseRemotes(@NotNull Ini ini, @Nullable ClassLoader classLoader) {
+  private static Pair<Collection<Remote>, Collection<Url>> parseRemotes(@NotNull File configFile) {
     Collection<Remote> remotes = new ArrayList<Remote>();
     Collection<Url> urls = new ArrayList<Url>();
-    for (Map.Entry<String, Profile.Section> stringSectionEntry : ini.entrySet()) {
-      String sectionName = stringSectionEntry.getKey();
-      Profile.Section section = stringSectionEntry.getValue();
-
-      if (sectionName.startsWith("remote") || sectionName.startsWith("svn-remote")) {
-        Remote remote = parseRemoteSection(sectionName, section, classLoader);
-        if (remote != null) {
-          remotes.add(remote);
+    try {
+      BufferedReader in = new BufferedReader(new InputStreamReader(new FileInputStream(configFile), BzrUtil.UTF8_CHARSET));
+      String line;
+      while ((line = in.readLine()) != null) {
+        Matcher match = REMOTE_SECTION.matcher(line);
+        if (match.matches()) {
+          remotes.add(new Remote(match.group(1), match.group(2)));
         }
       }
-      else if (sectionName.startsWith("url")) {
-        Url url = parseUrlSection(sectionName, section, classLoader);
-        if (url != null) {
-          urls.add(url);
-        }
-      }
+      in.close();
+    } catch (IOException e) {
+      LOG.error(e.getMessage());
     }
     return Pair.create(remotes, urls);
   }
 
   @NotNull
-  private static List<String> computePushSpec(@NotNull Remote remote) {
-    List<String> pushSpec = remote.getPushSpec();
-    return pushSpec == null ? remote.getFetchSpecs() : pushSpec;
-  }
-
-  /**
-   * <p>
-   *   Applies {@code url.<base>.insteadOf} and {@code url.<base>.pushInsteadOf} transformations to {@code url} and {@code pushUrl} of
-   *   the given remote.
-   * </p>
-   * <p>
-   *   The logic, is as follows:
-   *   <ul>
-   *     <li>If remote.url starts with url.insteadOf, it it substituted.</li>
-   *     <li>If remote.pushUrl starts with url.insteadOf, it is substituted.</li>
-   *     <li>If remote.pushUrl starts with url.pushInsteadOf, it is not substituted.</li>
-   *     <li>If remote.url starts with url.pushInsteadOf, but remote.pushUrl is given, additional push url is not added.</li>
-   *   </ul>
-   * </p>
-   *
-   * <p>
-   *   TODO: if there are several matches in url sections, the longest should be applied. // currently only one is applied
-   * </p>
-   */
-  @NotNull
   private static UrlsAndPushUrls substituteUrls(@NotNull Collection<Url> urlSections, @NotNull Remote remote) {
-    List<String> urls = new ArrayList<String>(remote.getUrls().size());
+    List<String> urls = new ArrayList<String>();
     Collection<String> pushUrls = new ArrayList<String>();
 
-    // urls are substituted by insteadOf
-    // if there are no pushUrls, we create a pushUrl for pushInsteadOf substitutions
-    for (final String remoteUrl : remote.getUrls()) {
-      boolean substituted = false;
-      for (Url url : urlSections) {
-        String insteadOf = url.getInsteadOf();
-        String pushInsteadOf = url.getPushInsteadOf();
-        // null means no entry, i.e. nothing to substitute. Empty string means substituting everything
-        if (insteadOf != null && remoteUrl.startsWith(insteadOf)) {
-          urls.add(substituteUrl(remoteUrl, url, insteadOf));
-          substituted = true;
-          break;
-        }
-        else if (pushInsteadOf != null && remoteUrl.startsWith(pushInsteadOf)) {
-          if (remote.getPushUrls().isEmpty()) { // only if there are no explicit pushUrls
-              pushUrls.add(substituteUrl(remoteUrl, url, pushInsteadOf)); // pushUrl is different
-          }
-          urls.add(remoteUrl);                                             // but url is left intact
-          substituted = true;
-          break;
-        } 
-      }
-      if (!substituted) {
-        urls.add(remoteUrl);
-      }
-    }
-
-    // pushUrls are substituted only by insteadOf, not by pushInsteadOf
-    for (final String remotePushUrl : remote.getPushUrls()) {
-      boolean substituted = false;
-      for (Url url : urlSections) {
-        String insteadOf = url.getInsteadOf();
-        // null means no entry, i.e. nothing to substitute. Empty string means substituting everything
-        if (insteadOf != null && remotePushUrl.startsWith(insteadOf)) {
-          pushUrls.add(substituteUrl(remotePushUrl, url, insteadOf));
-          substituted = true;
-          break;
-        }
-      }
-      if (!substituted) {
-        pushUrls.add(remotePushUrl);
-      }
-    }
-
-    // if no pushUrls are explicitly defined yet via pushUrl or url.<base>.pushInsteadOf, they are the same as urls.
-    if (pushUrls.isEmpty()) {
-      pushUrls = new ArrayList<String>(urls);
-    }
+    urls.add(remote.getUrl());
+    pushUrls.add(remote.getUrl());
 
     return new UrlsAndPushUrls(urls, pushUrls);
   }
-  
+
   private static class UrlsAndPushUrls {
     final List<String> myUrls;
     final Collection<String> myPushUrls;
@@ -353,72 +143,26 @@ public class BzrConfig {
     }
   }
 
-  @NotNull
-  private static String substituteUrl(@NotNull String remoteUrl, @NotNull Url url, @NotNull String insteadOf) {
-    return url.myName + remoteUrl.substring(insteadOf.length());
-  }
-
-  @Nullable
-  private static Remote parseRemoteSection(@NotNull String sectionName, @NotNull Profile.Section section, @Nullable ClassLoader classLoader) {
-    RemoteBean remoteBean = section.as(RemoteBean.class, classLoader);
-    Matcher matcher = REMOTE_SECTION.matcher(sectionName);
-    if (matcher.matches()) {
-      return new Remote(matcher.group(1), remoteBean);
-    }
-    LOG.error(String.format("Invalid remote section format in .git/config. sectionName: %s section: %s", sectionName, section));
-    return null;
-  }
-
-  @Nullable
-  private static Url parseUrlSection(@NotNull String sectionName, @NotNull Profile.Section section, @Nullable ClassLoader classLoader) {
-    UrlBean urlBean = section.as(UrlBean.class, classLoader);
-    Matcher matcher = URL_SECTION.matcher(sectionName);
-    if (matcher.matches()) {
-      return new Url(matcher.group(1), urlBean);
-    }
-    LOG.error(String.format("Invalid url section format in .git/config. sectionName: %s section: %s", sectionName, section));
-    return null;
-  }
-
   private static class Remote {
 
     private final String myName;
-    private final RemoteBean myRemoteBean;
+    private final String myRemoteUrl;
 
-    private Remote(@NotNull String name, @NotNull RemoteBean remoteBean) {
-      myRemoteBean = remoteBean;
+    private Remote(@NotNull String name, @NotNull String remoteUrl) {
+      myRemoteUrl = remoteUrl;
       myName = name;
     }
-    
-    @NotNull
-    private Collection<String> getUrls() {
-      return nonNullCollection(myRemoteBean.getUrl());
-    }
 
     @NotNull
-    private Collection<String> getPushUrls() {
-      return nonNullCollection(myRemoteBean.getPushUrl());
-    }
-
-    @Nullable
-    // no need in wrapping null here - we check for it in #computePushSpec 
-    private List<String> getPushSpec() {
-      String[] push = myRemoteBean.getPush();
-      return push == null ? null : Arrays.asList(push);
+    private String getUrl() {
+      return myRemoteUrl;
     }
 
     @NotNull
-    private List<String> getFetchSpecs() {
-      return Arrays.asList(notNull(myRemoteBean.getFetch()));
+    private String getPushUrl() {
+      return getUrl();
     }
-    
-  }
 
-  private interface RemoteBean {
-    @Nullable String[] getFetch();
-    @Nullable String[] getPush();
-    @Nullable String[] getUrl();
-    @Nullable String[] getPushUrl();
   }
 
   private static class Url {
@@ -436,50 +180,11 @@ public class BzrConfig {
       return myUrlBean.getInsteadOf();
     }
 
-    @Nullable
-    // null means to entry, i.e. nothing to substitute. Empty string means substituting everything
-    public String getPushInsteadOf() {
-      return myUrlBean.getPushInsteadOf();
-    }
   }
 
   private interface UrlBean {
     @Nullable String getInsteadOf();
     @Nullable String getPushInsteadOf();
-  }
-  
-  private static class BranchConfig {
-    private final String myName;
-    private final BranchBean myBean;
-
-    public BranchConfig(String name, BranchBean bean) {
-      myName = name;
-      myBean = bean;
-    }
-
-    public String getName() {
-      return myName;
-    }
-
-    public BranchBean getBean() {
-      return myBean;
-    }
-  }
-  
-  private interface BranchBean {
-    @Nullable String getRemote();
-    @Nullable String getMerge();
-    @Nullable String getRebase();
-  }
-
-  @NotNull
-  private static String[] notNull(@Nullable String[] s) {
-    return s == null ? ArrayUtil.EMPTY_STRING_ARRAY : s;
-  }
-
-  @NotNull
-  private static Collection<String> nonNullCollection(@Nullable String[] array) {
-    return array == null ? Collections.<String>emptyList() : new ArrayList<String>(Arrays.asList(array));
   }
 
 }

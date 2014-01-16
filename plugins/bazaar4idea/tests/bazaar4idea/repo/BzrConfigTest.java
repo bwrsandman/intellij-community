@@ -76,10 +76,6 @@ public class BzrConfigTest {
         return input.getRemoteBranch();
       }
     });
-
-    VcsTestUtil.assertEqualCollections(
-      BzrConfig.read(new BzrTestPlatformFacade(), configFile).parseTrackInfos(localBranches, remoteBranches),
-      expectedInfos);
   }
 
   private static Collection<BzrBranchTrackInfo> readBranchResults(File file) throws IOException {

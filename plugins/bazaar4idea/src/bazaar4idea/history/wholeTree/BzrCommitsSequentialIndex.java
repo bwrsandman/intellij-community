@@ -386,7 +386,8 @@ public class BzrCommitsSequentialIndex implements BzrCommitsSequentially {
           // no history at the moment
           return;
         }
-        if (lastRevision.isItemExists() && ((BzrRevisionNumber) lastRevision.getNumber()).asString().equals(latestWrittenHash[0].getString())) {
+        BzrRevisionNumber lastRevNo = (BzrRevisionNumber) lastRevision.getNumber();
+        if (lastRevision.isItemExists() && lastRevNo.asString().equals(latestWrittenHash[0].getString())) {
           // no refresh needed
           return;
         }

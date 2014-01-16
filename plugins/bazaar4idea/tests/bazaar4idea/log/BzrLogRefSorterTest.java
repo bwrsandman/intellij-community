@@ -158,60 +158,6 @@ public class BzrLogRefSorterTest extends UsefulTestCase {
   private static List<VcsRef> sort(final Collection<VcsRef> refs) {
     final BzrTestRepositoryManager manager = new BzrTestRepositoryManager();
     manager.add(new MockBzrRepository() {
-      @NotNull
-      @Override
-      public Collection<BzrBranchTrackInfo> getBranchTrackInfos() {
-        List<BzrBranchTrackInfo> infos = new ArrayList<BzrBranchTrackInfo>();
-        List<VcsRef> remoteRefs = ContainerUtil.findAll(refs, new Condition<VcsRef>() {
-          @Override
-          public boolean value(VcsRef ref) {
-            return isRemoteBranch(ref.getName());
-          }
-        });
-        List<VcsRef> localRefs = ContainerUtil.findAll(refs, new Condition<VcsRef>() {
-          @Override
-          public boolean value(VcsRef ref) {
-            return isLocalBranch(ref.getName());
-          }
-        });
-
-        for (final VcsRef localRef : localRefs) {
-          final VcsRef trackedRef = ContainerUtil.find(remoteRefs, new Condition<VcsRef>() {
-            @Override
-            public boolean value(VcsRef remoteRef) {
-              return localRef.getName().equals(remoteRef.getName().substring("origin/".length()));
-            }
-          });
-          if (trackedRef != null) {
-            infos.add(new BzrBranchTrackInfo(new BzrLocalBranch(localRef.getName(), HashImpl.build(randomHash())),
-                                             new BzrRemoteBranch(trackedRef.getName(), HashImpl.build(randomHash())) {
-                                               @NotNull
-                                               @Override
-                                               public String getNameForRemoteOperations() {
-                                                 return trackedRef.getName().substring("origin/".length());
-                                               }
-
-                                               @NotNull
-                                               @Override
-                                               public String getNameForLocalOperations() {
-                                                 return trackedRef.getName();
-                                               }
-
-                                               @NotNull
-                                               @Override
-                                               public BzrRemote getRemote() {
-                                                 return BzrRemote.DOT;
-                                               }
-
-                                               @Override
-                                               public boolean isRemote() {
-                                                 return true;
-                                               }
-                                             }, true));
-          }
-        }
-        return infos;
-      }
     });
     return new BzrRefManager(manager).sort(refs);
   }
@@ -251,12 +197,6 @@ public class BzrLogRefSorterTest extends UsefulTestCase {
     @NotNull
     @Override
     public Collection<BzrRemote> getRemotes() {
-      throw new UnsupportedOperationException();
-    }
-
-    @NotNull
-    @Override
-    public Collection<BzrBranchTrackInfo> getBranchTrackInfos() {
       throw new UnsupportedOperationException();
     }
 

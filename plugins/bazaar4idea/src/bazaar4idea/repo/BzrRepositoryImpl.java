@@ -155,12 +155,6 @@ public class BzrRepositoryImpl extends RepositoryImpl implements BzrRepository, 
   }
 
   @Override
-  @NotNull
-  public Collection<BzrBranchTrackInfo> getBranchTrackInfos() {
-    return myInfo.getBranchTrackInfos();
-  }
-
-  @Override
   public boolean isRebaseInProgress() {
     return getState() == State.REBASING;
   }
@@ -187,11 +181,9 @@ public class BzrRepositoryImpl extends RepositoryImpl implements BzrRepository, 
     BzrConfig config = BzrConfig.read(platformFacade, configFile);
     Collection<BzrRemote> remotes = config.parseRemotes();
     TempState tempState = readRepository(reader, remotes);
-    Collection<BzrBranchTrackInfo> trackInfos = config.parseTrackInfos(tempState.myBranches.getLocalBranches(),
-                                                                       tempState.myBranches.getRemoteBranches());
     BzrRepoInfo info = new BzrRepoInfo(tempState.myCurrentBranch, tempState.myCurrentRevision, tempState.myState,
                                        remotes, tempState.myBranches.getLocalBranches(),
-                                       tempState.myBranches.getRemoteBranches(), trackInfos);
+                                       tempState.myBranches.getRemoteBranches());
     notifyListeners(repository, previousInfo, info);
     return info;
   }

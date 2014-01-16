@@ -116,58 +116,11 @@ public class BzrUtil {
   @Nullable
   public static VirtualFile findBzrDir(@NotNull VirtualFile rootDir) {
     VirtualFile child = rootDir.findChild(DOT_BZR);
-    if (child == null) {
+    if (child == null || !child.isDirectory()) {
       return null;
-    }
-    if (child.isDirectory()) {
+    } else {
       return child;
     }
-
-    // this is standard for submodules, although probably it can
-    String content;
-    try {
-      content = readFile(child);
-    }
-    catch (IOException e) {
-      throw new RuntimeException("Couldn't read " + child, e);
-    }
-    String pathToDir;
-    String prefix = "gitdir:";
-    if (content.startsWith(prefix)) {
-      pathToDir = content.substring(prefix.length()).trim();
-    }
-    else {
-      pathToDir = content;
-    }
-
-    if (!FileUtil.isAbsolute(pathToDir)) {
-      String canonicalPath = FileUtil.toCanonicalPath(FileUtil.join(rootDir.getPath(), pathToDir));
-      if (canonicalPath == null) {
-        return null;
-      }
-      pathToDir = FileUtil.toSystemIndependentName(canonicalPath);
-    }
-    return VcsUtil.getVirtualFileWithRefresh(new File(pathToDir));
-  }
-
-  /**
-   * Makes 3 attempts to get the contents of the file. If all 3 fail with an IOException, rethrows the exception.
-   */
-  @NotNull
-  public static String readFile(@NotNull VirtualFile file) throws IOException {
-    final int ATTEMPTS = 3;
-    for (int attempt = 0; attempt < ATTEMPTS; attempt++) {
-      try {
-        return new String(file.contentsToByteArray());
-      }
-      catch (IOException e) {
-        LOG.info(String.format("IOException while reading %s (attempt #%s)", file, attempt));
-        if (attempt >= ATTEMPTS - 1) {
-          throw e;
-        }
-      }
-    }
-    throw new AssertionError("Shouldn't get here. Couldn't read " + file);
   }
 
   /**
@@ -869,19 +822,6 @@ public class BzrUtil {
         }
       }
     }.queue();
-  }
-
-
-  /**
-   * Returns the tracking information (remote and the name of the remote branch), or null if we are not on a branch.
-   */
-  @Nullable
-  public static BzrBranchTrackInfo getTrackInfoForCurrentBranch(@NotNull BzrRepository repository) {
-    BzrLocalBranch currentBranch = repository.getCurrentBranch();
-    if (currentBranch == null) {
-      return null;
-    }
-    return BzrBranchUtil.getTrackInfoForBranch(repository, currentBranch);
   }
 
   @NotNull
