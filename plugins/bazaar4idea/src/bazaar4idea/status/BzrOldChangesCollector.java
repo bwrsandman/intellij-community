@@ -78,7 +78,7 @@ class BzrOldChangesCollector extends BzrChangesCollector {
   private void updateIndex() throws VcsException {
     BzrSimpleHandler handler = new BzrSimpleHandler(myProject, myVcsRoot, BzrCommand.UPDATE_INDEX);
     handler.addParameters("--refresh", "--ignore-missing");
-    handler.setSilent(true);
+    //handler.setSilent(true);
     handler.setStdoutSuppressed(true);
     handler.ignoreErrorCode(1);
     handler.run();
@@ -107,7 +107,7 @@ class BzrOldChangesCollector extends BzrChangesCollector {
       BzrSimpleHandler handler = new BzrSimpleHandler(myProject, myVcsRoot, BzrCommand.LS);
       //handler.addParameters("--cached");
       handler.addParameters("--recursive", "--from-root");
-      handler.setSilent(true);
+      //handler.setSilent(true);
       handler.setStdoutSuppressed(true);
       // During init diff does not works because HEAD
       // will appear only after the first commit.
@@ -138,7 +138,7 @@ class BzrOldChangesCollector extends BzrChangesCollector {
     BzrSimpleHandler handler = new BzrSimpleHandler(myProject, myVcsRoot, BzrCommand.LS);
     // TODO find equivalent to git ls-files -v --unmerged
     handler.addParameters("-v", "--unmerged", "--from-root", "--recursive");
-    handler.setSilent(true);
+    //handler.setSilent(true);
     handler.setStdoutSuppressed(true);
     // run handler and collect changes
     parseFiles(handler.run());
@@ -146,7 +146,7 @@ class BzrOldChangesCollector extends BzrChangesCollector {
     handler = new BzrSimpleHandler(myProject, myVcsRoot, BzrCommand.LS);
     // TODO find equivalent to git ls-files -v
     handler.addParameters("-v", "--unknown", "--from-root", "--recursive");
-    handler.setSilent(true);
+    //handler.setSilent(true);
     handler.setStdoutSuppressed(true);
     handler.endOptions();
     handler.addRelativePaths(dirtyPaths);
@@ -154,7 +154,7 @@ class BzrOldChangesCollector extends BzrChangesCollector {
       handler = new BzrSimpleHandler(myProject, myVcsRoot, BzrCommand.LS);
       // TODO find equivalent to git ls-files -v
       handler.addParameters("-v", "--unknown", "--from-root", "--recursive");
-      handler.setSilent(true);
+      //handler.setSilent(true);
       handler.setStdoutSuppressed(true);
       handler.endOptions();
     }

@@ -65,7 +65,7 @@ public class BzrTag extends BzrReference {
   public static void listAsStrings(final Project project, final VirtualFile root, final Collection<String> tags,
                                    @Nullable final String containingCommit) throws VcsException {
     BzrSimpleHandler handler = new BzrSimpleHandler(project, root, BzrCommand.TAG);
-    handler.setSilent(true);
+    //handler.setSilent(true);
     handler.addParameters("-l");
     if (containingCommit != null) {
       handler.addParameters("--contains");

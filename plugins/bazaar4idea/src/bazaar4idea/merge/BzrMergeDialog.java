@@ -156,7 +156,7 @@ public class BzrMergeDialog extends DialogWrapper {
   public void updateBranches() throws VcsException {
     VirtualFile root = getSelectedRoot();
     BzrSimpleHandler handler = new BzrSimpleHandler(myProject, root, BzrCommand.BRANCH);
-    handler.setSilent(true);
+    //handler.setSilent(true);
     handler.addParameters("--no-color", "-a", "--no-merged");
     String output = handler.run();
     myBranchChooser.clear();

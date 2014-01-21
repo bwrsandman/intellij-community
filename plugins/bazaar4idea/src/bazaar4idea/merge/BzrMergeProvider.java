@@ -255,7 +255,7 @@ public class BzrMergeProvider implements MergeProvider2 {
           List<VirtualFile> files = e.getValue();
           BzrSimpleHandler handler = new BzrSimpleHandler(myProject, root, BzrCommand.LS);
           handler.setStdoutSuppressed(true);
-          handler.setSilent(true);
+          //handler.setSilent(true);
           // TODO find a parallel to git ls-files -t
           handler.addParameters("--unknown", "--null", "--recursive", "--from-root", "-t");
           handler.endOptions();

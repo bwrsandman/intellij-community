@@ -44,7 +44,6 @@ public class BzrConfig {
   private static final Logger LOG = Logger.getInstance(BzrConfig.class);
 
   private static final Pattern REMOTE_SECTION = Pattern.compile("(\\S*)\\s*=\\s*(\\S*)");
-  private static final Pattern URL_SECTION = Pattern.compile("url \"(.*)\"");
 
   @NotNull private final Collection<Remote> myRemotes;
   @NotNull private final Collection<Url> myUrls;

@@ -118,7 +118,7 @@ public class BzrBranchUtil {
   private static BzrLocalBranch getCurrentBranchFromBzr(@NotNull Project project, @NotNull VirtualFile root) {
     BzrSimpleHandler handler = new BzrSimpleHandler(project, root, BzrCommand.REV_PARSE);
     handler.addParameters("--abbrev-ref", "HEAD");
-    handler.setSilent(true);
+    //handler.setSilent(true);
     try {
       String name = handler.run();
       if (!name.equals("HEAD")) {
@@ -561,7 +561,7 @@ public class BzrBranchUtil {
                                                boolean remoteWanted, @Nullable String containingCommit) throws VcsException {
     // preparing native command executor
     final BzrSimpleHandler handler = new BzrSimpleHandler(project, root, BzrCommand.BRANCH);
-    handler.setSilent(true);
+    //handler.setSilent(true);
     handler.addParameters("--no-color");
     boolean remoteOnly = false;
     if (remoteWanted && localWanted) {

@@ -83,7 +83,7 @@ public class BzrHistoryUtils {
   public static long getHeadTs(final Project project, FilePath filePath) throws VcsException {
     BzrSimpleHandler h = new BzrSimpleHandler(project, BzrUtil.getBzrRoot(filePath), BzrCommand.LOG);
     BzrLogParser parser = new BzrLogParser(project, HASH, COMMIT_TIME);
-    h.setSilent(true);
+    //h.setSilent(true);
     h.addParameters("-n1", parser.getPretty());
     h.addParameters("HEAD");
     h.endOptions();
@@ -114,7 +114,7 @@ public class BzrHistoryUtils {
     filePath = getLastCommitName(project, filePath);
     BzrSimpleHandler h = new BzrSimpleHandler(project, BzrUtil.getBzrRoot(filePath), BzrCommand.LOG);
     BzrLogParser parser = new BzrLogParser(project, HASH, COMMIT_TIME);
-    h.setSilent(true);
+    //h.setSilent(true);
     h.addParameters("-n1", parser.getPretty());
     h.addParameters(!StringUtil.isEmpty(branch) ? branch : "--all");
     h.endOptions();
@@ -136,7 +136,7 @@ public class BzrHistoryUtils {
     filePath = getLastCommitName(project, filePath);
     BzrSimpleHandler h = new BzrSimpleHandler(project, BzrUtil.getBzrRoot(filePath), BzrCommand.LOG);
     BzrLogParser parser = new BzrLogParser(project, HASH, COMMIT_TIME, AUTHOR_NAME, COMMITTER_NAME, SUBJECT, BODY, RAW_BODY);
-    h.setSilent(true);
+    //h.setSilent(true);
     h.addParameters("-n1", parser.getPretty());
     if (branch != null && !branch.isEmpty()) {
       h.addParameters(branch);
@@ -180,7 +180,7 @@ public class BzrHistoryUtils {
     filePath = getLastCommitName(project, filePath);
     BzrSimpleHandler h = new BzrSimpleHandler(project, root, BzrCommand.LOG);
     BzrLogParser parser = new BzrLogParser(project, BzrLogParser.NameStatus.STATUS, HASH, COMMIT_TIME, PARENTS);
-    h.setSilent(true);
+    //h.setSilent(true);
     h.addParameters("-n1", parser.getPretty(), "--name-status", t.getFullName());
     h.endOptions();
     h.addRelativePaths(filePath);
@@ -202,7 +202,7 @@ public class BzrHistoryUtils {
     if (! BzrUtil.isBzrRoot(new File(root.getPath()))) throw new VcsException("Path " + root.getPath() + " is not git repository root");
 
     final BzrLineHandler h = new BzrLineHandler(project, root, BzrCommand.LOG);
-    h.setSilent(true);
+    //h.setSilent(true);
     h.addParameters(LOG_ALL);
     h.addParameters("--pretty=format:%H%x20%ct%x0A", "--date-order", "--reverse", "--encoding=UTF-8", "--full-history", "--sparse");
     h.endOptions();
@@ -465,7 +465,7 @@ public class BzrHistoryUtils {
   private static FilePath getFirstCommitRenamePath(Project project, VirtualFile root, String commit, FilePath filePath) throws VcsException {
     // 'git show -M --name-status <commit hash>' returns the information about commit and detects renames.
     // NB: we can't specify the filepath, because then rename detection will work only with the '--follow' option, which we don't wanna use.
-    final BzrSimpleHandler h = new BzrSimpleHandler(project, root, BzrCommand.SHOW);
+    final BzrSimpleHandler h = new BzrSimpleHandler(project, root, BzrCommand.CAT);
     final BzrLogParser parser = new BzrLogParser(project, BzrLogParser.NameStatus.STATUS, HASH, COMMIT_TIME, PARENTS);
     h.setStdoutSuppressed(true);
     h.addParameters("-M", "--name-status", parser.getPretty(), "--encoding=UTF-8", commit);
@@ -957,7 +957,7 @@ public class BzrHistoryUtils {
   public static Pair<AbstractHash, AbstractHash> getStashTop(@NotNull Project project, @NotNull VirtualFile root) throws VcsException {
     BzrSimpleHandler h = new BzrSimpleHandler(project, root, BzrCommand.STASH.readLockingCommand());
     BzrLogParser parser = new BzrLogParser(project, HASH, PARENTS);
-    h.setSilent(true);
+    //h.setSilent(true);
     h.addParameters("list");
     h.addParameters("-n1");
     h.addParameters(parser.getPretty());
@@ -971,7 +971,7 @@ public class BzrHistoryUtils {
 
       BzrSimpleHandler h1 = new BzrSimpleHandler(project, root, BzrCommand.LOG);
       BzrLogParser parser1 = new BzrLogParser(project, HASH, PARENTS, SUBJECT);
-      h1.setSilent(true);
+      //h1.setSilent(true);
       h1.addParameters("-n1");
       h1.addParameters(parser1.getPretty());
       //h1.endOptions();
@@ -1006,7 +1006,7 @@ public class BzrHistoryUtils {
     BzrLogParser
       parser = new BzrLogParser(project, BzrLogParser.NameStatus.STATUS, HASH, HASH, COMMIT_TIME, AUTHOR_NAME, AUTHOR_TIME, AUTHOR_EMAIL, COMMITTER_NAME,
                                            COMMITTER_EMAIL, PARENTS, REF_NAMES, SHORT_REF_LOG_SELECTOR, SUBJECT, BODY, RAW_BODY);
-    h.setSilent(true);
+    //h.setSilent(true);
     h.addParameters("list");
     h.addParameters(parameters);
     h.addParameters(parser.getPretty());
@@ -1030,7 +1030,7 @@ public class BzrHistoryUtils {
                                                @NotNull final Collection<String> commitsIds) throws VcsException {
     path = getLastCommitName(project, path);     // adjust path using change manager
     VirtualFile root = BzrUtil.getBzrRoot(path);
-    BzrSimpleHandler h = new BzrSimpleHandler(project, root, BzrCommand.SHOW);
+    BzrSimpleHandler h = new BzrSimpleHandler(project, root, BzrCommand.CAT);
     BzrLogParser parser = new BzrLogParser(project, BzrLogParser.NameStatus.STATUS,
                                            HASH, HASH, COMMIT_TIME, AUTHOR_NAME, AUTHOR_TIME, AUTHOR_EMAIL, COMMITTER_NAME,
                                            COMMITTER_EMAIL, PARENTS, REF_NAMES, SUBJECT, BODY, RAW_BODY);
@@ -1050,7 +1050,7 @@ public class BzrHistoryUtils {
   @NotNull
   public static List<BzrCommit> commitsDetails(@NotNull Project project, @NotNull VirtualFile root,
                                                @NotNull final Collection<String> hashes) throws VcsException {
-    BzrSimpleHandler h = new BzrSimpleHandler(project, root, BzrCommand.SHOW);
+    BzrSimpleHandler h = new BzrSimpleHandler(project, root, BzrCommand.CAT);
     BzrLogParser parser = new BzrLogParser(project, BzrLogParser.NameStatus.STATUS,
                                            HASH, HASH, COMMIT_TIME, AUTHOR_NAME, AUTHOR_TIME, AUTHOR_EMAIL, COMMITTER_NAME,
                                            COMMITTER_EMAIL, PARENTS, REF_NAMES, SUBJECT, BODY, RAW_BODY);
@@ -1089,9 +1089,9 @@ public class BzrHistoryUtils {
     // adjust path using change manager
     path = getLastCommitName(project, path);
     final VirtualFile root = BzrUtil.getBzrRoot(path);
-    BzrSimpleHandler h = new BzrSimpleHandler(project, root, BzrCommand.SHOW);
+    BzrSimpleHandler h = new BzrSimpleHandler(project, root, BzrCommand.CAT);
     BzrLogParser parser = new BzrLogParser(project, BzrLogParser.NameStatus.STATUS, AUTHOR_TIME);
-    h.setSilent(true);
+    //h.setSilent(true);
     h.addParameters("--name-status", parser.getPretty(), "--encoding=UTF-8");
     h.addParameters(commitsId);
 
@@ -1182,7 +1182,7 @@ public class BzrHistoryUtils {
                                                @NotNull final String second)
     throws VcsException {
     BzrSimpleHandler h = new BzrSimpleHandler(project, root, BzrCommand.MERGE_BASE);
-    h.setSilent(true);
+    //h.setSilent(true);
     h.addParameters(first, second);
     String output = h.run().trim();
     if (output.length() == 0) {

@@ -159,7 +159,7 @@ public final class BzrDeprecatedRemote {
    */
   public static List<BzrDeprecatedRemote> list(Project project, VirtualFile root) throws VcsException {
     BzrSimpleHandler handler = new BzrSimpleHandler(project, root, BzrCommand.REMOTE);
-    handler.setSilent(true);
+    //handler.setSilent(true);
     handler.addParameters("-v");
     String output = handler.run();
     return parseRemoteListInternal(output);

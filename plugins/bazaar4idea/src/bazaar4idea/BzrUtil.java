@@ -476,7 +476,7 @@ public class BzrUtil {
                                               final Consumer<BzrSimpleHandler> parametersSpecifier,
                                               final Consumer<BzrCommittedChangeList> consumer, boolean skipDiffsForMerge) throws VcsException {
     BzrSimpleHandler h = new BzrSimpleHandler(project, root, BzrCommand.LOG);
-    h.setSilent(true);
+    //h.setSilent(true);
     h.addParameters("--pretty=format:%x04%x01" + BzrChangeUtils.COMMITTED_CHANGELIST_FORMAT, "--name-status");
     parametersSpecifier.consume(h);
 

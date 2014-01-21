@@ -251,8 +251,8 @@ public class BzrChangeUtils {
                                                           String revisionName,
                                                           boolean skipDiffsForMerge,
                                                           boolean local, boolean revertable) throws VcsException {
-    BzrSimpleHandler h = new BzrSimpleHandler(project, root, BzrCommand.SHOW);
-    h.setSilent(true);
+    BzrSimpleHandler h = new BzrSimpleHandler(project, root, BzrCommand.CAT);
+    //h.setSilent(true);
     h.addParameters("--name-status", "--first-parent", "--no-abbrev", "-M", "--pretty=format:" + COMMITTED_CHANGELIST_FORMAT,
                     "--encoding=UTF-8",
                     revisionName, "--");
@@ -265,7 +265,7 @@ public class BzrChangeUtils {
   public static SHAHash commitExists(final Project project, final VirtualFile root, final String anyReference,
                                      List<VirtualFile> paths, final String... parameters) {
     BzrSimpleHandler h = new BzrSimpleHandler(project, root, BzrCommand.LOG);
-    h.setSilent(true);
+    //h.setSilent(true);
     h.addParameters(parameters);
     h.addParameters("--max-count=1", "--pretty=%H", "--encoding=UTF-8", anyReference, "--");
     if (paths != null && ! paths.isEmpty()) {
@@ -284,7 +284,7 @@ public class BzrChangeUtils {
   public static boolean isAnyLevelChild(final Project project, final VirtualFile root, final SHAHash parent,
                                         final String anyReferenceChild) {
     BzrSimpleHandler h = new BzrSimpleHandler(project, root, BzrCommand.MERGE_BASE);
-    h.setSilent(true);
+    //h.setSilent(true);
     h.addParameters("\"" + parent.getValue() + "\"","\"" + anyReferenceChild + "\"",  "--");
     try {
       final String output = h.run().trim();
@@ -299,7 +299,7 @@ public class BzrChangeUtils {
   @Nullable
   public static List<AbstractHash> commitExistsByComment(final Project project, final VirtualFile root, final String anyReference) {
     BzrSimpleHandler h = new BzrSimpleHandler(project, root, BzrCommand.LOG);
-    h.setSilent(true);
+    //h.setSilent(true);
     String escaped = StringUtil.escapeQuotes(anyReference);
     escaped = StringUtil.escapeSlashes(escaped);
     final String grepParam = "--grep=" + escaped;

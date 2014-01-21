@@ -249,7 +249,7 @@ public class BzrTagDialog extends DialogWrapper {
   private void fetchTags() {
     myExistingTags.clear();
     BzrSimpleHandler h = new BzrSimpleHandler(myProject, getBzrRoot(), BzrCommand.TAG);
-    h.setSilent(true);
+    //h.setSilent(true);
     String output = BzrHandlerUtil.doSynchronously(h, BzrBundle.getString("tag.getting.existing.tags"), h.printableCommandLine());
     for (StringScanner s = new StringScanner(output); s.hasMoreData();) {
       String line = s.line();

@@ -55,7 +55,7 @@ public class BzrStashUtils {
   public static void loadStashStack(@NotNull Project project, @NotNull VirtualFile root, final Charset charset,
                                     final Consumer<StashInfo> consumer) {
     BzrSimpleHandler h = new BzrSimpleHandler(project, root, BzrCommand.STASH.readLockingCommand());
-    h.setSilent(true);
+    //h.setSilent(true);
     h.addParameters("list");
     String out;
     try {

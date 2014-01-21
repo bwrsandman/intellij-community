@@ -138,7 +138,7 @@ public class BzrLogProvider implements VcsLogProvider {
   // TODO this is to be removed when tags will be supported by the BzrRepositoryReader
   private Collection<? extends VcsRef> readTags(@NotNull VirtualFile root) throws VcsException {
     BzrSimpleHandler tagHandler = new BzrSimpleHandler(myProject, root, BzrCommand.LOG);
-    tagHandler.setSilent(true);
+    //tagHandler.setSilent(true);
     tagHandler.addParameters("--tags", "--no-walk", "--format=%H%d" + BzrLogParser.RECORD_START_BZR, "--decorate=full");
     String out = tagHandler.run();
     Collection<VcsRef> refs = new ArrayList<VcsRef>();

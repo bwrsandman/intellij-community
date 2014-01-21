@@ -102,7 +102,7 @@ public class BzrImpl implements Bzr {
     final Set<String> untrackedFileNames = new HashSet<String>();
     final Set<VirtualFile> untrackedFiles = new HashSet<VirtualFile>();
     BzrSimpleHandler handler = new BzrSimpleHandler(project, root, BzrCommand.LS);
-    handler.setSilent(true);
+    //handler.setSilent(true);
     handler.addParameters("--unknown", "--null", "--recursive", "--from-root");
     handler.endOptions();
     // Bazaar doesn't support listing files
@@ -401,7 +401,7 @@ public class BzrImpl implements Bzr {
   @NotNull
   @Override
   public BzrCommandResult show(@NotNull BzrRepository repository, @NotNull String... params) {
-    final BzrLineHandler handler = new BzrLineHandler(repository.getProject(), repository.getRoot(), BzrCommand.SHOW);
+    final BzrLineHandler handler = new BzrLineHandler(repository.getProject(), repository.getRoot(), BzrCommand.CAT);
     handler.addParameters(params);
     return run(handler);
   }
@@ -426,7 +426,7 @@ public class BzrImpl implements Bzr {
   public BzrCommandResult getUnmergedFiles(@NotNull BzrRepository repository) {
     BzrLineHandler handler = new BzrLineHandler(repository.getProject(), repository.getRoot(), BzrCommand.LS);
     handler.addParameters("--unmerged", "--from-root", "--recursive");
-    handler.setSilent(true);
+    //handler.setSilent(true);
     return run(handler);
   }
 
