@@ -24,15 +24,13 @@ import com.intellij.openapi.progress.ProgressIndicator;
 import com.intellij.openapi.progress.ProgressManager;
 import com.intellij.openapi.progress.Task;
 import com.intellij.openapi.project.Project;
-import com.intellij.openapi.vcs.FilePath;
-import com.intellij.openapi.vcs.ObjectsConvertor;
-import com.intellij.openapi.vcs.VcsException;
-import com.intellij.openapi.vcs.VcsVFSListener;
+import com.intellij.openapi.vcs.*;
 import com.intellij.openapi.vfs.LocalFileSystem;
 import com.intellij.openapi.vfs.VirtualFile;
 import com.intellij.openapi.vfs.VirtualFileEvent;
 import com.intellij.ui.AppUIUtil;
 import com.intellij.util.ui.UIUtil;
+import com.intellij.util.ui.VcsBackgroundTask;
 import com.intellij.vcsUtil.VcsFileUtil;
 import com.intellij.vcsUtil.VcsUtil;
 import org.jetbrains.annotations.NotNull;
@@ -197,21 +195,29 @@ public class BzrVFSListener extends VcsVFSListener {
   }
 
   protected void performMoveRename(final List<MovedFileInfo> movedFiles) {
-    // because git does not tracks moves, the file are just added and deleted.
-    ArrayList<FilePath> added = new ArrayList<FilePath>();
-    ArrayList<FilePath> removed = new ArrayList<FilePath>();
-    for (MovedFileInfo info : movedFiles) {
-      if (!BzrFileUtils.shouldIgnoreCaseChange(info.myNewPath, info.myOldPath)) {
-        added.add(VcsUtil.getFilePath(info.myNewPath));
-        removed.add(VcsUtil.getFilePath(info.myOldPath));
+    (new VcsBackgroundTask<MovedFileInfo>(myProject,
+                                          BzrBundle.message("move.moving"),
+                                          VcsConfiguration.getInstance(myProject).getAddRemoveOption(),
+                                          movedFiles) {
+      protected void process(final MovedFileInfo file) throws VcsException {
+        final FilePath source = VcsUtil.getFilePath(file.myOldPath);
+        final FilePath target = VcsUtil.getFilePath(file.myNewPath);
+        VirtualFile sourceRoot = VcsUtil.getVcsRootFor(myProject, source);
+        VirtualFile targetRoot = VcsUtil.getVcsRootFor(myProject, target);
+        if (sourceRoot != null && targetRoot != null) {
+          BzrFileUtils.moveFile(myProject, sourceRoot, source, targetRoot, target, "--quiet");
+        }
+        List<FilePath> filesToRefresh = new ArrayList<FilePath>();
+        filesToRefresh.add(source);
+        filesToRefresh.add(target);
+        VcsFileUtil.markFilesDirty(myProject, filesToRefresh);
       }
-    }
-    performAdding(added);
-    performDeletion(removed);
+
+    }).queue();
   }
 
   protected boolean isDirectoryVersioningSupported() {
-    return false;
+    return true;
   }
 
   @Override

@@ -49,6 +49,7 @@ public class BzrCommand {
   public static final BzrCommand LS = read("ls");
   public static final BzrCommand MERGE = write("merge");
   public static final BzrCommand MERGE_BASE = read("merge-base");
+  public static final BzrCommand MV = read("mv");
   public static final BzrCommand PULL = write("pull");
   public static final BzrCommand PUSH = write("push");
   public static final BzrCommand REBASE = writeSuspendable("rebase");
