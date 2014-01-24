@@ -141,7 +141,7 @@ public class BzrFileRevision extends VcsFileRevisionEx implements Comparable<Vcs
 
   public synchronized byte[] loadContent() throws IOException, VcsException {
     VirtualFile root = BzrUtil.getBzrRoot(myPath);
-    return BzrFileUtils.getFileContent(myProject, root, myRevision.getRev(), VcsFileUtil.relativePath(root, myPath));
+    return BzrFileUtils.getFileContent(myProject, root, myRevision.asString(), VcsFileUtil.relativePath(root, myPath));
   }
 
   public synchronized byte[] getContent() throws IOException, VcsException {
@@ -155,7 +155,7 @@ public class BzrFileRevision extends VcsFileRevisionEx implements Comparable<Vcs
 
   @Override
   public String toString() {
-    return myPath.getName() + ":" + myRevision.getShortRev();
+    return myPath.getName() + ":" + myRevision.asString();
   }
 
   @NotNull
@@ -165,7 +165,7 @@ public class BzrFileRevision extends VcsFileRevisionEx implements Comparable<Vcs
 
   @NotNull
   public String getHash() {
-    return myRevision.getRev();
+    return myRevision.asString();
   }
 
 }

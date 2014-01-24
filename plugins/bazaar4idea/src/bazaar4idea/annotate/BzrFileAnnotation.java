@@ -74,7 +74,7 @@ public class BzrFileAnnotation extends FileAnnotation {
     @Override
     protected String doGetValue(LineInfo lineInfo) {
       final BzrRevisionNumber revision = lineInfo.getRevision();
-      return revision == null ? "" : String.valueOf(revision.getShortRev());
+      return revision == null ? "" : revision.asString();
     }
   };
 
