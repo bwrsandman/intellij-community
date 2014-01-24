@@ -46,6 +46,27 @@ public class BzrFileUtils {
   }
 
   /**
+   * Move files
+   *
+   * @param project the project
+   * @param sourceRoot    the vcs root of the source file
+   * @param sourceFile   source file of move
+   * @param targetRoot    a vcs root of the target file
+   * @param targetFile   taget file of move
+   * @return a result of operation
+   * @throws VcsException in case of bzr problem
+   */
+
+  public static void moveFile(Project project, VirtualFile sourceRoot, FilePath source, VirtualFile targetRoot, FilePath target,
+                              String... additionalOptions) throws VcsException {
+    BzrSimpleHandler handler = new BzrSimpleHandler(project, sourceRoot, BzrCommand.MV);
+    handler.addParameters(additionalOptions);
+    handler.addParameters(source.getPath());
+    handler.addParameters(target.getPath());
+    handler.run();
+  }
+
+  /**
    * Delete files
    *
    * @param project the project
