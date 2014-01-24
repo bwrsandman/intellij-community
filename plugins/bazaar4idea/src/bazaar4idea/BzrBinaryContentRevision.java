@@ -40,6 +40,6 @@ public class BzrBinaryContentRevision extends BzrContentRevision implements Bina
       return null;
     }
     final VirtualFile root = BzrUtil.getBzrRoot(myFile);
-    return BzrFileUtils.getFileContent(myProject, root, myRevision.getRev(), VcsFileUtil.relativePath(root, myFile));
+    return BzrFileUtils.getFileContent(myProject, root, myRevision.asString(), VcsFileUtil.relativePath(root, myFile));
   }
 }
