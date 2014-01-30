@@ -25,8 +25,8 @@ import com.intellij.openapi.vcs.AbstractVcs;
 import com.intellij.openapi.vcs.ProjectLevelVcsManager;
 import com.intellij.openapi.vcs.VcsDirectoryMapping;
 import com.intellij.openapi.vcs.VcsRoot;
-import com.intellij.openapi.vcs.roots.VcsRootDetectInfo;
 import com.intellij.openapi.vcs.roots.VcsRootErrorsFinder;
+import com.intellij.openapi.vfs.VfsUtilCore;
 import com.intellij.openapi.vfs.VirtualFile;
 import com.intellij.util.containers.ContainerUtil;
 import com.intellij.util.ui.UIUtil;
@@ -56,39 +56,50 @@ public class BzrIntegrationEnabler {
     myPlatformFacade = platformFacade;
   }
 
-  public void enable(@NotNull VcsRootDetectInfo detectInfo) {
+  public void enable(@NotNull Collection<VcsRoot> vcsRoots) {
     Notificator notificator = myPlatformFacade.getNotificator(myProject);
-    Collection<VcsRoot> gitRoots = ContainerUtil.filter(detectInfo.getRoots(), new Condition<VcsRoot>() {
+    Collection<VcsRoot> bzrRoots = ContainerUtil.filter(vcsRoots, new Condition<VcsRoot>() {
       @Override
       public boolean value(VcsRoot root) {
         AbstractVcs vcs = root.getVcs();
         return vcs != null && vcs.getName().equals(BzrVcs.NAME);
       }
     });
-    Collection<VirtualFile> roots = VcsRootErrorsFinder.vcsRootsToVirtualFiles(gitRoots);
+    Collection<VirtualFile> roots = VcsRootErrorsFinder.vcsRootsToVirtualFiles(bzrRoots);
     VirtualFile projectDir = myProject.getBaseDir();
     assert projectDir != null : "Base dir is unexpectedly null for project: " + myProject;
 
-    if (gitRoots.isEmpty()) {
-      boolean succeeded = gitInitOrNotifyError(notificator, projectDir);
+    if (bzrRoots.isEmpty()) {
+      boolean succeeded = bzrInitOrNotifyError(notificator, projectDir);
       if (succeeded) {
         addVcsRoots(Collections.singleton(projectDir));
       }
     }
     else {
       assert !roots.isEmpty();
-      if (roots.size() > 1 || detectInfo.projectIsBelowVcs()) {
+      if (roots.size() > 1 || isProjectBelowVcs(roots)) {
         notifyAddedRoots(notificator, roots);
       }
       addVcsRoots(roots);
     }
   }
 
+  private boolean isProjectBelowVcs(@NotNull Collection<VirtualFile> bzrRoots) {
+    //check if there are vcs roots strictly above the project dir
+    VirtualFile baseDir = myProject.getBaseDir();
+    for (VirtualFile root : bzrRoots) {
+      if (VfsUtilCore.isAncestor(root, baseDir, true)) {
+        return true;
+      }
+    }
+    return false;
+  }
+
   private static void notifyAddedRoots(Notificator notificator, Collection<VirtualFile> roots) {
     notificator.notifySuccess("", String.format("Added Bazaar %s: %s", pluralize("root", roots.size()), joinRootsPaths(roots)));
   }
 
-  private boolean gitInitOrNotifyError(@NotNull Notificator notificator, @NotNull final VirtualFile projectDir) {
+  private boolean bzrInitOrNotifyError(@NotNull Notificator notificator, @NotNull final VirtualFile projectDir) {
     BzrCommandResult result = myBzr.init(myProject, projectDir);
     if (result.success()) {
       refreshBzrDir(projectDir);
