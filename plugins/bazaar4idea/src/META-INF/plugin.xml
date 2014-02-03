@@ -85,16 +85,10 @@
 
     <group id="Bazaar.Log.ContextMenu">
       <separator/>
-      <reference id="Bazaar.CherryPick" />
       <reference id="Bazaar.CheckoutRevision"/>
       <reference id="Bazaar.CreateNewBranch" />
       <reference id="Bazaar.CreateNewTag" />
       <add-to-group group-id="Vcs.Log.ContextMenu" />
-    </group>
-
-    <group id="Bazaar.Log.Toolbar">
-      <reference id="Bazaar.CherryPick"/>
-      <add-to-group group-id="Vcs.Log.Toolbar" />
     </group>
     
 
@@ -116,8 +110,6 @@
     <checkinHandlerFactory implementation="bazaar4idea.checkin.UnresolvedMergeCheckFactory"/>
     <logProvider implementation="bazaar4idea.log.BzrLogProvider"/>
     <vcsChangesViewRefresher implementation="bazaar4idea.changes.BzrChangesViewRefresher" />
-    
-    <vcs.rootFinder implementation="bazaar4idea.roots.BzrRootFinder"/>
 
     <projectService
       serviceInterface="bazaar4idea.history.wholeTree.LogFactoryService"

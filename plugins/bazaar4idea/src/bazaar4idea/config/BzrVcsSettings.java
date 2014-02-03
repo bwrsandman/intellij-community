@@ -161,14 +161,6 @@ public class BzrVcsSettings implements PersistentStateComponent<BzrVcsSettings.S
     myState.RECENT_COMMON_BRANCH = branch;
   }
 
-  public void setAutoCommitOnCherryPick(boolean autoCommit) {
-    myState.AUTO_COMMIT_ON_CHERRY_PICK = autoCommit;
-  }
-
-  public boolean isAutoCommitOnCherryPick() {
-    return myState.AUTO_COMMIT_ON_CHERRY_PICK;
-  }
-
   public boolean warnAboutCrlf() {
     return myState.WARN_ABOUT_CRLF;
   }

@@ -406,21 +406,6 @@ public class BzrImpl implements Bzr {
     return run(handler);
   }
 
-  @Override
-  @NotNull
-  public BzrCommandResult cherryPick(@NotNull BzrRepository repository, @NotNull String hash, boolean autoCommit,
-                                     @NotNull BzrLineHandlerListener... listeners) {
-    final BzrLineHandler handler = new BzrLineHandler(repository.getProject(), repository.getRoot(), BzrCommand.CHERRY_PICK);
-    handler.addParameters("-x");
-    if (!autoCommit) {
-      handler.addParameters("-n");
-    }
-    handler.addParameters(hash);
-    addListeners(handler, listeners);
-    handler.setSilent(false);
-    return run(handler);
-  }
-
   @NotNull
   @Override
   public BzrCommandResult getUnmergedFiles(@NotNull BzrRepository repository) {

@@ -49,7 +49,6 @@ public class BzrVcsPanel {
   private JComboBox mySSHExecutableComboBox; // Type of SSH executable to use
   private JCheckBox myAutoUpdateIfPushRejected;
   private JBCheckBox mySyncBranchControl;
-  private JCheckBox myAutoCommitOnCherryPick;
   private JBCheckBox myWarnAboutCrlf;
 
   public BzrVcsPanel(@NotNull Project project) {
@@ -119,7 +118,6 @@ public class BzrVcsPanel {
     mySSHExecutableComboBox.setSelectedItem(settings.isIdeaSsh() ? IDEA_SSH : NATIVE_SSH);
     myAutoUpdateIfPushRejected.setSelected(settings.autoUpdateIfPushRejected());
     mySyncBranchControl.setSelected(settings.getSyncSetting() == BzrBranchSyncSetting.SYNC);
-    myAutoCommitOnCherryPick.setSelected(settings.isAutoCommitOnCherryPick());
     myWarnAboutCrlf.setSelected(settings.warnAboutCrlf());
   }
 
@@ -133,7 +131,6 @@ public class BzrVcsPanel {
            (settings.isIdeaSsh() != IDEA_SSH.equals(mySSHExecutableComboBox.getSelectedItem())) ||
            !settings.autoUpdateIfPushRejected() == myAutoUpdateIfPushRejected.isSelected() ||
            ((settings.getSyncSetting() == BzrBranchSyncSetting.SYNC) != mySyncBranchControl.isSelected() ||
-           settings.isAutoCommitOnCherryPick() != myAutoCommitOnCherryPick.isSelected() ||
            settings.warnAboutCrlf() != myWarnAboutCrlf.isSelected());
   }
 
@@ -151,7 +148,6 @@ public class BzrVcsPanel {
     settings.setAutoUpdateIfPushRejected(myAutoUpdateIfPushRejected.isSelected());
 
     settings.setSyncSetting(mySyncBranchControl.isSelected() ? BzrBranchSyncSetting.SYNC : BzrBranchSyncSetting.DONT);
-    settings.setAutoCommitOnCherryPick(myAutoCommitOnCherryPick.isSelected());
     settings.setWarnAboutCrlf(myWarnAboutCrlf.isSelected());
   }
 

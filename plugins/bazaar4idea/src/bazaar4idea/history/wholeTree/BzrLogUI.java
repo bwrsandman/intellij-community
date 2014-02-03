@@ -842,7 +842,6 @@ public class BzrLogUI implements Disposable {
           myUsersFilterAction.setPreselectedUser(commit.getCommitter());
         }
       }
-      group.add(getCherryPickAction());
       group.add(new CreatePatchFromChangesAction() {
         @Override
         public void update(AnActionEvent e) {
@@ -965,7 +964,6 @@ public class BzrLogUI implements Disposable {
     myDatesFilterAction = new DatesFilterAction(myProject, myDatesFilter);
     group.add(myDatesFilterAction);
     group.add(myFilterStarredAction);
-    group.add(getCherryPickAction());
     group.add(ActionManager.getInstance().getAction("ChangesView.CreatePatchFromChanges"));
     myRefreshAction = new MyRefreshAction();
     myRootsAction = new MyRootsAction(rootsGetter, myJBTable);
@@ -1025,10 +1023,6 @@ public class BzrLogUI implements Disposable {
       }
     };
     return ActionManager.getInstance().createActionToolbar("Bazaar log", group, true);
-  }
-
-  private static AnAction getCherryPickAction() {
-    return ActionManager.getInstance().getAction("Bazaar.CherryPick");
   }
 
   private void setupDetailsSplitter(boolean state) {

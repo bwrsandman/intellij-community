@@ -200,15 +200,6 @@ public class BzrTestImpl implements Bzr {
 
   @NotNull
   @Override
-  public BzrCommandResult cherryPick(@NotNull BzrRepository repository,
-                                     @NotNull String hash,
-                                     boolean autoCommit,
-                                     @NotNull BzrLineHandlerListener... listeners) {
-    return execute(repository, format("cherry-pick -x %s %s", autoCommit ? "" : "-n", hash), listeners);
-  }
-
-  @NotNull
-  @Override
   public BzrCommandResult fetch(@NotNull BzrRepository repository, @NotNull String url, @NotNull String remote, String... params) {
     throw new UnsupportedOperationException();
   }

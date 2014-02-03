@@ -107,10 +107,6 @@ public interface Bzr {
   BzrCommandResult show(@NotNull BzrRepository repository, @NotNull String... params);
 
   @NotNull
-  BzrCommandResult cherryPick(@NotNull BzrRepository repository, @NotNull String hash, boolean autoCommit,
-                              @NotNull BzrLineHandlerListener... listeners);
-
-  @NotNull
   BzrCommandResult getUnmergedFiles(@NotNull BzrRepository repository);
 
   @NotNull

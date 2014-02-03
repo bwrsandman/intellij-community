@@ -319,7 +319,7 @@ public class BzrHistoryUtils {
                                                     SUBJECT, BODY, RAW_BODY, AUTHOR_TIME);
 
     final AtomicReference<String> firstCommit = new AtomicReference<String>("HEAD");
-    final AtomicReference<String> firstCommitParent = new AtomicReference<String>("HEAD");
+    final AtomicReference<String> firstCommitParent = new AtomicReference<String>("-r-1");
     final AtomicReference<FilePath> currentPath = new AtomicReference<FilePath>(filePath);
     final AtomicReference<BzrLineHandler> logHandler = new AtomicReference<BzrLineHandler>();
     final AtomicBoolean skipFurtherOutput = new AtomicBoolean();
@@ -428,18 +428,6 @@ public class BzrHistoryUtils {
       if (criticalFailure.get()) {
         return;
       }
-
-      try {
-        FilePath firstCommitRenamePath;
-        firstCommitRenamePath = getFirstCommitRenamePath(project, finalRoot, firstCommit.get(), currentPath.get());
-        currentPath.set(firstCommitRenamePath);
-        skipFurtherOutput.set(false);
-      }
-      catch (VcsException e) {
-        LOG.warn("Tried to get first commit rename path", e);
-        exceptionConsumer.consume(e);
-        return;
-      }
     }
 
   }
@@ -447,7 +435,7 @@ public class BzrHistoryUtils {
   private static BzrLineHandler getLogHandler(Project project, VirtualFile root, BzrLogParser parser, FilePath path, String lastCommit, String... parameters) {
     final BzrLineHandler h = new BzrLineHandler(project, root, BzrCommand.LOG);
     h.setStdoutSuppressed(true);
-    h.addParameters("--name-status", parser.getPretty(), "--encoding=UTF-8", lastCommit);
+    h.addParameters(lastCommit);
     if (parameters != null && parameters.length > 0) {
       h.addParameters(parameters);
     }
