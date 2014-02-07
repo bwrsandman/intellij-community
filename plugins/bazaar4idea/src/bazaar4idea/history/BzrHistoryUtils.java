@@ -86,7 +86,6 @@ public class BzrHistoryUtils {
     h.setSilent(true);
     h.addParameters("-n1", parser.getPretty());
     h.addParameters("HEAD");
-    h.endOptions();
     String result = h.run();
     if (result.length() == 0) {
       return -1;
@@ -117,7 +116,6 @@ public class BzrHistoryUtils {
     h.setSilent(true);
     h.addParameters("-n1", parser.getPretty());
     h.addParameters(!StringUtil.isEmpty(branch) ? branch : "--all");
-    h.endOptions();
     h.addRelativePaths(filePath);
     String result = h.run();
     if (result.length() == 0) {
@@ -143,7 +141,6 @@ public class BzrHistoryUtils {
     } else {
       h.addParameters("--all");
     }
-    h.endOptions();
     h.addRelativePaths(filePath);
     String result = h.run();
     if (result.length() == 0) {
@@ -182,7 +179,6 @@ public class BzrHistoryUtils {
     BzrLogParser parser = new BzrLogParser(project, BzrLogParser.NameStatus.STATUS, HASH, COMMIT_TIME, PARENTS);
     h.setSilent(true);
     h.addParameters("-n1", parser.getPretty(), "--name-status", t.getFullName());
-    h.endOptions();
     h.addRelativePaths(filePath);
     String result = h.run();
     if (result.length() == 0) {
@@ -205,7 +201,6 @@ public class BzrHistoryUtils {
     h.setSilent(true);
     h.addParameters(LOG_ALL);
     h.addParameters("--pretty=format:%H%x20%ct%x0A", "--date-order", "--reverse", "--encoding=UTF-8", "--full-history", "--sparse");
-    h.endOptions();
 
     final OutputStream[] stream = new OutputStream[1];
     try {
@@ -439,7 +434,6 @@ public class BzrHistoryUtils {
     if (parameters != null && parameters.length > 0) {
       h.addParameters(parameters);
     }
-    h.endOptions();
     h.addRelativePaths(path);
     return h;
   }
@@ -457,7 +451,6 @@ public class BzrHistoryUtils {
     final BzrLogParser parser = new BzrLogParser(project, BzrLogParser.NameStatus.STATUS, HASH, COMMIT_TIME, PARENTS);
     h.setStdoutSuppressed(true);
     h.addParameters("-M", "--name-status", parser.getPretty(), "--encoding=UTF-8", commit);
-    h.endOptions();
     final String output = h.run();
     final List<BzrLogRecord> records = parser.parse(output);
 
@@ -480,7 +473,6 @@ public class BzrHistoryUtils {
     h.addParameters(parser.getPretty(), "--encoding=UTF-8");
     h.addParameters(LOG_ALL);
     h.addParameters("--full-history", "--sparse");
-    h.endOptions();
 
     String output = h.run();
 
@@ -540,7 +532,6 @@ public class BzrHistoryUtils {
     h.addParameters(LOG_ALL);
     h.addParameters("--full-history", "--sparse");
     h.addParameters("--date-order");
-    h.endOptions();
 
     final List<TimedVcsCommit> commits = ContainerUtil.newArrayList();
 
@@ -725,7 +716,6 @@ public class BzrHistoryUtils {
     h.setStdoutSuppressed(true);
     h.addParameters(parameters);
     h.addParameters(parser.getPretty(), "--encoding=UTF-8");
-    h.endOptions();
     h.addRelativePaths(path);
     String output = h.run();
 
@@ -753,7 +743,6 @@ public class BzrHistoryUtils {
     h.addParameters(parameters);
     h.addParameters("--name-status", parser.getPretty(), "--encoding=UTF-8");
     h.addParameters("--full-history", "--sparse");
-    h.endOptions();
 
     String output = h.run();
 
@@ -816,13 +805,11 @@ public class BzrHistoryUtils {
       h.addParameters("--full-history");
     }
     if (paths != null && ! paths.isEmpty()) {
-      h.endOptions();
       h.addRelativeFiles(paths);
     } else {
       if (fullHistory) {
         h.addParameters("--sparse");
       }
-      h.endOptions();
       h.addRelativePaths(path);
     }
 
@@ -962,7 +949,6 @@ public class BzrHistoryUtils {
       h1.setSilent(true);
       h1.addParameters("-n1");
       h1.addParameters(parser1.getPretty());
-      //h1.endOptions();
       h1.addParameters(bzrLogRecord.getHash());
 
       String out1;
@@ -1101,11 +1087,9 @@ public class BzrHistoryUtils {
     h.addParameters(parser.getPretty(), "--encoding=UTF-8", "--full-history");
 
     if (paths != null && ! paths.isEmpty()) {
-      h.endOptions();
       h.addRelativeFiles(paths);
     } else {
       h.addParameters("--sparse");
-      h.endOptions();
       h.addRelativePaths(path);
     }
 

@@ -258,7 +258,6 @@ public class BzrMergeProvider implements MergeProvider2 {
           handler.setSilent(true);
           // TODO find a parallel to git ls-files -t
           handler.addParameters("--unknown", "--null", "--recursive", "--from-root", "-t");
-          handler.endOptions();
           String output = handler.run();
           StringScanner s = new StringScanner(output);
           while (s.hasMoreData()) {

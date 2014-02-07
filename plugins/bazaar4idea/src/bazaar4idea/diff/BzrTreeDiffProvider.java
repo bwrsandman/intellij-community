@@ -57,7 +57,6 @@ public class BzrTreeDiffProvider implements TreeDiffProvider {
         handler.addParameters("--name-status", "--diff-filter=ADCRUX", "-M", "HEAD..." + searcher.getRemote().getFullName());
         //handler.setSilent(true);
         handler.setStdoutSuppressed(true);
-        handler.endOptions();
         handler.addParameters(pathList);
         String output = handler.run();
         Collection<String> pathCollection = BzrChangeUtils.parseDiffForPaths(vcsRoot.getPath(), new StringScanner(output));

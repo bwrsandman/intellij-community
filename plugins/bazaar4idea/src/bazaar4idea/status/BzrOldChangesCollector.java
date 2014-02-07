@@ -148,7 +148,6 @@ class BzrOldChangesCollector extends BzrChangesCollector {
     handler.addParameters("-v", "--unknown", "--from-root", "--recursive");
     handler.setSilent(true);
     handler.setStdoutSuppressed(true);
-    handler.endOptions();
     handler.addRelativePaths(dirtyPaths);
     if(handler.isLargeCommandLine()) {
       handler = new BzrSimpleHandler(myProject, myVcsRoot, BzrCommand.LS);
@@ -156,7 +155,6 @@ class BzrOldChangesCollector extends BzrChangesCollector {
       handler.addParameters("-v", "--unknown", "--from-root", "--recursive");
       handler.setSilent(true);
       handler.setStdoutSuppressed(true);
-      handler.endOptions();
     }
     // run handler and collect changes
     parseFiles(handler.run());

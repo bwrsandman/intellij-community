@@ -133,7 +133,6 @@ public class BzrRevisionNumber implements ShortVcsRevisionNumber {
     BzrSimpleHandler h = new BzrSimpleHandler(project, vcsRoot, BzrCommand.VERSION_INFO);
     //h.setSilent(true);
     h.addParameters(rev);
-    h.endOptions();
     final String output = h.run();
     return parseRevlistOutputAsRevisionNumber(h, output);
   }

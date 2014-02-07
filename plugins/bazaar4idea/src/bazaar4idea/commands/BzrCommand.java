@@ -40,7 +40,6 @@ public class BzrCommand {
   public static final BzrCommand CHECKOUT = write("checkout");
   public static final BzrCommand COMMIT = write("commit");
   public static final BzrCommand CONFIG = read("config");
-  public static final BzrCommand CHERRY_PICK = write("cherry-pick");
   public static final BzrCommand DIFF = read("diff");
   public static final BzrCommand FETCH = read("fetch");  // fetch is a read-command, because it doesn't modify the index
   public static final BzrCommand INIT = write("init");
@@ -56,6 +55,7 @@ public class BzrCommand {
   public static final BzrCommand REMOTE = read("remote");
   public static final BzrCommand RESET = write("reset");
   public static final BzrCommand REV_PARSE = read("rev-parse");
+  public static final BzrCommand REVERT = write("revert");
   public static final BzrCommand RM = write("rm");
   public static final BzrCommand SHOW = read("show");
   public static final BzrCommand STASH = write("stash");

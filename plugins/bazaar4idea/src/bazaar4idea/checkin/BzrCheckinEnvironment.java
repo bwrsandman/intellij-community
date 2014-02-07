@@ -263,7 +263,6 @@ public class BzrCheckinEnvironment implements CheckinEnvironment {
     //handler.setSilent(true);
     handler.setStdoutSuppressed(true);
     handler.addParameters("--diff-filter=ADMRUX", "--name-status", "HEAD");
-    handler.endOptions();
     String output;
     try {
       output = handler.run();
@@ -338,7 +337,6 @@ public class BzrCheckinEnvironment implements CheckinEnvironment {
       if (author != null) {
         handler.addParameters("--author=" + author);
       }
-      handler.endOptions();
       handler.run();
       BzrRepositoryManager manager = BzrUtil.getRepositoryManager(project);
       manager.updateRepository(root);
@@ -492,7 +490,6 @@ public class BzrCheckinEnvironment implements CheckinEnvironment {
       if (nextCommitAuthorDate != null) {
         handler.addParameters("--commit-time", BzrUtil.COMMIT_DATE_FORMAT.format(nextCommitAuthorDate));
       }
-      handler.endOptions();
       handler.addParameters(paths);
       handler.run();
     }

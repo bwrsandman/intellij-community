@@ -140,7 +140,7 @@ public class BzrRollbackEnvironment implements RollbackEnvironment {
         exceptions.add(new VcsException("Unable to delete file: " + file, e));
       }
     }
-    // revert files from HEAD
+    // revert files
     for (Map.Entry<VirtualFile, List<FilePath>> entry : toRevert.entrySet()) {
       listener.accept(entry.getValue());
       try {
@@ -178,24 +178,22 @@ public class BzrRollbackEnvironment implements RollbackEnvironment {
    */
   public void revert(final VirtualFile root, final List<FilePath> files) throws VcsException {
     for (List<String> paths : VcsFileUtil.chunkPaths(root, files)) {
-      BzrSimpleHandler handler = new BzrSimpleHandler(myProject, root, BzrCommand.CHECKOUT);
-      handler.addParameters("HEAD");
-      handler.endOptions();
+      BzrSimpleHandler handler = new BzrSimpleHandler(myProject, root, BzrCommand.REVERT);
       handler.addParameters(paths);
       handler.run();
     }
   }
 
   /**
-   * Remove file paths from index (git remove --cached).
+   * Remove file paths from index (bzr remove --new --keep).
    *
-   * @param root  a git root
+   * @param root  a bazaar root
    * @param files files to remove from index.
    * @param toUnversioned passed true if the file will be unversioned after unindexing, i.e. it was added before the revert operation.
-   * @throws VcsException if there is a problem with running git
+   * @throws VcsException if there is a problem with running bzr
    */
   private void unindex(final VirtualFile root, final List<FilePath> files, boolean toUnversioned) throws VcsException {
-    BzrFileUtils.delete(myProject, root, files, "--cached", "-f");
+    BzrFileUtils.delete(myProject, root, files, "--new", "--keep");
 
     if (toUnversioned) {
       final BzrRepository repo = BzrUtil.getRepositoryManager(myProject).getRepositoryForRoot(root);
@@ -247,7 +245,6 @@ public class BzrRollbackEnvironment implements RollbackEnvironment {
   public static void resetHardLocal(final Project project, final VirtualFile root) {
     BzrSimpleHandler handler = new BzrSimpleHandler(project, root, BzrCommand.RESET);
     handler.addParameters("--hard");
-    handler.endOptions();
     BzrHandlerUtil.runInCurrentThread(handler, null);
   }
 }

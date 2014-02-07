@@ -81,7 +81,6 @@ public class BzrFileUtils {
     for (List<String> paths : VcsFileUtil.chunkPaths(root, files)) {
       BzrSimpleHandler handler = new BzrSimpleHandler(project, root, BzrCommand.RM);
       handler.addParameters(additionalOptions);
-      handler.endOptions();
       handler.addParameters(paths);
       handler.run();
     }
@@ -101,7 +100,6 @@ public class BzrFileUtils {
     for (List<String> paths : VcsFileUtil.chunkFiles(root, files)) {
       BzrSimpleHandler handler = new BzrSimpleHandler(project, root, BzrCommand.RM);
       handler.addParameters(additionalOptions);
-      handler.endOptions();
       handler.addParameters(paths);
       handler.run();
     }
@@ -202,7 +200,6 @@ public class BzrFileUtils {
       }
       BzrSimpleHandler handler = new BzrSimpleHandler(project, root, BzrCommand.ADD);
       handler.addParameters("--quiet");
-      handler.endOptions();
       handler.addParameters(paths);
       handler.run();
     }
@@ -214,7 +211,6 @@ public class BzrFileUtils {
     BzrSimpleHandler handler = new BzrSimpleHandler(project, root, BzrCommand.LS);
     handler.setSilent(true);
     handler.addParameters("--ignored", "--from-root", "--recursive");
-    handler.endOptions();
     //handler.addParameters(paths);
     String output = handler.run();
 

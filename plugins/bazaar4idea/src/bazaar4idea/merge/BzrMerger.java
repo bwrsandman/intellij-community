@@ -75,7 +75,6 @@ public class BzrMerger {
     } else {
       handler.addParameters("-F", messageFile.getAbsolutePath());
     }
-    handler.endOptions();
     handler.run();
   }
 

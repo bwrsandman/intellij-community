@@ -104,7 +104,6 @@ public class BzrImpl implements Bzr {
     BzrSimpleHandler handler = new BzrSimpleHandler(project, root, BzrCommand.LS);
     handler.setSilent(true);
     handler.addParameters("--unknown", "--null", "--recursive", "--from-root");
-    handler.endOptions();
     // Bazaar doesn't support listing files
     //if (relativePaths != null) {
     //  handler.addParameters(relativePaths);

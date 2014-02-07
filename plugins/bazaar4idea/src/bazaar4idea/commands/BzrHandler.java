@@ -238,13 +238,6 @@ public abstract class BzrHandler {
   }
 
   /**
-   * End option parameters and start file paths. The method adds {@code "--"} parameter.
-   */
-  public void endOptions() {
-    myCommandLine.addParameter("--");
-  }
-
-  /**
    * Add string parameters
    *
    * @param parameters a parameters to add

@@ -113,15 +113,13 @@ class BzrNewChangesCollector extends BzrChangesCollector {
     handler.addParameters(params);
     //handler.setSilent(true);
     //handler.setStdoutSuppressed(true);
-    handler.endOptions();
     handler.addRelativePaths(dirtyPaths);
     if (handler.isLargeCommandLine()) {
       // if there are too much files, just get all changes for the project
       handler = new BzrSimpleHandler(myProject, myVcsRoot, BzrCommand.STATUS);
       handler.addParameters(params);
-      handler.setSilent(true);
-      handler.setStdoutSuppressed(true);
-      handler.endOptions();
+      //handler.setSilent(true);
+      //handler.setStdoutSuppressed(true);
     }
     return handler;
   }

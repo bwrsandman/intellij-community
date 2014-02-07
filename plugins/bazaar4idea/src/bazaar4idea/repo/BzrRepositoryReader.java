@@ -132,23 +132,7 @@ class BzrRepositoryReader {
   @Nullable
   String readCurrentRevision() {
     final Head head = readHead();
-    if (!head.isBranch) { // .git/HEAD is a commit
-      return head.ref;
-    }
-
-    // look in /refs/heads/<branch name>
-    File branchFile = null;
-    for (Map.Entry<String, File> entry : readLocalBranches().entrySet()) {
-      if (entry.getKey().equals(head.ref)) {
-        branchFile = entry.getValue();
-      }
-    }
-    if (branchFile != null) {
-      return readBranchFile(branchFile);
-    }
-
-    // finally look in packed-refs
-    return findBranchRevisionInPackedRefs(head.ref);
+    return head.ref;
   }
 
   /**

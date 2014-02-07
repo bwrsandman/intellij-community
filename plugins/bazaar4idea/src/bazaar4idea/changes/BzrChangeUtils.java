@@ -188,7 +188,6 @@ public class BzrChangeUtils {
                                                    @NotNull String reference) throws VcsException {
     BzrSimpleHandler handler = new BzrSimpleHandler(project, vcsRoot, BzrCommand.VERSION_INFO);
     handler.addParameters(reference);
-    handler.endOptions();
     //handler.setSilent(true);
     String output = handler.run();
     String[] lines = StringUtil.splitByLines(output);
@@ -452,7 +451,6 @@ public class BzrChangeUtils {
     handler.addParameters("--name-status", "--diff-filter=ADCMRUXT", "-M", diffRange);
     //handler.setSilent(true);
     handler.setStdoutSuppressed(true);
-    handler.endOptions();
     if (dirtyPaths != null) {
       handler.addRelativePaths(dirtyPaths);
     }

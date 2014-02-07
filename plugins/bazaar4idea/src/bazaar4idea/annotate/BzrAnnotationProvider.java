@@ -156,7 +156,6 @@ public class BzrAnnotationProvider implements AnnotationProvider, VcsCacheableAn
     else {
       h.addParameters(revision.getRevisionNumber().asString());
     }
-    h.endOptions();
     h.addRelativePaths(repositoryFilePath);
     String output = h.run();
     BzrFileAnnotation

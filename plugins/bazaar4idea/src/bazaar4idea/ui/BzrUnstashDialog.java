@@ -217,7 +217,6 @@ public class BzrUnstashDialog extends DialogWrapper {
           BzrSimpleHandler h = new BzrSimpleHandler(project, root, BzrCommand.VERSION_INFO);
           //h.setSilent(true);
           addStashParameter(h, selectedStash);
-          h.endOptions();
           final String output = h.run();
           resolvedStash = BzrRevisionNumber.parseRevlistOutputAsRevisionNumber(h, output).asString();
         }
