@@ -37,6 +37,7 @@ public class BzrCommand {
   public static final BzrCommand ADD = write("add");
   public static final BzrCommand BLAME = read("blame"); // annotate
   public static final BzrCommand BRANCH = read("branch");
+  public static final BzrCommand CAT = read("cat");
   public static final BzrCommand CHECKOUT = write("checkout");
   public static final BzrCommand COMMIT = write("commit");
   public static final BzrCommand CONFIG = read("config");
@@ -57,7 +58,6 @@ public class BzrCommand {
   public static final BzrCommand REV_PARSE = read("rev-parse");
   public static final BzrCommand REVERT = write("revert");
   public static final BzrCommand RM = write("rm");
-  public static final BzrCommand SHOW = read("show");
   public static final BzrCommand STASH = write("stash");
   public static final BzrCommand STATUS = read("status");
   public static final BzrCommand TAG = read("tag");

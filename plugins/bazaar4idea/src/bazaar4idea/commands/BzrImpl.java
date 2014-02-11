@@ -400,7 +400,7 @@ public class BzrImpl implements Bzr {
   @NotNull
   @Override
   public BzrCommandResult show(@NotNull BzrRepository repository, @NotNull String... params) {
-    final BzrLineHandler handler = new BzrLineHandler(repository.getProject(), repository.getRoot(), BzrCommand.SHOW);
+    final BzrLineHandler handler = new BzrLineHandler(repository.getProject(), repository.getRoot(), BzrCommand.CAT);
     handler.addParameters(params);
     return run(handler);
   }

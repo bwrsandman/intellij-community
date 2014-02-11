@@ -90,12 +90,10 @@ public class BzrRollbackEnvironment implements RollbackEnvironment {
           break;
         case MOVED:
           registerFile(toRevert, c.getBeforeRevision().getFile(), exceptions);
-          registerFile(toUnindex, c.getAfterRevision().getFile(), exceptions);
           toDelete.add(c.getAfterRevision().getFile());
           break;
         case MODIFICATION:
           // note that changes are also removed from index, if they got into index somehow
-          registerFile(toUnindex, c.getBeforeRevision().getFile(), exceptions);
           registerFile(toRevert, c.getBeforeRevision().getFile(), exceptions);
           break;
         case DELETED:

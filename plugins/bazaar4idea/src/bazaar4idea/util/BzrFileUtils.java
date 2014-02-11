@@ -242,9 +242,9 @@ public class BzrFileUtils {
    * @throws VcsException if there is a problem with running git
    */
   public static byte[] getFileContent(Project project, VirtualFile root, String revisionOrBranch, String relativePath) throws VcsException {
-    BzrBinaryHandler h = new BzrBinaryHandler(project, root, BzrCommand.SHOW);
-    h.setSilent(true);
-    h.addParameters(revisionOrBranch + ":" + relativePath);
+    BzrBinaryHandler h = new BzrBinaryHandler(project, root, BzrCommand.CAT);
+    //h.setSilent(true);
+    h.addParameters("-r", revisionOrBranch, relativePath);
     return h.run();
   }
 

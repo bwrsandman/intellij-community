@@ -250,7 +250,7 @@ public class BzrChangeUtils {
                                                           String revisionName,
                                                           boolean skipDiffsForMerge,
                                                           boolean local, boolean revertable) throws VcsException {
-    BzrSimpleHandler h = new BzrSimpleHandler(project, root, BzrCommand.SHOW);
+    BzrSimpleHandler h = new BzrSimpleHandler(project, root, BzrCommand.CAT);
     h.setSilent(true);
     h.addParameters("--name-status", "--first-parent", "--no-abbrev", "-M", "--pretty=format:" + COMMITTED_CHANGELIST_FORMAT,
                     "--encoding=UTF-8",
