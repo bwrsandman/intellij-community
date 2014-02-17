@@ -23,24 +23,36 @@ import com.intellij.openapi.vcs.VcsException;
 import com.intellij.openapi.vfs.VirtualFile;
 import bazaar4idea.commands.BzrSimpleHandler;
 import org.jetbrains.annotations.NonNls;
+import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.nio.charset.Charset;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 /**
  * Bazaar utilities for working with configuration
  */
 public class BzrConfigUtil {
 
-  public static final String USER_NAME = "user.name";
-  public static final String USER_EMAIL = "user.email";
+  public static final String USER_EMAIL = "email";
   public static final String BRANCH_AUTOSETUP_REBASE = "branch.autosetuprebase";
-  public static final String CORE_AUTOCRLF = "core.autocrlf";
+  private static final Pattern NAME_AND_EMAIL_PATTERN = Pattern.compile("(.*) <(.*)>");
 
   private BzrConfigUtil() {
+  }
+
+  @NotNull
+  public static Pair<String, String> getUserNameAndEmailFromBzrConfig(@NotNull Project project, @NotNull VirtualFile root) throws VcsException {
+    String nameAndEmail = getValue(project, root, USER_EMAIL);
+    Matcher matcher = NAME_AND_EMAIL_PATTERN.matcher(nameAndEmail);
+    if (!matcher.matches()) {
+      return null;
+    }
+    return Pair.create(matcher.group(1), matcher.group(2));
   }
 
   /**
@@ -122,41 +134,6 @@ public class BzrConfigUtil {
       return null;
     }
     return output.substring(0, pos);
-  }
-
-  /**
-   * Get boolean configuration value for the repository. Note that the method executes a git command.
-   *
-   * @param project the context project
-   * @param root    the git root
-   * @param key     the keys to be queried
-   * @return the value associated with the key or null if the value is not found, value is not valid integer or boolean
-   * @throws VcsException an exception
-   */
-  @SuppressWarnings({"HardCodedStringLiteral"})
-  @Nullable
-  public static Boolean getBoolValue(final Project project, final VirtualFile root, @NonNls final String key) throws VcsException {
-    String value = getValue(project, root, key);
-    if (value == null) {
-      return null;
-    }
-    value = value.trim();
-    if (value.length() == 0) {
-      return null;
-    }
-    if ("yes".equals(value) || "true".equals(value)) {
-      return Boolean.TRUE;
-    }
-    if ("no".equals(value) || "false".equals(value)) {
-      return Boolean.FALSE;
-    }
-    try {
-      int i = Integer.parseInt(value);
-      return i != 0;
-    }
-    catch (NumberFormatException ex) {
-      return null;
-    }
   }
 
   /**

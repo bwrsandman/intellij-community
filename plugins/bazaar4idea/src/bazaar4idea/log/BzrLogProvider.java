@@ -31,6 +31,7 @@ import com.intellij.openapi.components.ServiceManager;
 import com.intellij.openapi.diagnostic.Attachment;
 import com.intellij.openapi.diagnostic.Logger;
 import com.intellij.openapi.project.Project;
+import com.intellij.openapi.util.Pair;
 import com.intellij.openapi.util.text.StringUtil;
 import com.intellij.openapi.vcs.VcsException;
 import com.intellij.openapi.vcs.VcsKey;
@@ -38,7 +39,6 @@ import com.intellij.openapi.vfs.VirtualFile;
 import com.intellij.util.ArrayUtil;
 import com.intellij.util.Consumer;
 import com.intellij.util.ExceptionUtil;
-import com.intellij.util.Function;
 import com.intellij.util.containers.ContainerUtil;
 import com.intellij.vcs.log.*;
 import com.intellij.vcs.log.impl.HashImpl;
@@ -251,9 +251,10 @@ public class BzrLogProvider implements VcsLogProvider {
   @Nullable
   @Override
   public VcsUser getCurrentUser(@NotNull VirtualFile root) throws VcsException {
-    String userName = BzrConfigUtil.getValue(myProject, root, BzrConfigUtil.USER_NAME);
-    String userEmail = StringUtil.notNullize(BzrConfigUtil.getValue(myProject, root, BzrConfigUtil.USER_EMAIL));
-    return userName == null ? null : myVcsObjectsFactory.createUser(userName, userEmail);
+    Pair<String, String> nameAndEmail = BzrConfigUtil.getUserNameAndEmailFromBzrConfig(myProject, root);
+    String name = nameAndEmail.getFirst();
+    String email = nameAndEmail.getSecond();
+    return name == null ? null : myVcsObjectsFactory.createUser(name, email);
   }
 
   @NotNull
@@ -264,10 +265,6 @@ public class BzrLogProvider implements VcsLogProvider {
 
   private static String prepareParameter(String paramName, String value) {
     return "--" + paramName + "=" + value; // no value escaping needed, because the parameter itself will be quoted by GeneralCommandLine
-  }
-
-  private static <T> String joinFilters(Collection<T> filters, Function<T, String> toString) {
-    return StringUtil.join(filters, toString, "\\|");
   }
 
   @Nullable

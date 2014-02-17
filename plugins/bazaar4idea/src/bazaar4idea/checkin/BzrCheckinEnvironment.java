@@ -79,7 +79,6 @@ public class BzrCheckinEnvironment implements CheckinEnvironment {
   private final BzrVcsSettings mySettings;
 
   private String myNextCommitAuthor = null; // The author for the next commit
-  private boolean myNextCommitAmend; // If true, the next commit is amended
   private Boolean myNextCommitIsPushed = null; // The push option of the next commit
   private Date myNextCommitAuthorDate;
 
@@ -193,7 +192,7 @@ public class BzrCheckinEnvironment implements CheckinEnvironment {
               Set<FilePath> files = new HashSet<FilePath>();
               files.addAll(added);
               files.addAll(removed);
-              commit(myProject, root, files, messageFile, myNextCommitAuthor, myNextCommitAmend, myNextCommitAuthorDate);
+              commit(myProject, root, files, messageFile, myNextCommitAuthor, myNextCommitAuthorDate);
             }
             catch (VcsException ex) {
               PartialOperation partialOperation = isMergeCommit(ex);
@@ -462,7 +461,6 @@ public class BzrCheckinEnvironment implements CheckinEnvironment {
    * @param files                a files to commit
    * @param message              a message file to use
    * @param nextCommitAuthor     a author for the next commit
-   * @param nextCommitAmend      true, if the commit should be amended
    * @param nextCommitAuthorDate Author date timestamp to override the date of the commit or null if this overriding is not needed.
    * @return a simple handler that does the task
    * @throws VcsException in case of bzr problem
@@ -472,17 +470,10 @@ public class BzrCheckinEnvironment implements CheckinEnvironment {
                              Collection<FilePath> files,
                              File message,
                              final String nextCommitAuthor,
-                             boolean nextCommitAmend, Date nextCommitAuthorDate)
+                             Date nextCommitAuthorDate)
     throws VcsException {
-    boolean amend = nextCommitAmend;
     for (List<String> paths : VcsFileUtil.chunkPaths(root, files)) {
       BzrSimpleHandler handler = new BzrSimpleHandler(project, root, BzrCommand.COMMIT);
-      if (amend) {
-        handler.addParameters("--amend");
-      }
-      else {
-        amend = true;
-      }
       handler.addParameters("-F", message.getAbsolutePath());
       if (nextCommitAuthor != null) {
         handler.addParameters("--author=" + nextCommitAuthor);
@@ -591,7 +582,6 @@ public class BzrCheckinEnvironment implements CheckinEnvironment {
   }
 
   public void reset() {
-    myNextCommitAmend = false;
     myNextCommitAuthor = null;
     myNextCommitIsPushed = null;
     myNextCommitAuthorDate = null;
@@ -609,13 +599,8 @@ public class BzrCheckinEnvironment implements CheckinEnvironment {
      * The author ComboBox, the combobox contains previously selected authors.
      */
     private final JComboBox myAuthor;
-    /**
-     * The amend checkbox
-     */
-    private final JCheckBox myAmend;
     private Date myAuthorDate;
     @Nullable private String myPreviousMessage;
-    @Nullable private String myAmendedMessage;
 
     @NotNull private final CheckinProjectPanel myCheckinPanel;
 
@@ -662,66 +647,8 @@ public class BzrCheckinEnvironment implements CheckinEnvironment {
       myAuthor.setEditable(true);
       authorLabel.setLabelFor(myAuthor);
       myAuthor.setToolTipText(BzrBundle.getString("commit.author.tooltip"));
-      myPanel.add(myAuthor, c);
-      // add amend checkbox
-      c = new GridBagConstraints();
-      c.gridx = 0;
-      c.gridy = 1;
-      c.gridwidth = 2;
-      c.anchor = GridBagConstraints.CENTER;
-      c.insets = insets;
-      c.weightx = 1;
-      c.fill = GridBagConstraints.HORIZONTAL;
-      myAmend = new NonFocusableCheckBox(BzrBundle.getString("commit.amend"));
-      myAmend.setMnemonic('m');
-      myAmend.setSelected(false);
-      myAmend.setToolTipText(BzrBundle.getString("commit.amend.tooltip"));
-      myPanel.add(myAmend, c);
 
       myPreviousMessage = myCheckinPanel.getCommitMessage();
-
-      myAmend.addActionListener(new ActionListener() {
-        @Override
-        public void actionPerformed(ActionEvent e) {
-          if (myAmend.isSelected()) {
-            if (myPreviousMessage.equals(myCheckinPanel.getCommitMessage())) { // if user has already typed something, don't revert it
-              if (myAmendedMessage == null) {
-                loadMessageInModalTask(project);
-              }
-              else { // checkbox is selected not the first time
-                substituteCommitMessage(myAmendedMessage);
-              }
-            }
-          }
-          else {
-            // there was the amended message, but user has changed it => not reverting
-            if (myCheckinPanel.getCommitMessage().equals(myAmendedMessage)) {
-              myCheckinPanel.setCommitMessage(myPreviousMessage);
-            }
-          }
-        }
-      });
-    }
-
-    private void loadMessageInModalTask(@NotNull Project project) {
-      try {
-        String messageFromBzr =
-          ProgressManager.getInstance().runProcessWithProgressSynchronously(new ThrowableComputable<String, VcsException>() {
-            @Override
-            public String compute() throws VcsException {
-              return getLastCommitMessage();
-            }
-          }, "Reading commit message...", false, project);
-        if (!StringUtil.isEmptyOrSpaces(messageFromBzr)) {
-          substituteCommitMessage(messageFromBzr);
-          myAmendedMessage = messageFromBzr;
-        }
-      }
-      catch (VcsException e) {
-        Messages.showErrorDialog(getComponent(), "Couldn't load commit message of the commit to amend.\n" + e.getMessage(),
-                                 "Commit Message not Loaded");
-        log.info(e);
-      }
     }
 
     private void substituteCommitMessage(@NotNull String newMessage) {
@@ -786,7 +713,6 @@ public class BzrCheckinEnvironment implements CheckinEnvironment {
      */
     public void refresh() {
       myAuthor.setSelectedItem("");
-      myAmend.setSelected(false);
       reset();
     }
 
@@ -803,7 +729,6 @@ public class BzrCheckinEnvironment implements CheckinEnvironment {
         myNextCommitAuthor = author;
         mySettings.saveCommitAuthor(author);
       }
-      myNextCommitAmend = myAmend.isSelected();
       myNextCommitAuthorDate = myAuthorDate;
     }
 

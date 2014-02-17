@@ -15,20 +15,13 @@
  */
 package bazaar4idea.checkin;
 
-import bazaar4idea.BzrPlatformFacade;
 import bazaar4idea.BzrUtil;
 import bazaar4idea.BzrVcs;
-import bazaar4idea.commands.Bzr;
 import bazaar4idea.config.BzrConfigUtil;
-import bazaar4idea.config.BzrVcsSettings;
 import bazaar4idea.i18n.BzrBundle;
 import bazaar4idea.repo.BzrRepository;
 import bazaar4idea.repo.BzrRepositoryManager;
-import com.intellij.openapi.components.ServiceManager;
 import com.intellij.openapi.diagnostic.Logger;
-import com.intellij.openapi.progress.ProgressIndicator;
-import com.intellij.openapi.progress.ProgressManager;
-import com.intellij.openapi.progress.Task;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.ui.Messages;
 import com.intellij.openapi.util.Pair;
@@ -42,12 +35,12 @@ import com.intellij.openapi.vcs.checkin.CheckinHandler;
 import com.intellij.openapi.vcs.checkin.VcsCheckinHandlerFactory;
 import com.intellij.openapi.vfs.VirtualFile;
 import com.intellij.util.PairConsumer;
-import com.intellij.util.ui.UIUtil;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.*;
-import java.util.concurrent.atomic.AtomicReference;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 /**
  * Prohibits committing with an empty messages, warns if committing into detached HEAD, checks if user name and correct CRLF attributes
@@ -106,7 +99,7 @@ public class BzrCheckinHandlerFactory extends VcsCheckinHandlerFactory {
       Collection<VirtualFile> affectedRoots = getSelectedRoots();
       for (VirtualFile root : affectedRoots) {
         try {
-          Pair<String, String> nameAndEmail = getUserNameAndEmailFromBzrConfig(project, root);
+          Pair<String, String> nameAndEmail = BzrConfigUtil.getUserNameAndEmailFromBzrConfig(project, root);
           String name = nameAndEmail.getFirst();
           String email = nameAndEmail.getSecond();
           if (name == null || email == null) {
@@ -130,7 +123,7 @@ public class BzrCheckinHandlerFactory extends VcsCheckinHandlerFactory {
         allRoots.removeAll(affectedRoots);
         for (VirtualFile root : allRoots) {
           try {
-            Pair<String, String> nameAndEmail = getUserNameAndEmailFromBzrConfig(project, root);
+            Pair<String, String> nameAndEmail = BzrConfigUtil.getUserNameAndEmailFromBzrConfig(project, root);
             String name = nameAndEmail.getFirst();
             String email = nameAndEmail.getSecond();
             if (name != null && email != null) {
@@ -150,12 +143,10 @@ public class BzrCheckinHandlerFactory extends VcsCheckinHandlerFactory {
       if (dialog.isOK()) {
         try {
           if (dialog.isGlobal()) {
-            BzrConfigUtil.setValue(project, notDefined.iterator().next(), BzrConfigUtil.USER_NAME, dialog.getUserName(), "--global");
             BzrConfigUtil.setValue(project, notDefined.iterator().next(), BzrConfigUtil.USER_EMAIL, dialog.getUserEmail(), "--global");
           }
           else {
             for (VirtualFile root : notDefined) {
-              BzrConfigUtil.setValue(project, root, BzrConfigUtil.USER_NAME, dialog.getUserName());
               BzrConfigUtil.setValue(project, root, BzrConfigUtil.USER_EMAIL, dialog.getUserEmail());
             }
           }
@@ -169,13 +160,6 @@ public class BzrCheckinHandlerFactory extends VcsCheckinHandlerFactory {
         return ReturnResult.COMMIT;
       }
       return ReturnResult.CLOSE_WINDOW;
-    }
-
-    @NotNull
-    private Pair<String, String> getUserNameAndEmailFromBzrConfig(@NotNull Project project, @NotNull VirtualFile root) throws VcsException {
-      String name = BzrConfigUtil.getValue(project, root, BzrConfigUtil.USER_NAME);
-      String email = BzrConfigUtil.getValue(project, root, BzrConfigUtil.USER_EMAIL);
-      return Pair.create(name, email);
     }
 
     private boolean emptyCommitMessage() {

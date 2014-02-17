@@ -28,6 +28,7 @@ import com.intellij.openapi.components.ServiceManager;
 import com.intellij.openapi.diagnostic.Logger;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.util.Getter;
+import com.intellij.openapi.util.Pair;
 import com.intellij.openapi.vcs.FilePathImpl;
 import com.intellij.openapi.vcs.VcsException;
 import com.intellij.openapi.vfs.VirtualFile;
@@ -113,7 +114,9 @@ public class LowLevelAccessImpl implements LowLevelAccess {
         }
       }
     }
-    refs.setUsername(BzrConfigUtil.getValue(myProject, myRoot, BzrConfigUtil.USER_NAME));
+    Pair<String, String> nameAndEmail = BzrConfigUtil.getUserNameAndEmailFromBzrConfig(myProject, myRoot);
+    String name = nameAndEmail.getFirst();
+    refs.setUsername(name);
     final String head = repository.getCurrentRevision();
     if (head != null) {
       refs.setHeadHash(AbstractHash.create(head));

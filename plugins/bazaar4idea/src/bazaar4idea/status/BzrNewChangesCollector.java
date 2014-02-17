@@ -204,6 +204,9 @@ class BzrNewChangesCollector extends BzrChangesCollector {
         case '-':
           if (yStatus == 'N') {
             reportAdded(filepath);
+          }
+          else if (yStatus == 'D') {
+            reportDeleted(filepath, head);
           }  else {
             throwYStatus(output, handler, line, xStatus, yStatus);
           }
