@@ -142,6 +142,7 @@ class BzrNewChangesCollector extends BzrChangesCollector {
       X File nonexistent (and unknown to bzr)
       C File has conflicts
       P Entry for a pending merge (not a file)
+      I Entry is ignored
 
     Column 2 - contents:
 
@@ -222,6 +223,7 @@ class BzrNewChangesCollector extends BzrChangesCollector {
           reportConflict(filepath, head);
           break;
 
+        case 'I':
         case '?':
         case 'X':
           throwGFE("Unexpected unversioned file flag.", handler, output, line, xStatus, yStatus);
