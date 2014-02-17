@@ -184,11 +184,7 @@ public class BzrLogProvider implements VcsLogProvider {
   @NotNull
   @Override
   public List<? extends VcsFullCommitDetails> getFilteredDetails(@NotNull final VirtualFile root,
-                                                                 @NotNull Collection<VcsLogBranchFilter> branchFilters,
-                                                                 @NotNull Collection<VcsLogUserFilter> userFilters,
-                                                                 @NotNull Collection<VcsLogDateFilter> dateFilters,
-                                                                 @NotNull Collection<VcsLogTextFilter> textFilters,
-                                                                 @NotNull Collection<VcsLogStructureFilter> structureFilters,
+                                                                 @NotNull VcsLogFilterCollection filterCollection,
                                                                  int maxCount) throws VcsException {
     if (!isRepositoryReady(root)) {
       return Collections.emptyList();
@@ -196,32 +192,32 @@ public class BzrLogProvider implements VcsLogProvider {
 
     List<String> filterParameters = ContainerUtil.newArrayList();
 
-    if (!branchFilters.isEmpty()) {
+    if (filterCollection.getBranchFilter() != null) {
       // git doesn't support filtering by several branches very well (--branches parameter give a weak pattern capabilities)
       // => by now assuming there is only one branch filter.
-      if (branchFilters.size() > 1) {
+      if (filterCollection.getBranchFilter().getBranchNames().size() > 1) {
         LOG.warn("More than one branch filter was passed. Using only the first one.");
       }
-      VcsLogBranchFilter branchFilter = branchFilters.iterator().next();
-      filterParameters.add(branchFilter.getBranchName());
+      String branch = filterCollection.getBranchFilter().getBranchNames().iterator().next();
+      BzrRepository repository = getRepository(root);
+      assert repository != null : "repository is null for root " + root + " but was previously reported as 'ready'";
+      if (repository.getBranches().findBranchByName(branch) == null) {
+        return Collections.emptyList();
+      }
+      filterParameters.add(branch);
     }
     else {
       filterParameters.addAll(BzrHistoryUtils.LOG_ALL);
     }
 
-    if (!userFilters.isEmpty()) {
-      String authorFilter = joinFilters(userFilters, new Function<VcsLogUserFilter, String>() {
-        @Override
-        public String fun(VcsLogUserFilter filter) {
-          return filter.getUserName(root);
-        }
-      });
-      filterParameters.add(prepareParameter("author", authorFilter));
+    if (filterCollection.getUserFilter() != null) {
+      String authorFilter = StringUtil.join(filterCollection.getUserFilter().getUserNames(root), "|");
+      filterParameters.add(prepareParameter("author", StringUtil.escapeChar(StringUtil.escapeBackSlashes(authorFilter), '|')));
     }
 
-    if (!dateFilters.isEmpty()) {
+    if (filterCollection.getDateFilter() != null) {
       // assuming there is only one date filter, until filter expressions are defined
-      VcsLogDateFilter filter = dateFilters.iterator().next();
+      VcsLogDateFilter filter = filterCollection.getDateFilter();
       if (filter.getAfter() != null) {
         filterParameters.add(prepareParameter("after", filter.getAfter().toString()));
       }
@@ -230,26 +226,22 @@ public class BzrLogProvider implements VcsLogProvider {
       }
     }
 
-    if (textFilters.size() > 1) {
-      LOG.warn("Expected only one text filter: " + textFilters);
-    }
-    else if (!textFilters.isEmpty()) {
-      String textFilter = textFilters.iterator().next().getText();
+    if (filterCollection.getTextFilter() != null) {
+      String textFilter = StringUtil.escapeBackSlashes(filterCollection.getTextFilter().getText());
       filterParameters.add(prepareParameter("grep", textFilter));
     }
 
     filterParameters.add("--regexp-ignore-case"); // affects case sensitivity of any filter (except file filter)
     if (maxCount > 0) {
-      filterParameters.add("--max-count=" + maxCount);
+      filterParameters.add(prepareParameter("max-count", String.valueOf(maxCount)));
     }
+    filterParameters.add("--date-order");
 
     // note: this filter must be the last parameter, because it uses "--" which separates parameters from paths
-    if (!structureFilters.isEmpty()) {
+    if (filterCollection.getStructureFilter() != null) {
       filterParameters.add("--");
-      for (VcsLogStructureFilter filter : structureFilters) {
-        for (VirtualFile file : filter.getFiles(root)) {
-          filterParameters.add(file.getPath());
-        }
+      for (VirtualFile file : filterCollection.getStructureFilter().getFiles(root)) {
+        filterParameters.add(file.getPath());
       }
     }
 

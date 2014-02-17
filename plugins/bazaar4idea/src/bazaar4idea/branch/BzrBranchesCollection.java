@@ -15,11 +15,13 @@
  */
 package bazaar4idea.branch;
 
+import bazaar4idea.BzrBranch;
 import bazaar4idea.BzrLocalBranch;
 import bazaar4idea.BzrRemoteBranch;
 import com.intellij.openapi.util.Condition;
 import com.intellij.util.containers.ContainerUtil;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.Collection;
 import java.util.Collections;
@@ -58,12 +60,26 @@ public final class BzrBranchesCollection {
     return Collections.unmodifiableCollection(myRemoteBranches);
   }
 
-  public BzrLocalBranch findLocalBranch(@NotNull final String name) {
-    return ContainerUtil.find(myLocalBranches, new Condition<BzrLocalBranch>() {
+
+  @Nullable
+  public BzrLocalBranch findLocalBranch(@NotNull String name) {
+    return findByName(myLocalBranches, name);
+  }
+
+  @Nullable
+  public BzrBranch findBranchByName(@NotNull String name) {
+    BzrLocalBranch branch = findByName(myLocalBranches, name);
+    return branch != null ? branch : findByName(myRemoteBranches, name);
+  }
+
+  @Nullable
+  private static <T extends BzrBranch> T findByName(Collection<T> branches, @NotNull final String name) {
+    return ContainerUtil.find(branches, new Condition<T>() {
       @Override
-      public boolean value(BzrLocalBranch branch) {
+      public boolean value(T branch) {
         return name.equals(branch.getName());
       }
     });
   }
+
 }
